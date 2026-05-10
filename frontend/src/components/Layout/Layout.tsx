@@ -1,26 +1,20 @@
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar/Sidebar';
+import TopBar from '../TopBar/TopBar';
 import styles from './Layout.module.css';
 
-const Layout = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-
-    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-    const closeSidebar = () => setSidebarOpen(false);
-
-    return (
-        <div className={styles.wrapper}>
-            <Navbar onMenuClick={toggleSidebar} />
-            <div className={styles.main}>
-                <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-                <main className={styles.content} onClick={closeSidebar}>
+const Layout = () => (
+    <div className={styles.page}>
+        <div className={styles.layout}>
+            <Sidebar />
+            <main className={styles.main}>
+                <TopBar />
+                <div className={styles.container}>
                     <Outlet />
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
-    );
-};
+    </div>
+);
 
 export default Layout;

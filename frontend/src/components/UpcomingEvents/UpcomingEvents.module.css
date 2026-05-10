@@ -1,0 +1,16 @@
+.card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.heading {
+    margin: 0 0 8px 0;
+    color: #1F2937;
+}
+
+.eventItem {
+    padding: 8px 0;
+    color: #1F2937;
+}

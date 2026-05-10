@@ -4,18 +4,24 @@ export type UserRole = 'koordynator' | 'opiekun' | 'promocja' | 'zarzad';
 
 interface AuthContextType {
     role: UserRole;
-    setRole: (role: UserRole) => void;
     userName: string;
+    userRoleName: string;
 }
+
+const roleNames: Record<UserRole, string> = {
+    koordynator: 'Koordynator inicjatywy',
+    opiekun: 'Opiekun relacji',
+    promocja: 'Dział promocji',
+    zarzad: 'Kadra zarządzająca',
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [role, setRole] = useState<UserRole>('opiekun');
+    const [role] = useState<UserRole>('zarzad');  // tymczasowo
     const userName = 'Anna Nowak';
-
     return (
-        <AuthContext.Provider value={{ role, setRole, userName }}>
+        <AuthContext.Provider value={{ role, userName, userRoleName: roleNames[role] }}>
             {children}
         </AuthContext.Provider>
     );
