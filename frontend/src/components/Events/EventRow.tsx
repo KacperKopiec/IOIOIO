@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { getEventStatusConfig } from '../../constants/eventStatuses';
 import { eventStatusToDisplayId, formatDateRange } from '../../lib/format';
 import type { EventStatus } from '../../types/api';
@@ -30,7 +31,11 @@ const EventRow: React.FC<EventRowProps> = ({ event }) => {
                 <input type="checkbox" className={styles.checkbox} />
             </div>
 
-            <div className={styles.nameCell}>
+            <Link
+                to={`/events/${event.id}`}
+                className={styles.nameCell}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+            >
                 <div className={styles.initial}>
                     {event.name.charAt(0).toUpperCase()}
                 </div>
@@ -38,7 +43,7 @@ const EventRow: React.FC<EventRowProps> = ({ event }) => {
                     <div className={styles.eventName}>{event.name}</div>
                     <div className={styles.eventDate}>{dateLabel}</div>
                 </div>
-            </div>
+            </Link>
 
             <div className={styles.typeCell}>
                 <span className={styles.eventDate}>{dateLabel}</span>

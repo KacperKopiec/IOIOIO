@@ -1,0 +1,112 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1B1C1C;
+    line-height: 28px;
+    margin: 0;
+}
+
+.card {
+    background: #FFFFFF;
+    border: 1px solid #C2C7D1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #F8FAFC;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #CBD5E1;
+    border-radius: 2px;
+    accent-color: var(--color-primary, #03467B);
+    flex-shrink: 0;
+}
+
+.taskTitle {
+    font-weight: 500;
+    font-size: 16px;
+    color: #1B1C1C;
+    line-height: 24px;
+}
+
+.taskTitleDone {
+    color: #94A3B8;
+    text-decoration: line-through;
+}
+
+.taskMeta {
+    font-weight: 600;
+    font-size: 12px;
+    color: #42474F;
+    letter-spacing: 0.5px;
+    text-transform: capitalize;
+}
+
+.taskMetaDone {
+    color: #CBD5E1;
+}
+
+.badge {
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: lowercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badgeOverdue {
+    background: rgba(255, 218, 214, 0.4);
+    color: #BA1A1A;
+}
+
+.badgeUpcoming {
+    background: #F1F5F9;
+    color: #42474F;
+}
+
+.badgeDone {
+    background: #F0FDF4;
+    color: #16A34A;
+}
+
+.empty {
+    padding: 24px;
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+}
