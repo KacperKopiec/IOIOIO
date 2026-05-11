@@ -1,22 +1,19 @@
 .card {
-    background: #fff;
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .headerRow {
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px minmax(160px, 2.4fr) minmax(120px, 2fr) minmax(110px, 1.4fr) minmax(110px, 1.4fr) minmax(96px, 1.1fr);
     align-items: center;
-    gap: 0;
-    padding: 0;
     background: var(--color-canvas);
     border-bottom: 1px solid var(--color-border);
-    font-weight: 700;
-    font-size: 13px;
-    color: var(--color-text-strong);
     min-height: 48px;
 }
 
@@ -36,38 +33,17 @@
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    min-width: 0;
 }
 
 .checkboxHeader {
-    width: 48px;
-    flex-shrink: 0;
     justify-content: center;
-}
-
-.nameHeader {
-    width: 260px;
-}
-
-.tagsHeader {
-    width: 220px;
-}
-
-.coordinatorHeader {
-    width: 180px;
-}
-
-.statusHeader {
-    width: 180px;
-}
-
-.dateHeader {
-    width: 140px;
+    padding: 16px 8px;
 }
 
 .body {
     display: flex;
     flex-direction: column;
-    flex: 1;
 }
 
 .pagination {
@@ -83,6 +59,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .paginationControls {

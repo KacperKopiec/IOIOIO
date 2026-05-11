@@ -1,8 +1,7 @@
 .row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px minmax(160px, 2.4fr) minmax(120px, 2fr) minmax(110px, 1.4fr) minmax(110px, 1.4fr) minmax(96px, 1.1fr);
     align-items: center;
-    gap: 0;
-    padding: 0;
     border-bottom: 1px solid var(--color-border-subtle);
     background: var(--color-surface);
     min-height: 64px;
@@ -18,15 +17,15 @@
 .coordinatorCell,
 .statusCell,
 .dateCell {
-    padding: 16px 12px;
+    padding: 12px;
     display: flex;
     align-items: center;
+    min-width: 0;
 }
 
 .checkboxCell {
-    width: 48px;
-    flex-shrink: 0;
     justify-content: center;
+    padding: 12px 8px;
 }
 
 .rowCheckbox {
@@ -35,15 +34,14 @@
     margin: 0;
     border: 1px solid var(--color-text-subtle);
     border-radius: 4px;
-    accent-color: var(--color-success);
+    accent-color: var(--color-primary);
     cursor: pointer;
 }
 
 .nameCell {
-    width: 260px;
     flex-direction: column;
-    gap: 2px;
     align-items: flex-start;
+    gap: 2px;
 }
 
 .companyName {
@@ -52,6 +50,10 @@
     font-size: 14px;
     line-height: 20px;
     color: var(--color-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .cityName {
@@ -60,12 +62,10 @@
     font-size: 12px;
     line-height: 16px;
     color: var(--color-text-subtle);
-}
-
-.tagsCell {
-    width: 220px;
-    flex-wrap: wrap;
-    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .tagsList {
@@ -73,31 +73,7 @@
     gap: 6px;
     align-items: center;
     flex-wrap: wrap;
-}
-
-.tag {
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--color-success);
-    background: var(--color-success-bg);
-    padding: 2px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.typeText {
-    font-family: var(--font-body);
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--color-text-subtle);
-    font-style: italic;
-}
-
-.coordinatorCell {
-    width: 180px;
+    min-width: 0;
 }
 
 .coordinatorName {
@@ -106,55 +82,10 @@
     font-size: 13px;
     line-height: 18px;
     color: var(--color-text-strong);
-}
-
-.statusCell {
-    width: 180px;
-}
-
-.statusBadge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    width: fit-content;
-}
-
-.statusActive {
-    background: var(--color-success-bg);
-    color: var(--color-success);
-}
-
-.statusPending {
-    background: var(--color-warning-bg);
-    color: var(--color-warning);
-}
-
-.statusDefault {
-    background: var(--color-border-subtle);
-    color: var(--color-text-muted);
-}
-
-.statusDot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-}
-
-.statusText {
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.dateCell {
-    width: 140px;
+    width: 100%;
 }
 
 .dateText {
@@ -163,4 +94,7 @@
     font-size: 12px;
     line-height: 16px;
     color: var(--color-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

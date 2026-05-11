@@ -1,70 +1,47 @@
 .row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px minmax(160px, 2.4fr) minmax(120px, 2fr) minmax(110px, 1.4fr) minmax(110px, 1.4fr) minmax(96px, 1.1fr);
     align-items: center;
-    gap: 16px;
-    padding: 0;
-    width: 1192px;
-    min-height: 73px;
     border-bottom: 1px solid var(--color-border-subtle);
     background: var(--color-surface);
-}
-
-.row:last-child {
-    border-bottom: none;
+    min-height: 64px;
 }
 
 .row:hover {
     background: var(--color-surface-muted);
 }
 
-.checkboxCell {
-    width: 64px;
+.checkboxCell,
+.nameCell,
+.tagsCell,
+.coordinatorCell,
+.statusCell,
+.partnersCell {
+    padding: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 28.5px 24px;
-    flex-shrink: 0;
+    min-width: 0;
 }
 
-.checkbox {
+.checkboxCell {
+    justify-content: center;
+    padding: 12px 8px;
+}
+
+.rowCheckbox {
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 2px;
-    accent-color: var(--color-primary-dark);
+    border: 1px solid var(--color-text-subtle);
+    border-radius: 4px;
+    accent-color: var(--color-primary);
     cursor: pointer;
 }
 
 .nameCell {
-    width: 310px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.initial {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-primary-soft);
-    border: 1px solid var(--color-info-border);
-    border-radius: 4px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 28px;
-    color: var(--color-primary-dark);
-    flex-shrink: 0;
-}
-
-.nameInfo {
-    display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: flex-start;
+    gap: 2px;
 }
 
 .eventName {
@@ -72,7 +49,11 @@
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
-    color: var(--color-primary-dark);
+    color: var(--color-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .eventDate {
@@ -80,111 +61,57 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
+    color: var(--color-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.tagsList {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.emptyValue {
     color: var(--color-text-placeholder);
-}
-
-.typeCell {
-    width: 125px;
-    padding: 26px 16px 27px 24px;
-}
-
-.typeBadge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 10px;
-    line-height: 12px;
-    text-transform: uppercase;
-    letter-spacing: -0.25px;
-}
-
-.coordinatorCell {
-    width: 190px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 16px 0 32px;
-}
-
-.coordinatorAvatar {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-border);
-    border-radius: 12px;
-    flex-shrink: 0;
-}
-
-.avatarInitial {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 10px;
-    line-height: 12px;
-    color: var(--color-text-strong);
+    font-size: 12px;
 }
 
 .coordinatorName {
     font-family: var(--font-body);
     font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--color-text-muted);
-}
-
-.partnersCell {
-    width: 125px;
-    padding: 0 16px;
-}
-
-.partnerAvatars {
-    display: flex;
-    align-items: center;
-}
-
-.partnerAvatar {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-border);
-    border: 2px solid var(--color-surface);
-    border-radius: 12px;
-    flex-shrink: 0;
-}
-
-.partnerAvatar:nth-child(3n) {
-    background: var(--color-primary-dark);
-}
-
-.partnerInitial {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 10px;
-    line-height: 12px;
+    font-size: 13px;
+    line-height: 18px;
     color: var(--color-text-strong);
-    text-align: center;
-}
-
-.partnerAvatar:nth-child(3n) .partnerInitial {
-    color: var(--color-surface);
-}
-
-.statusCell {
-    width: 153px;
-    padding: 24.5px 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .statusBadge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 4px 10px;
-    border-radius: 12px;
+    border-radius: 16px;
     font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 11px;
-    line-height: 13px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+.partnersValue {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--color-text);
 }
