@@ -1,32 +1,51 @@
 .page {
-    padding: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1700px;
+}
+
+.headerBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .breadcrumb {
-    color: #6B7280;
+    color: #64748B;
     font-size: 12px;
-    margin-bottom: 8px;
+    letter-spacing: 0.5px;
 }
 
 .title {
-    color: #00458E;
+    color: var(--color-primary, #00458E);
     font-weight: 800;
     font-size: 32px;
-    margin: 0 0 24px 0;
+    letter-spacing: -0.64px;
+    line-height: 38.4px;
+    margin: 0;
+}
+
+.subtitle {
+    color: #64748B;
+    font-size: 14px;
+    line-height: 21px;
 }
 
 .toolbar {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
 .label {
     font-size: 12px;
-    color: #6B7280;
+    color: #64748B;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    font-weight: 600;
 }
 
 .select {
@@ -42,59 +61,82 @@
 .kpiRow {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 20px;
 }
 
 .kpiCard {
     background: #FFFFFF;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #C3C6D2;
     border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+    padding: 24px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.kpiIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #EFF6FF;
+    color: #2563EB;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.kpiIconGreen {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.kpiIconIndigo {
+    background: #EEF2FF;
+    color: #4F46E5;
+}
+
+.kpiIconRose {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.kpiBody {
+    flex: 1;
+    min-width: 0;
 }
 
 .kpiLabel {
-    font-weight: 700;
-    font-size: 11px;
-    color: #9CA3AF;
-    text-transform: uppercase;
+    color: #64748B;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    line-height: 18px;
 }
 
 .kpiValue {
-    font-size: 32px;
-    font-weight: 800;
-    color: #00458E;
-    margin-top: 4px;
+    color: #0F172A;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    line-height: 36px;
 }
 
 .kpiSub {
+    color: #94A3B8;
     font-size: 12px;
-    color: #6B7280;
-    margin-top: 2px;
+    line-height: 16px;
 }
 
-.kpiHighlight {
-    background: #00458E;
-    color: #FFFFFF;
-}
-
-.kpiHighlight .kpiLabel {
-    color: #DBEAFE;
-}
-
-.kpiHighlight .kpiValue {
-    color: #FFFFFF;
-}
-
-.kpiHighlight .kpiSub {
-    color: #E0E7FF;
+.kpiSubAccent {
+    color: #047857;
 }
 
 .sectionGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -105,105 +147,255 @@
 
 .section {
     background: #FFFFFF;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #C3C6D2;
     border-radius: 12px;
-    padding: 18px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .sectionTitle {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
-    color: #00458E;
-    margin: 0 0 12px 0;
+    color: #141D23;
+    margin: 0;
+    line-height: 28px;
+}
+
+.sectionAction {
+    background: transparent;
+    border: none;
+    color: #305EA4;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sectionAction:hover {
+    text-decoration: underline;
 }
 
 .list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .listItem {
     display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #F1F5F9;
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+
+.listItemBody {
+    flex: 1;
+    min-width: 0;
+    display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 10px 12px;
-    border: 1px solid #F3F4F6;
-    border-radius: 8px;
-    background: #F9FAFB;
 }
 
 .listItemTitle {
     font-weight: 600;
-    color: #1F2937;
+    color: #141D23;
     font-size: 14px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .listItemSub {
     font-size: 12px;
-    color: #6B7280;
+    color: #64748B;
+    line-height: 16px;
+}
+
+.listItemDate {
+    font-size: 11px;
+    color: #94A3B8;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.overdueItem {
+    border-color: #FECACA;
+    background: #FEF2F2;
+}
+
+.overdueItem .listItemTitle {
+    color: #991B1B;
+}
+
+.overdueItem .listItemDate {
+    color: #B91C1C;
 }
 
 .emptyState {
-    color: #6B7280;
+    color: #64748B;
     font-size: 14px;
-    padding: 12px;
+    padding: 16px;
     text-align: center;
 }
 
 .cardGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 16px;
 }
 
 .eventCard {
     background: #FFFFFF;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #C3C6D2;
     border-radius: 12px;
-    padding: 18px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.eventCard:hover {
+    border-color: var(--color-primary, #00458E);
+    box-shadow: 0px 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.eventCardChips {
+    display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    font-weight: 700;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.chipBlue {
+    background: #EFF6FF;
+    color: #2563EB;
+}
+
+.chipGreen {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.chipAmber {
+    background: #FFFBEB;
+    color: #B45309;
+}
+
+.chipSlate {
+    background: #F1F5F9;
+    color: #475569;
 }
 
 .eventCardName {
     font-size: 18px;
     font-weight: 700;
-    color: #1F2937;
+    color: #0F172A;
+    line-height: 24px;
 }
 
-.eventCardDate {
+.eventCardDescription {
+    font-size: 13px;
+    color: #64748B;
+    line-height: 18px;
+}
+
+.eventCardFoot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.eventCardMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     font-size: 12px;
-    color: #6B7280;
+    color: #64748B;
+}
+
+.eventCardMetaValue {
+    color: #141D23;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 .progressBar {
     width: 100%;
     height: 6px;
-    background: #F3F4F6;
+    background: #F1F5F9;
     border-radius: 999px;
     overflow: hidden;
 }
 
 .progressFill {
     height: 100%;
-    background: #00458E;
+    background: var(--color-primary, #00458E);
     transition: width 0.2s ease;
+}
+
+.progressFillGreen {
+    background: #059669;
 }
 
 .progressLabel {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #6B7280;
+    color: #64748B;
 }
 
-.overdueItem {
-    border-left: 3px solid #B91C1C;
-    background: #FEF2F2;
+.ctaBtn {
+    align-self: flex-start;
+    background: #002A5C;
+    color: #FFFFFF;
+    border: none;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.overdueItem .listItemTitle {
-    color: #991B1B;
+.ctaBtn:hover {
+    background: var(--color-primary, #00458E);
+}
+
+.ctaBtnGhost {
+    background: transparent;
+    color: #305EA4;
+    border: 1px solid #C3C6D2;
+}
+
+.ctaBtnGhost:hover {
+    background: #EFF6FF;
 }

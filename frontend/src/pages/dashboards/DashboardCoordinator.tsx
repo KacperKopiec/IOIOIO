@@ -1,138 +1,206 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Briefcase, CalendarDays, Target } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useEvents } from '../../hooks/api/events';
-import { useCoordinatorDashboard } from '../../hooks/api/dashboard';
+import { usePipelineEntries } from '../../hooks/api/pipeline';
 import { formatDateRange, formatPLN, formatPercent } from '../../lib/format';
+import type { Event, PipelineEntry } from '../../types/api';
 import styles from './Dashboards.module.css';
 
+const STATUS_CHIP_CLASS: Record<string, string> = {
+    active: styles.chipGreen,
+    draft: styles.chipAmber,
+    closed: styles.chipSlate,
+    cancelled: styles.chipSlate,
+};
+
+const STATUS_LABEL: Record<string, string> = {
+    active: 'Aktywne',
+    draft: 'Wersja robocza',
+    closed: 'Zakończone',
+    cancelled: 'Anulowane',
+};
+
 const DashboardCoordinator: React.FC = () => {
-    const events = useEvents({ status: 'active', page: 1, page_size: 50 });
-    const [eventId, setEventId] = useState<number | null>(null);
+    const { userId, userName } = useAuth();
+    const myEvents = useEvents({
+        owner_user_id: userId,
+        page: 1,
+        page_size: 50,
+    });
+    const allEvents = useEvents({ page: 1, page_size: 50 });
+    const allEntries = usePipelineEntries({});
 
-    useEffect(() => {
-        if (eventId == null && events.data && events.data.items.length > 0) {
-            setEventId(events.data.items[0].id);
-        }
-    }, [events.data, eventId]);
+    const events =
+        (myEvents.data?.items?.length ?? 0) > 0
+            ? myEvents.data!.items
+            : allEvents.data?.items ?? [];
 
-    const dashboard = useCoordinatorDashboard(eventId);
+    const stats = computeStats(events, allEntries.data ?? []);
 
     return (
         <div className={styles.page}>
-            <nav className={styles.breadcrumb}>Dashboard / Koordynator wydarzenia</nav>
-            <h1 className={styles.title}>Koordynator wydarzenia</h1>
+            <header className={styles.headerBlock}>
+                <span className={styles.breadcrumb}>Dashboard / Koordynator wydarzenia</span>
+                <h1 className={styles.title}>Witaj, {userName.split(' ')[0]}</h1>
+                <span className={styles.subtitle}>
+                    Twoje wydarzenia i ich aktualne metryki.
+                </span>
+            </header>
 
-            <div className={styles.toolbar}>
-                <span className={styles.label}>Wydarzenie:</span>
-                <select
-                    className={styles.select}
-                    value={eventId ?? ''}
-                    onChange={(e) =>
-                        setEventId(
-                            e.target.value ? Number.parseInt(e.target.value, 10) : null,
-                        )
+            <div className={styles.kpiRow}>
+                <KpiCard
+                    icon={<CalendarDays size={20} />}
+                    iconClass={styles.kpiIcon}
+                    label="Moje wydarzenia"
+                    value={`${stats.myActive}`}
+                    sub={`${events.length} łącznie`}
+                />
+                <KpiCard
+                    icon={<Briefcase size={20} />}
+                    iconClass={styles.kpiIconGreen}
+                    label="Pozyskani partnerzy"
+                    value={`${stats.partners}`}
+                    sub={`${stats.pipelineCount} firm w lejku`}
+                />
+                <KpiCard
+                    icon={<Target size={20} />}
+                    iconClass={styles.kpiIconIndigo}
+                    label="Łączna wartość"
+                    value={formatPLN(stats.totalValue)}
+                    sub={
+                        stats.conversion != null
+                            ? `Konwersja: ${formatPercent(stats.conversion, 1)}`
+                            : 'Brak danych konwersji'
                     }
-                >
-                    <option value="">— wybierz —</option>
-                    {events.data?.items.map((ev) => (
-                        <option key={ev.id} value={ev.id}>
-                            {ev.name}{' '}
-                            {ev.start_date ? `(${formatDateRange(ev.start_date, ev.end_date)})` : ''}
-                        </option>
-                    ))}
-                </select>
+                />
             </div>
 
-            {eventId == null && (
-                <div className={styles.emptyState}>
-                    Wybierz aktywne wydarzenie, aby zobaczyć metryki.
+            <section className={styles.section}>
+                <div className={styles.sectionHead}>
+                    <h2 className={styles.sectionTitle}>Twoje wydarzenia</h2>
+                    <Link to="/events" className={styles.sectionAction}>
+                        Zobacz wszystkie
+                    </Link>
                 </div>
-            )}
 
-            {dashboard.isLoading && (
-                <div className={styles.emptyState}>Ładowanie dashboardu…</div>
-            )}
-
-            {dashboard.data && (
-                <>
-                    <div className={styles.kpiRow}>
-                        <div className={`${styles.kpiCard} ${styles.kpiHighlight}`}>
-                            <div className={styles.kpiLabel}>Aktywne partnerstwa</div>
-                            <div className={styles.kpiValue}>
-                                {dashboard.data.kpi_partners_count}
-                            </div>
-                            <div className={styles.kpiSub}>
-                                {formatPercent(dashboard.data.kpi_progress_partners_pct)} celu
-                            </div>
-                        </div>
-                        <div className={styles.kpiCard}>
-                            <div className={styles.kpiLabel}>Wartość współpracy</div>
-                            <div className={styles.kpiValue}>
-                                {formatPLN(dashboard.data.kpi_total_value)}
-                            </div>
-                            <div className={styles.kpiSub}>
-                                {formatPercent(dashboard.data.kpi_progress_budget_pct)} budżetu
-                            </div>
-                        </div>
-                        <div className={styles.kpiCard}>
-                            <div className={styles.kpiLabel}>W lejku</div>
-                            <div className={styles.kpiValue}>
-                                {dashboard.data.kpi_pipeline_count}
-                            </div>
-                            <div className={styles.kpiSub}>firm w pipeline</div>
-                        </div>
+                {myEvents.isLoading || allEntries.isLoading ? (
+                    <div className={styles.emptyState}>Ładowanie wydarzeń…</div>
+                ) : events.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        Brak wydarzeń przypisanych do Twojego konta.
                     </div>
-
-                    <div className={styles.sectionGrid}>
-                        <section className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Nadchodzące zadania</h2>
-                            <div className={styles.list}>
-                                {dashboard.data.upcoming_tasks.length === 0 && (
-                                    <div className={styles.emptyState}>
-                                        Brak zaplanowanych zadań.
-                                    </div>
-                                )}
-                                {dashboard.data.upcoming_tasks.map((task) => (
-                                    <div key={task.id} className={styles.listItem}>
-                                        <div className={styles.listItemTitle}>
-                                            {task.subject}
-                                        </div>
-                                        <div className={styles.listItemSub}>
-                                            {task.company_name ?? '—'}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        <section className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Ostatnie aktywności</h2>
-                            <div className={styles.list}>
-                                {dashboard.data.recent_activities.length === 0 && (
-                                    <div className={styles.emptyState}>
-                                        Brak aktywności.
-                                    </div>
-                                )}
-                                {dashboard.data.recent_activities.map((act) => (
-                                    <div key={act.id} className={styles.listItem}>
-                                        <div className={styles.listItemTitle}>
-                                            {act.subject}
-                                        </div>
-                                        <div className={styles.listItemSub}>
-                                            {act.company_name ?? '—'} ·{' '}
-                                            {act.activity_date
-                                                ? new Date(act.activity_date).toLocaleDateString(
-                                                    'pl-PL',
-                                                )
-                                                : '—'}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
+                ) : (
+                    <div className={styles.cardGrid}>
+                        {events.map((ev) => (
+                            <EventCard key={ev.id} event={ev} entries={allEntries.data ?? []} />
+                        ))}
                     </div>
-                </>
-            )}
+                )}
+            </section>
         </div>
+    );
+};
+
+function computeStats(events: Event[], entries: PipelineEntry[]) {
+    const eventIds = new Set(events.map((e) => e.id));
+    const scoped = entries.filter((e) => eventIds.has(e.event_id));
+    const partners = scoped.filter((e) => e.stage?.outcome === 'won').length;
+    const lost = scoped.filter((e) => e.stage?.outcome === 'lost').length;
+    const totalValue = scoped
+        .filter((e) => e.stage?.outcome === 'won')
+        .reduce((acc, e) => acc + Number.parseFloat(e.agreed_amount ?? '0'), 0);
+    const closed = partners + lost;
+    const conversion = closed > 0 ? partners / closed : null;
+    const myActive = events.filter((e) => e.status === 'active').length;
+    return {
+        myActive,
+        partners,
+        pipelineCount: scoped.length,
+        totalValue,
+        conversion,
+    };
+}
+
+interface KpiCardProps {
+    icon: React.ReactNode;
+    iconClass: string;
+    label: string;
+    value: string;
+    sub: string;
+}
+
+const KpiCard: React.FC<KpiCardProps> = ({ icon, iconClass, label, value, sub }) => (
+    <div className={styles.kpiCard}>
+        <span className={iconClass}>{icon}</span>
+        <div className={styles.kpiBody}>
+            <div className={styles.kpiLabel}>{label}</div>
+            <div className={styles.kpiValue}>{value}</div>
+            <div className={styles.kpiSub}>{sub}</div>
+        </div>
+    </div>
+);
+
+interface EventCardProps {
+    event: Event;
+    entries: PipelineEntry[];
+}
+
+const EventCard: React.FC<EventCardProps> = ({ event, entries }) => {
+    const own = entries.filter((e) => e.event_id === event.id);
+    const won = own.filter((e) => e.stage?.outcome === 'won');
+    const total = won.reduce(
+        (acc, e) => acc + Number.parseFloat(e.agreed_amount ?? '0'),
+        0,
+    );
+    const target = event.target_partners_count ?? 0;
+    const targetBudget = event.target_budget
+        ? Number.parseFloat(event.target_budget)
+        : 0;
+    const budgetPct = targetBudget > 0 ? Math.min(total / targetBudget, 1) : 0;
+
+    return (
+        <Link to={`/events/${event.id}`} className={styles.eventCard}>
+            <div className={styles.eventCardChips}>
+                <span
+                    className={`${styles.chip} ${STATUS_CHIP_CLASS[event.status] ?? styles.chipSlate}`}
+                >
+                    {STATUS_LABEL[event.status] ?? event.status}
+                </span>
+                <span className={`${styles.chip} ${styles.chipBlue}`}>
+                    {formatDateRange(event.start_date, event.end_date)}
+                </span>
+            </div>
+            <div className={styles.eventCardName}>{event.name}</div>
+            {event.description && (
+                <div className={styles.eventCardDescription}>{event.description}</div>
+            )}
+
+            <div className={styles.progressBar}>
+                <div
+                    className={`${styles.progressFill} ${styles.progressFillGreen}`}
+                    style={{ width: `${budgetPct * 100}%` }}
+                />
+            </div>
+
+            <div className={styles.eventCardFoot}>
+                <div className={styles.eventCardMeta}>
+                    <span>Partnerzy</span>
+                    <span className={styles.eventCardMetaValue}>
+                        {won.length}
+                        {target ? ` / ${target}` : ''}
+                    </span>
+                </div>
+                <div className={styles.eventCardMeta}>
+                    <span>Wartość</span>
+                    <span className={styles.eventCardMetaValue}>{formatPLN(total)}</span>
+                </div>
+                <span className={`${styles.ctaBtn} ${styles.ctaBtnGhost}`}>
+                    Otwórz <ArrowRight size={12} />
+                </span>
+            </div>
+        </Link>
     );
 };
 
