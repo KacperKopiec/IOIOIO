@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import { useActivities } from '../hooks/api/activities';
@@ -14,12 +14,14 @@ import EventContactsCard from '../components/EventCompany/EventContactsCard';
 import EventHistoryTimeline from '../components/EventCompany/EventHistoryTimeline';
 import EventNotesCard from '../components/EventCompany/EventNotesCard';
 import PipelineStatusBar from '../components/EventCompany/PipelineStatusBar';
+import AddContactModal from '../components/modals/AddContactModal';
 import styles from './EventCompany.module.css';
 
 const EventCompany: React.FC = () => {
     const { id, companyId } = useParams<{ id: string; companyId: string }>();
     const eventId = id ? Number.parseInt(id, 10) : null;
     const numericCompanyId = companyId ? Number.parseInt(companyId, 10) : null;
+    const [addContactOpen, setAddContactOpen] = useState(false);
 
     const company = useCompany(numericCompanyId);
     const event = useEvent(eventId);
@@ -115,6 +117,7 @@ const EventCompany: React.FC = () => {
                     <EventContactsCard
                         contacts={contacts.data ?? []}
                         isLoading={contacts.isLoading}
+                        onAdd={() => setAddContactOpen(true)}
                     />
                 </div>
 
@@ -131,6 +134,12 @@ const EventCompany: React.FC = () => {
                     />
                 </div>
             </div>
+
+            <AddContactModal
+                open={addContactOpen}
+                companyId={c.id}
+                onClose={() => setAddContactOpen(false)}
+            />
         </div>
     );
 };

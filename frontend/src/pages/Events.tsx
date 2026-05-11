@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
+import { Plus } from 'lucide-react';
 import EventsFilterSidebar from '../components/Events/EventsFilterSidebar';
 import EventsTable from '../components/Events/EventsTable';
 import type { EventRowData } from '../components/Events/EventRow';
+import AddEventModal from '../components/modals/AddEventModal';
 import { useEvents, type EventFilters } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
 import { ownerInitials } from '../lib/format';
@@ -11,6 +13,7 @@ const DEFAULT_FILTERS: EventFilters = { page: 1, page_size: 25 };
 
 const Events: React.FC = () => {
     const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
+    const [addOpen, setAddOpen] = useState(false);
     const eventsQuery = useEvents(filters);
     const allEntries = usePipelineEntries({});
 
@@ -52,6 +55,13 @@ const Events: React.FC = () => {
                     </nav>
                     <h1 className={styles.title}>Wydarzenia</h1>
                 </div>
+                <button
+                    type="button"
+                    className={styles.primaryBtn}
+                    onClick={() => setAddOpen(true)}
+                >
+                    <Plus size={14} /> Dodaj wydarzenie
+                </button>
             </div>
 
             <div className={styles.mainContent}>
@@ -70,6 +80,8 @@ const Events: React.FC = () => {
                     />
                 </div>
             </div>
+
+            <AddEventModal open={addOpen} onClose={() => setAddOpen(false)} />
         </div>
     );
 };

@@ -1,0 +1,97 @@
+.row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 600px) {
+    .row2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: 0.2px;
+}
+
+.required {
+    color: #DC2626;
+}
+
+.input,
+.select,
+.textarea {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: #0F172A;
+    background: #FFFFFF;
+    font-family: inherit;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: 2px solid var(--color-primary, #00458E);
+    outline-offset: 1px;
+}
+
+.textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.helper {
+    font-size: 12px;
+    color: #64748B;
+}
+
+.error {
+    color: #B91C1C;
+    font-size: 13px;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btnPrimary {
+    background: #00458E;
+    color: #FFFFFF;
+}
+
+.btnPrimary:hover:not(:disabled) {
+    background: #002A5C;
+}
+
+.btnGhost {
+    background: #FFFFFF;
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+}
+
+.btnGhost:hover:not(:disabled) {
+    background: #F1F5F9;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

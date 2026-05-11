@@ -12,6 +12,8 @@ import RelationshipValue from '../components/CompanyDetail/RelationshipValue';
 import ContactsList from '../components/CompanyDetail/ContactsList';
 import CompanyNotes from '../components/CompanyDetail/CompanyNotes';
 import SectionCard from '../components/CompanyDetail/SectionCard';
+import AddActivityModal from '../components/modals/AddActivityModal';
+import AddContactModal from '../components/modals/AddContactModal';
 import styles from './CompanyDetail.module.css';
 
 const CompanyDetail: React.FC = () => {
@@ -19,6 +21,8 @@ const CompanyDetail: React.FC = () => {
     const companyId = id ? Number.parseInt(id, 10) : null;
 
     const [editingNotes, setEditingNotes] = useState(false);
+    const [addContactOpen, setAddContactOpen] = useState(false);
+    const [addActivityOpen, setAddActivityOpen] = useState(false);
 
     const company = useCompany(companyId);
     const contacts = useCompanyContacts(companyId);
@@ -84,9 +88,9 @@ const CompanyDetail: React.FC = () => {
                     <button
                         type="button"
                         className={`${styles.btn} ${styles.btnPrimary}`}
-                        disabled
+                        onClick={() => setAddActivityOpen(true)}
                     >
-                        Nowa współpraca
+                        Nowy wpis
                     </button>
                 </div>
             </header>
@@ -126,7 +130,7 @@ const CompanyDetail: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.iconButton}
-                                disabled
+                                onClick={() => setAddContactOpen(true)}
                                 aria-label="Dodaj kontakt"
                             >
                                 <Plus size={14} />
@@ -165,6 +169,17 @@ const CompanyDetail: React.FC = () => {
                     </SectionCard>
                 </div>
             </div>
+
+            <AddContactModal
+                open={addContactOpen}
+                companyId={c.id}
+                onClose={() => setAddContactOpen(false)}
+            />
+            <AddActivityModal
+                open={addActivityOpen}
+                onClose={() => setAddActivityOpen(false)}
+                defaults={{ companyId: c.id }}
+            />
         </div>
     );
 };

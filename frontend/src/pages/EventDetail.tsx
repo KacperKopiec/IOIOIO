@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Pencil } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEvent, useEventKpi, useEventPipeline } from '../hooks/api/events';
 import { usePipelineStages } from '../hooks/api/reference';
 import { useCoordinatorDashboard } from '../hooks/api/dashboard';
@@ -12,6 +12,8 @@ import EventTasksList from '../components/EventDetail/EventTasksList';
 import GoalProgress from '../components/EventDetail/GoalProgress';
 import ActivityFeed from '../components/EventDetail/ActivityFeed';
 import UpcomingActions from '../components/EventDetail/UpcomingActions';
+import AddActivityModal from '../components/modals/AddActivityModal';
+import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
 import styles from './EventDetail.module.css';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -24,6 +26,9 @@ const STATUS_LABELS: Record<string, string> = {
 const EventDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const eventId = id ? Number.parseInt(id, 10) : null;
+
+    const [addActivityOpen, setAddActivityOpen] = useState(false);
+    const [addPipelineOpen, setAddPipelineOpen] = useState(false);
 
     const event = useEvent(eventId);
     const kpi = useEventKpi(eventId);
@@ -74,10 +79,22 @@ const EventDetail: React.FC = () => {
                         </span>
                     </div>
                 </div>
-                <button type="button" className={styles.editButton} disabled>
-                    <Pencil size={14} />
-                    Edytuj projekt
-                </button>
+                <div className={styles.headerActions}>
+                    <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        onClick={() => setAddPipelineOpen(true)}
+                    >
+                        <Plus size={14} /> Dodaj firmę
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.editButton}
+                        onClick={() => setAddActivityOpen(true)}
+                    >
+                        <Plus size={14} /> Nowy wpis
+                    </button>
+                </div>
             </header>
 
             <div className={styles.layout}>
@@ -109,6 +126,17 @@ const EventDetail: React.FC = () => {
                     />
                 </aside>
             </div>
+
+            <AddActivityModal
+                open={addActivityOpen}
+                onClose={() => setAddActivityOpen(false)}
+                defaults={{ eventId: ev.id }}
+            />
+            <AddPipelineEntryModal
+                open={addPipelineOpen}
+                eventId={ev.id}
+                onClose={() => setAddPipelineOpen(false)}
+            />
         </div>
     );
 };

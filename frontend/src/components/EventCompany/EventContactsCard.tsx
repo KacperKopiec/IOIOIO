@@ -7,17 +7,24 @@ import styles from './EventContactsCard.module.css';
 interface EventContactsCardProps {
     contacts: Contact[];
     isLoading: boolean;
+    onAdd?: () => void;
 }
 
 const EventContactsCard: React.FC<EventContactsCardProps> = ({
     contacts,
     isLoading,
+    onAdd,
 }) => {
     return (
         <div className={styles.card}>
             <header className={styles.header}>
                 <h2 className={styles.title}>Osoby kontaktowe</h2>
-                <button type="button" className={styles.addBtn} disabled>
+                <button
+                    type="button"
+                    className={styles.addBtn}
+                    onClick={onAdd}
+                    disabled={!onAdd}
+                >
                     Dodaj osobę
                 </button>
             </header>

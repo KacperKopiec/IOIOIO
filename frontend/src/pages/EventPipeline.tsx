@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { useEvent, useEventKpi, useEventPipeline } from '../hooks/api/events';
 import { usePipelineStages } from '../hooks/api/reference';
 import PipelineStats from '../components/EventPipeline/PipelineStats';
 import KanbanBoard from '../components/EventPipeline/KanbanBoard';
+import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
 import styles from './EventPipeline.module.css';
 
 const EventPipeline: React.FC = () => {
@@ -14,6 +16,8 @@ const EventPipeline: React.FC = () => {
     const kpi = useEventKpi(eventId);
     const pipeline = useEventPipeline(eventId);
     const stages = usePipelineStages();
+
+    const [addOpen, setAddOpen] = useState(false);
 
     if (event.isLoading) {
         return (
@@ -60,6 +64,13 @@ const EventPipeline: React.FC = () => {
                     <button type="button" className={styles.toolbarBtn} disabled>
                         Sortuj
                     </button>
+                    <button
+                        type="button"
+                        className={styles.primaryBtn}
+                        onClick={() => setAddOpen(true)}
+                    >
+                        <Plus size={14} /> Dodaj firmę
+                    </button>
                 </div>
             </header>
 
@@ -74,6 +85,12 @@ const EventPipeline: React.FC = () => {
                     entries={pipeline.data ?? []}
                 />
             )}
+
+            <AddPipelineEntryModal
+                open={addOpen}
+                eventId={ev.id}
+                onClose={() => setAddOpen(false)}
+            />
         </div>
     );
 };

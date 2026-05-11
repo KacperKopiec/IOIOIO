@@ -103,6 +103,30 @@
     cursor: not-allowed;
 }
 
+.headerActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.secondaryButton {
+    background: #FFFFFF;
+    color: #03467B;
+    border: 1px solid #03467B;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.secondaryButton:hover {
+    background: #EFF6FF;
+}
+
 .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 340px;
