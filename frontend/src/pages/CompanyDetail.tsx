@@ -11,9 +11,18 @@ import CooperationTimeline from '../components/CompanyDetail/CooperationTimeline
 import RelationshipValue from '../components/CompanyDetail/RelationshipValue';
 import ContactsList from '../components/CompanyDetail/ContactsList';
 import CompanyNotes from '../components/CompanyDetail/CompanyNotes';
-import SectionCard from '../components/CompanyDetail/SectionCard';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
+import {
+    Avatar,
+    Badge,
+    Button,
+    Card,
+    CardHeader,
+    EmptyState,
+    Page,
+    PageHeader,
+} from '../components/ui';
 import styles from './CompanyDetail.module.css';
 
 const CompanyDetail: React.FC = () => {
@@ -30,92 +39,96 @@ const CompanyDetail: React.FC = () => {
 
     if (company.isLoading) {
         return (
-            <div className={styles.page}>
-                <div className={styles.loading}>Ładowanie firmy…</div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState>Ładowanie firmy…</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     if (company.isError || !company.data) {
         return (
-            <div className={styles.page}>
-                <div className={styles.errorBox}>
-                    Nie udało się załadować firmy. Wróć do{' '}
-                    <Link to="/firms">listy firm</Link>.
-                </div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState title="Błąd">
+                        Nie udało się załadować firmy. Wróć do{' '}
+                        <Link to="/firms">listy firm</Link>.
+                    </EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     const c = company.data;
-    const initial = c.name.charAt(0).toUpperCase();
 
     return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <div className={styles.companyIcon} aria-hidden>
-                        {initial}
-                    </div>
-                    <div className={styles.headerBody}>
-                        <nav className={styles.breadcrumb} aria-label="breadcrumb">
-                            <Link to="/firms">Baza Firm</Link>
-                            <span className={styles.breadcrumbSep}>›</span>
-                            <span className={styles.breadcrumbCurrent}>{c.name}</span>
-                        </nav>
-                        <div className={styles.titleRow}>
-                            <h1 className={styles.title}>{c.name}</h1>
-                            <span
-                                className={`${styles.statusBadge} ${c.is_partner
-                                    ? styles.statusBadgePartner
-                                    : styles.statusBadgeContact
-                                    }`}
+        <Page width="wide">
+            <div className={styles.headerWithLogo}>
+                <Avatar
+                    initials={c.name.slice(0, 2)}
+                    size="xl"
+                    tone="info"
+                    square
+                />
+                <PageHeader
+                    breadcrumb={[
+                        { label: 'Baza firm', to: '/firms' },
+                        { label: c.name },
+                    ]}
+                    title={c.name}
+                    chips={
+                        <Badge
+                            tone={c.is_partner ? 'success' : 'neutral'}
+                            pill
+                            icon={<Building2 size={12} />}
+                        >
+                            {c.is_partner ? 'Klient' : 'Kontakt'}
+                        </Badge>
+                    }
+                    actions={
+                        <>
+                            <Button variant="secondary" disabled>
+                                Edytuj dane
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={() => setAddActivityOpen(true)}
+                                iconLeft={<Plus size={14} />}
                             >
-                                <Building2 size={12} />
-                                {c.is_partner ? 'Klient' : 'Kontakt'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.headerActions}>
-                    <button
-                        type="button"
-                        className={`${styles.btn} ${styles.btnSecondary}`}
-                        disabled
-                    >
-                        Edytuj dane
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        onClick={() => setAddActivityOpen(true)}
-                    >
-                        Nowy wpis
-                    </button>
-                </div>
-            </header>
+                                Nowy wpis
+                            </Button>
+                        </>
+                    }
+                />
+            </div>
 
             <div className={styles.grid}>
                 <div className={styles.leftCol}>
-                    <SectionCard title="Informacje ogólne" icon={<Info size={18} />}>
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Informacje ogólne"
+                            icon={<Info size={18} />}
+                        />
                         <CompanyInfo company={c} />
-                    </SectionCard>
+                    </Card>
 
-                    <SectionCard
-                        title="Historia współpracy"
-                        icon={<History size={18} />}
-                        action={
-                            <Link to="/events" className={styles.linkSubtle}>
-                                Zobacz wszystko
-                            </Link>
-                        }
-                    >
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Historia współpracy"
+                            icon={<History size={18} />}
+                            action={
+                                <Link to="/events" className={styles.linkSubtle}>
+                                    Zobacz wszystko
+                                </Link>
+                            }
+                        />
                         <CooperationTimeline
                             companyId={c.id}
                             eventLinks={events.data ?? []}
                             isLoading={events.isLoading}
                         />
-                    </SectionCard>
+                    </Card>
                 </div>
 
                 <div className={styles.rightCol}>
@@ -123,42 +136,47 @@ const CompanyDetail: React.FC = () => {
                         eventLinks={events.data ?? []}
                         isLoading={events.isLoading}
                     />
-                    <SectionCard
-                        title="Osoby kontaktowe"
-                        icon={<Users size={18} />}
-                        action={
-                            <button
-                                type="button"
-                                className={styles.iconButton}
-                                onClick={() => setAddContactOpen(true)}
-                                aria-label="Dodaj kontakt"
-                            >
-                                <Plus size={14} />
-                            </button>
-                        }
-                    >
+
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Osoby kontaktowe"
+                            icon={<Users size={18} />}
+                            action={
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    iconOnly
+                                    aria-label="Dodaj kontakt"
+                                    onClick={() => setAddContactOpen(true)}
+                                >
+                                    <Plus size={14} />
+                                </Button>
+                            }
+                        />
                         <ContactsList
                             contacts={contacts.data ?? []}
                             isLoading={contacts.isLoading}
                         />
-                    </SectionCard>
+                    </Card>
 
-                    <SectionCard
-                        title="Notatki"
-                        icon={<NotebookPen size={18} />}
-                        action={
-                            !editingNotes && (
-                                <button
-                                    type="button"
-                                    className={styles.iconButton}
-                                    onClick={() => setEditingNotes(true)}
-                                    aria-label="Edytuj notatki"
-                                >
-                                    <Pencil size={14} />
-                                </button>
-                            )
-                        }
-                    >
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Notatki"
+                            icon={<NotebookPen size={18} />}
+                            action={
+                                !editingNotes && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        iconOnly
+                                        aria-label="Edytuj notatki"
+                                        onClick={() => setEditingNotes(true)}
+                                    >
+                                        <Pencil size={14} />
+                                    </Button>
+                                )
+                            }
+                        />
                         <CompanyNotes
                             companyId={c.id}
                             notes={c.notes}
@@ -166,7 +184,7 @@ const CompanyDetail: React.FC = () => {
                             onCancel={() => setEditingNotes(false)}
                             onSaved={() => setEditingNotes(false)}
                         />
-                    </SectionCard>
+                    </Card>
                 </div>
             </div>
 
@@ -180,7 +198,7 @@ const CompanyDetail: React.FC = () => {
                 onClose={() => setAddActivityOpen(false)}
                 defaults={{ companyId: c.id }}
             />
-        </div>
+        </Page>
     );
 };
 

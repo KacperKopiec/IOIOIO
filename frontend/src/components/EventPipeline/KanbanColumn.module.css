@@ -28,7 +28,7 @@
 }
 
 .title {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 13px;
     color: #334155;

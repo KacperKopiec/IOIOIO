@@ -4,6 +4,14 @@ import { AlertTriangle, Briefcase, CheckCheck, Users } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useRelationshipManagerDashboard } from '../../hooks/api/dashboard';
 import { formatPercent } from '../../lib/format';
+import {
+    Card,
+    CardHeader,
+    EmptyState,
+    KpiCard,
+    Page,
+    PageHeader,
+} from '../../components/ui';
 import type { RecentActivityBrief } from '../../types/api';
 import styles from './Dashboards.module.css';
 
@@ -33,26 +41,24 @@ const DashboardRelationshipManager: React.FC = () => {
     const closeRate = pipeline > 0 ? won / pipeline : null;
 
     return (
-        <div className={styles.page}>
-            <header className={styles.headerBlock}>
-                <span className={styles.breadcrumb}>Dashboard / Opiekun partnerów</span>
-                <h1 className={styles.title}>Witaj, {userName.split(' ')[0]}</h1>
-                <span className={styles.subtitle}>
-                    Twoje firmy w lejku, zaległe zadania i ostatnie aktywności.
-                </span>
-            </header>
+        <Page width="wide">
+            <PageHeader
+                title={`Witaj, ${userName.split(' ')[0]}`}
+                breadcrumb={[{ label: 'Dashboard' }, { label: 'Opiekun partnerów' }]}
+                subtitle="Twoje firmy w lejku, zaległe zadania i ostatnie aktywności."
+            />
 
             <div className={styles.kpiRow}>
                 <KpiCard
                     icon={<Users size={20} />}
-                    iconClass={styles.kpiIcon}
+                    tone="brand"
                     label="W lejku"
                     value={`${pipeline}`}
                     sub="firm pod moją opieką"
                 />
                 <KpiCard
                     icon={<CheckCheck size={20} />}
-                    iconClass={styles.kpiIconGreen}
+                    tone="success"
                     label="Pozyskani partnerzy"
                     value={`${won}`}
                     sub={
@@ -63,14 +69,14 @@ const DashboardRelationshipManager: React.FC = () => {
                 />
                 <KpiCard
                     icon={<AlertTriangle size={20} />}
-                    iconClass={styles.kpiIconRose}
+                    tone="danger"
                     label="Zaległe zadania"
                     value={`${overdue.length}`}
                     sub="wymagają reakcji"
                 />
                 <KpiCard
                     icon={<Briefcase size={20} />}
-                    iconClass={styles.kpiIconIndigo}
+                    tone="indigo"
                     label="Ostatnich aktywności"
                     value={`${recent.length}`}
                     sub="w ostatnim czasie"
@@ -78,90 +84,76 @@ const DashboardRelationshipManager: React.FC = () => {
             </div>
 
             <div className={styles.sectionGrid}>
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Zaległe</h2>
-                        <Link to="/firms" className={styles.sectionAction}>
-                            Zobacz wszystkie
-                        </Link>
-                    </div>
+                <Card padding="compact">
+                    <CardHeader
+                        title="Zaległe"
+                        action={
+                            <Link to="/firms" className={styles.sectionAction}>
+                                Zobacz wszystkie
+                            </Link>
+                        }
+                    />
                     {dashboard.isLoading ? (
-                        <div className={styles.emptyState}>Ładowanie…</div>
+                        <EmptyState compact>Ładowanie…</EmptyState>
                     ) : overdue.length === 0 ? (
-                        <div className={styles.emptyState}>Brak zaległych zadań.</div>
+                        <EmptyState compact>Brak zaległych zadań.</EmptyState>
                     ) : (
-                        <div className={styles.list}>
+                        <div className={styles.activityList}>
                             {overdue.map((act) => (
-                                <ActivityRow key={act.id} activity={act} variant="overdue" />
+                                <ActivityRow
+                                    key={act.id}
+                                    activity={act}
+                                    variant="overdue"
+                                />
                             ))}
                         </div>
                     )}
-                </section>
+                </Card>
 
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Moje ostatnie aktywności</h2>
-                    </div>
+                <Card padding="compact">
+                    <CardHeader title="Moje ostatnie aktywności" />
                     {dashboard.isLoading ? (
-                        <div className={styles.emptyState}>Ładowanie…</div>
+                        <EmptyState compact>Ładowanie…</EmptyState>
                     ) : recent.length === 0 ? (
-                        <div className={styles.emptyState}>Brak aktywności.</div>
+                        <EmptyState compact>Brak aktywności.</EmptyState>
                     ) : (
-                        <div className={styles.list}>
+                        <div className={styles.activityList}>
                             {recent.map((act) => (
-                                <ActivityRow key={act.id} activity={act} variant="regular" />
+                                <ActivityRow
+                                    key={act.id}
+                                    activity={act}
+                                    variant="regular"
+                                />
                             ))}
                         </div>
                     )}
-                </section>
+                </Card>
             </div>
-        </div>
+        </Page>
     );
 };
-
-interface KpiCardProps {
-    icon: React.ReactNode;
-    iconClass: string;
-    label: string;
-    value: string;
-    sub: string;
-}
-
-const KpiCard: React.FC<KpiCardProps> = ({ icon, iconClass, label, value, sub }) => (
-    <div className={styles.kpiCard}>
-        <span className={iconClass}>{icon}</span>
-        <div className={styles.kpiBody}>
-            <div className={styles.kpiLabel}>{label}</div>
-            <div className={styles.kpiValue}>{value}</div>
-            <div className={styles.kpiSub}>{sub}</div>
-        </div>
-    </div>
-);
 
 interface ActivityRowProps {
     activity: RecentActivityBrief;
     variant: 'regular' | 'overdue';
 }
 
-const ActivityRow: React.FC<ActivityRowProps> = ({ activity, variant }) => {
-    const itemClass =
-        variant === 'overdue'
-            ? `${styles.listItem} ${styles.overdueItem}`
-            : styles.listItem;
-    return (
-        <div className={itemClass}>
-            <div className={styles.listItemBody}>
-                <span className={styles.listItemTitle}>{activity.subject}</span>
-                <span className={styles.listItemSub}>
-                    {activity.company_name ?? '—'}
-                    {activity.event_name ? ` · ${activity.event_name}` : ''}
-                </span>
-            </div>
-            <span className={styles.listItemDate}>
-                {formatRelative(activity.activity_date)}
+const ActivityRow: React.FC<ActivityRowProps> = ({ activity, variant }) => (
+    <div
+        className={`${styles.activityRow} ${variant === 'overdue' ? styles.activityRowOverdue : ''
+            }`}
+    >
+        <div className={styles.activityBody}>
+            <span className={styles.activityTitle}>{activity.subject}</span>
+            <span className={styles.activitySub}>
+                {activity.company_name ?? '—'}
+                {activity.event_name ? ` · ${activity.event_name}` : ''}
             </span>
         </div>
-    );
-};
+        <span className={styles.activityDate}>
+            {formatRelative(activity.activity_date)}
+        </span>
+    </div>
+);
 
 export default DashboardRelationshipManager;

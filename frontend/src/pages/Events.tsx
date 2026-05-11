@@ -4,6 +4,7 @@ import EventsFilterSidebar from '../components/Events/EventsFilterSidebar';
 import EventsTable from '../components/Events/EventsTable';
 import type { EventRowData } from '../components/Events/EventRow';
 import AddEventModal from '../components/modals/AddEventModal';
+import { Button, Page, PageHeader } from '../components/ui';
 import { useEvents, type EventFilters } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
 import { ownerInitials } from '../lib/format';
@@ -45,24 +46,23 @@ const Events: React.FC = () => {
     }, [eventsQuery.data, allEntries.data]);
 
     return (
-        <div className={styles.page}>
-            <div className={styles.header}>
-                <div className={styles.headerContent}>
-                    <nav className={styles.breadcrumb}>
-                        <span className={styles.breadcrumbItem}>Panel</span>
-                        <span className={styles.breadcrumbSeparator}>/</span>
-                        <span className={styles.breadcrumbItem}>Wydarzenia</span>
-                    </nav>
-                    <h1 className={styles.title}>Wydarzenia</h1>
-                </div>
-                <button
-                    type="button"
-                    className={styles.primaryBtn}
-                    onClick={() => setAddOpen(true)}
-                >
-                    <Plus size={14} /> Dodaj wydarzenie
-                </button>
-            </div>
+        <Page width="wide">
+            <PageHeader
+                title="Wydarzenia"
+                breadcrumb={[
+                    { label: 'Panel', to: '/dashboard' },
+                    { label: 'Wydarzenia' },
+                ]}
+                actions={
+                    <Button
+                        variant="primary"
+                        iconLeft={<Plus size={14} />}
+                        onClick={() => setAddOpen(true)}
+                    >
+                        Dodaj wydarzenie
+                    </Button>
+                }
+            />
 
             <div className={styles.mainContent}>
                 <div className={styles.filterColumn}>
@@ -82,7 +82,7 @@ const Events: React.FC = () => {
             </div>
 
             <AddEventModal open={addOpen} onClose={() => setAddOpen(false)} />
-        </div>
+        </Page>
     );
 };
 

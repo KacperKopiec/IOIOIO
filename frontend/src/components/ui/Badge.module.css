@@ -1,0 +1,94 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    border-radius: var(--radius-xs);
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.sm {
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.3px;
+}
+
+.md {
+    padding: 4px 10px;
+    font-size: var(--font-size-sm);
+}
+
+.lg {
+    padding: 6px 12px;
+    font-size: var(--font-size-base);
+}
+
+.pill {
+    border-radius: var(--radius-pill);
+}
+
+.uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* tones */
+.brand {
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+}
+
+.brandSolid {
+    background: var(--color-primary);
+    color: #FFFFFF;
+}
+
+.neutral {
+    background: var(--color-border-subtle);
+    color: var(--color-text-muted);
+}
+
+.success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border-color: var(--color-success-border);
+}
+
+.successSolid {
+    background: var(--color-success);
+    color: #FFFFFF;
+}
+
+.warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border-color: var(--color-warning-border);
+}
+
+.danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border-color: var(--color-danger-border);
+}
+
+.dangerSolid {
+    background: var(--color-danger);
+    color: #FFFFFF;
+}
+
+.info {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    border-color: var(--color-info-border);
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: currentColor;
+    flex-shrink: 0;
+}

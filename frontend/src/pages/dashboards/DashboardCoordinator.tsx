@@ -5,17 +5,28 @@ import { useAuth } from '../../context/AuthContext';
 import { useEvents } from '../../hooks/api/events';
 import { usePipelineEntries } from '../../hooks/api/pipeline';
 import { formatDateRange, formatPLN, formatPercent } from '../../lib/format';
-import type { Event, PipelineEntry } from '../../types/api';
+import {
+    Badge,
+    Card,
+    CardHeader,
+    EmptyState,
+    KpiCard,
+    Page,
+    PageHeader,
+    ProgressBar,
+} from '../../components/ui';
+import type { BadgeTone } from '../../components/ui';
+import type { Event, EventStatus, PipelineEntry } from '../../types/api';
 import styles from './Dashboards.module.css';
 
-const STATUS_CHIP_CLASS: Record<string, string> = {
-    active: styles.chipGreen,
-    draft: styles.chipAmber,
-    closed: styles.chipSlate,
-    cancelled: styles.chipSlate,
+const STATUS_TONE: Record<EventStatus, BadgeTone> = {
+    active: 'success',
+    draft: 'warning',
+    closed: 'neutral',
+    cancelled: 'danger',
 };
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABEL: Record<EventStatus, string> = {
     active: 'Aktywne',
     draft: 'Wersja robocza',
     closed: 'Zakończone',
@@ -40,33 +51,31 @@ const DashboardCoordinator: React.FC = () => {
     const stats = computeStats(events, allEntries.data ?? []);
 
     return (
-        <div className={styles.page}>
-            <header className={styles.headerBlock}>
-                <span className={styles.breadcrumb}>Dashboard / Koordynator wydarzenia</span>
-                <h1 className={styles.title}>Witaj, {userName.split(' ')[0]}</h1>
-                <span className={styles.subtitle}>
-                    Twoje wydarzenia i ich aktualne metryki.
-                </span>
-            </header>
+        <Page width="wide">
+            <PageHeader
+                title={`Witaj, ${userName.split(' ')[0]}`}
+                breadcrumb={[{ label: 'Dashboard' }, { label: 'Koordynator wydarzenia' }]}
+                subtitle="Twoje wydarzenia i ich aktualne metryki."
+            />
 
             <div className={styles.kpiRow}>
                 <KpiCard
                     icon={<CalendarDays size={20} />}
-                    iconClass={styles.kpiIcon}
+                    tone="brand"
                     label="Moje wydarzenia"
                     value={`${stats.myActive}`}
                     sub={`${events.length} łącznie`}
                 />
                 <KpiCard
                     icon={<Briefcase size={20} />}
-                    iconClass={styles.kpiIconGreen}
+                    tone="success"
                     label="Pozyskani partnerzy"
                     value={`${stats.partners}`}
                     sub={`${stats.pipelineCount} firm w lejku`}
                 />
                 <KpiCard
                     icon={<Target size={20} />}
-                    iconClass={styles.kpiIconIndigo}
+                    tone="indigo"
                     label="Łączna wartość"
                     value={formatPLN(stats.totalValue)}
                     sub={
@@ -77,29 +86,34 @@ const DashboardCoordinator: React.FC = () => {
                 />
             </div>
 
-            <section className={styles.section}>
-                <div className={styles.sectionHead}>
-                    <h2 className={styles.sectionTitle}>Twoje wydarzenia</h2>
-                    <Link to="/events" className={styles.sectionAction}>
-                        Zobacz wszystkie
-                    </Link>
-                </div>
-
+            <Card padding="compact">
+                <CardHeader
+                    title="Twoje wydarzenia"
+                    action={
+                        <Link to="/events" className={styles.sectionAction}>
+                            Zobacz wszystkie
+                        </Link>
+                    }
+                />
                 {myEvents.isLoading || allEntries.isLoading ? (
-                    <div className={styles.emptyState}>Ładowanie wydarzeń…</div>
+                    <EmptyState compact>Ładowanie wydarzeń…</EmptyState>
                 ) : events.length === 0 ? (
-                    <div className={styles.emptyState}>
+                    <EmptyState compact>
                         Brak wydarzeń przypisanych do Twojego konta.
-                    </div>
+                    </EmptyState>
                 ) : (
                     <div className={styles.cardGrid}>
                         {events.map((ev) => (
-                            <EventCard key={ev.id} event={ev} entries={allEntries.data ?? []} />
+                            <EventCard
+                                key={ev.id}
+                                event={ev}
+                                entries={allEntries.data ?? []}
+                            />
                         ))}
                     </div>
                 )}
-            </section>
-        </div>
+            </Card>
+        </Page>
     );
 };
 
@@ -123,25 +137,6 @@ function computeStats(events: Event[], entries: PipelineEntry[]) {
     };
 }
 
-interface KpiCardProps {
-    icon: React.ReactNode;
-    iconClass: string;
-    label: string;
-    value: string;
-    sub: string;
-}
-
-const KpiCard: React.FC<KpiCardProps> = ({ icon, iconClass, label, value, sub }) => (
-    <div className={styles.kpiCard}>
-        <span className={iconClass}>{icon}</span>
-        <div className={styles.kpiBody}>
-            <div className={styles.kpiLabel}>{label}</div>
-            <div className={styles.kpiValue}>{value}</div>
-            <div className={styles.kpiSub}>{sub}</div>
-        </div>
-    </div>
-);
-
 interface EventCardProps {
     event: Event;
     entries: PipelineEntry[];
@@ -163,26 +158,19 @@ const EventCard: React.FC<EventCardProps> = ({ event, entries }) => {
     return (
         <Link to={`/events/${event.id}`} className={styles.eventCard}>
             <div className={styles.eventCardChips}>
-                <span
-                    className={`${styles.chip} ${STATUS_CHIP_CLASS[event.status] ?? styles.chipSlate}`}
-                >
-                    {STATUS_LABEL[event.status] ?? event.status}
-                </span>
-                <span className={`${styles.chip} ${styles.chipBlue}`}>
+                <Badge tone={STATUS_TONE[event.status]} pill size="sm">
+                    {STATUS_LABEL[event.status]}
+                </Badge>
+                <Badge tone="info" pill size="sm">
                     {formatDateRange(event.start_date, event.end_date)}
-                </span>
+                </Badge>
             </div>
             <div className={styles.eventCardName}>{event.name}</div>
             {event.description && (
                 <div className={styles.eventCardDescription}>{event.description}</div>
             )}
 
-            <div className={styles.progressBar}>
-                <div
-                    className={`${styles.progressFill} ${styles.progressFillGreen}`}
-                    style={{ width: `${budgetPct * 100}%` }}
-                />
-            </div>
+            <ProgressBar value={budgetPct} tone="success" />
 
             <div className={styles.eventCardFoot}>
                 <div className={styles.eventCardMeta}>
@@ -194,9 +182,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, entries }) => {
                 </div>
                 <div className={styles.eventCardMeta}>
                     <span>Wartość</span>
-                    <span className={styles.eventCardMetaValue}>{formatPLN(total)}</span>
+                    <span className={styles.eventCardMetaValue}>
+                        {formatPLN(total)}
+                    </span>
                 </div>
-                <span className={`${styles.ctaBtn} ${styles.ctaBtnGhost}`}>
+                <span className={styles.eventCardCta}>
                     Otwórz <ArrowRight size={12} />
                 </span>
             </div>

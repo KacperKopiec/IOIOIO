@@ -20,7 +20,7 @@
 }
 
 .title {
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
@@ -32,7 +32,7 @@
     background: transparent;
     border: none;
     color: #1E3A8A;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 12px;
     line-height: 16px;
@@ -59,7 +59,7 @@
 }
 
 .sectionLabel {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 12px;
     line-height: 16px;
@@ -80,7 +80,7 @@
     border: 1px solid #E2E8F0;
     border-radius: 2px;
     background: #FFFFFF;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 12px;
     line-height: 15px;
     color: #6B7280;
@@ -102,7 +102,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 14px;
     line-height: 20px;
     color: #475569;
@@ -126,7 +126,7 @@
     border: 1px solid #E2E8F0;
     border-radius: 2px;
     background: #FFFFFF;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 12px;
     line-height: 16px;
     color: #475569;
@@ -145,7 +145,7 @@
     border: 1px solid #E2E8F0;
     border-radius: 2px;
     background: #FFFFFF;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 12px;
     line-height: 15px;
     color: #6B7280;
@@ -162,7 +162,7 @@
     background: #F8FAFC;
     border: 1px solid #E2E8F0;
     border-radius: 2px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 700;
     font-size: 12px;
     line-height: 16px;

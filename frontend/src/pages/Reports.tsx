@@ -13,20 +13,31 @@ import {
 } from 'recharts';
 import { useReports } from '../hooks/api/reports';
 import { formatDate, formatPLN, formatPercent } from '../lib/format';
+import {
+    Badge,
+    Card,
+    CardHeader,
+    EmptyState,
+    KpiCard,
+    Page,
+    PageHeader,
+} from '../components/ui';
+import type { BadgeTone } from '../components/ui';
+import type { EventStatus } from '../types/api';
 import styles from './Reports.module.css';
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABEL: Record<EventStatus, string> = {
     draft: 'Wersja robocza',
     active: 'Aktywne',
     closed: 'Zakończone',
     cancelled: 'Anulowane',
 };
 
-const STATUS_CLASS: Record<string, string> = {
-    draft: styles.statusDraft,
-    active: styles.statusActive,
-    closed: styles.statusClosed,
-    cancelled: styles.statusCancelled,
+const STATUS_TONE: Record<EventStatus, BadgeTone> = {
+    draft: 'warning',
+    active: 'success',
+    closed: 'neutral',
+    cancelled: 'danger',
 };
 
 const Reports: React.FC = () => {
@@ -39,16 +50,15 @@ const Reports: React.FC = () => {
 
     const eventsChartData = useMemo(
         () =>
-            events
-                .slice(0, 8)
-                .map((ev) => ({
-                    name: ev.event_name.length > 18
+            events.slice(0, 8).map((ev) => ({
+                name:
+                    ev.event_name.length > 18
                         ? `${ev.event_name.slice(0, 16)}…`
                         : ev.event_name,
-                    full: ev.event_name,
-                    partners: ev.partners_count,
-                    value: Number.parseFloat(ev.total_value) / 1000,
-                })),
+                full: ev.event_name,
+                partners: ev.partners_count,
+                value: Number.parseFloat(ev.total_value) / 1000,
+            })),
         [events],
     );
 
@@ -67,31 +77,33 @@ const Reports: React.FC = () => {
 
     if (reports.isLoading) {
         return (
-            <div className={styles.page}>
-                <div className={styles.loading}>Ładowanie raportów…</div>
-            </div>
+            <Page>
+                <PageHeader title="Raporty" breadcrumb={[{ label: 'Raporty' }]} />
+                <Card>
+                    <EmptyState>Ładowanie raportów…</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     if (reports.isError || !reports.data) {
         return (
-            <div className={styles.page}>
-                <div className={styles.errorBox}>
-                    Nie udało się pobrać raportów. Spróbuj odświeżyć stronę.
-                </div>
-            </div>
+            <Page>
+                <PageHeader title="Raporty" breadcrumb={[{ label: 'Raporty' }]} />
+                <Card>
+                    <EmptyState title="Błąd">Nie udało się pobrać raportów.</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <span className={styles.breadcrumb}>Raporty</span>
-                <h1 className={styles.title}>Raporty</h1>
-                <span className={styles.subtitle}>
-                    Skumulowane metryki, najnowsi sponsorzy i szczegóły wydarzeń.
-                </span>
-            </header>
+        <Page width="wide">
+            <PageHeader
+                title="Raporty"
+                breadcrumb={[{ label: 'Raporty' }]}
+                subtitle="Skumulowane metryki, najnowsi sponsorzy i szczegóły wydarzeń."
+            />
 
             <div className={styles.kpiRow}>
                 <KpiCard
@@ -121,13 +133,13 @@ const Reports: React.FC = () => {
             </div>
 
             <div className={styles.grid2}>
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Wartość partnerstw w wydarzeniach</h2>
-                        <span className={styles.sectionSub}>w tysiącach PLN</span>
-                    </div>
+                <Card>
+                    <CardHeader
+                        title="Wartość partnerstw w wydarzeniach"
+                        subtitle="w tysiącach PLN"
+                    />
                     {eventsChartData.length === 0 ? (
-                        <div className={styles.tableEmpty}>Brak danych do wykresu.</div>
+                        <EmptyState compact>Brak danych do wykresu.</EmptyState>
                     ) : (
                         <div className={styles.chartBox}>
                             <ResponsiveContainer width="100%" height="100%">
@@ -164,14 +176,12 @@ const Reports: React.FC = () => {
                             </ResponsiveContainer>
                         </div>
                     )}
-                </section>
+                </Card>
 
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Nowi sponsorzy w czasie</h2>
-                    </div>
+                <Card>
+                    <CardHeader title="Nowi sponsorzy w czasie" />
                     {sponsorsTimeline.length === 0 ? (
-                        <div className={styles.tableEmpty}>Brak nowych sponsorów.</div>
+                        <EmptyState compact>Brak nowych sponsorów.</EmptyState>
                     ) : (
                         <div className={styles.chartBox}>
                             <ResponsiveContainer width="100%" height="100%">
@@ -195,24 +205,24 @@ const Reports: React.FC = () => {
                                     <Line
                                         type="monotone"
                                         dataKey="count"
-                                        stroke="#059669"
+                                        stroke="#047857"
                                         strokeWidth={3}
-                                        dot={{ r: 4, fill: '#059669' }}
+                                        dot={{ r: 4, fill: '#047857' }}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
                     )}
-                </section>
+                </Card>
             </div>
 
-            <section className={styles.section}>
-                <div className={styles.sectionHead}>
-                    <h2 className={styles.sectionTitle}>Szczegóły wydarzeń</h2>
-                    <span className={styles.sectionSub}>{events.length} wydarzeń</span>
-                </div>
+            <Card>
+                <CardHeader
+                    title="Szczegóły wydarzeń"
+                    subtitle={`${events.length} wydarzeń`}
+                />
                 {events.length === 0 ? (
-                    <div className={styles.tableEmpty}>Brak wydarzeń.</div>
+                    <EmptyState compact>Brak wydarzeń.</EmptyState>
                 ) : (
                     <div className={styles.table}>
                         <div className={styles.tableHead}>
@@ -224,20 +234,23 @@ const Reports: React.FC = () => {
                         </div>
                         {events.map((ev) => (
                             <div key={ev.event_id} className={styles.tableRow}>
-                                <div>
-                                    <div className={styles.eventCellTitle}>{ev.event_name}</div>
-                                    <div className={styles.eventCellSub}>
-                                        {formatDate(ev.start_date)}
-                                    </div>
+                                <div className={styles.tableCellMain}>
+                                    <div className={styles.tableTitle}>{ev.event_name}</div>
+                                    <div className={styles.tableSub}>{formatDate(ev.start_date)}</div>
                                 </div>
-                                <span
-                                    className={`${styles.statusBadge} ${STATUS_CLASS[ev.status] ?? styles.statusClosed}`}
+                                <Badge
+                                    tone={STATUS_TONE[ev.status]}
+                                    pill
+                                    size="sm"
+                                    uppercase
                                 >
-                                    {STATUS_LABEL[ev.status] ?? ev.status}
-                                </span>
+                                    {STATUS_LABEL[ev.status]}
+                                </Badge>
                                 <span>
                                     {ev.partners_count}
-                                    {ev.target_partners_count ? ` / ${ev.target_partners_count}` : ''}
+                                    {ev.target_partners_count
+                                        ? ` / ${ev.target_partners_count}`
+                                        : ''}
                                 </span>
                                 <span>{formatPLN(ev.total_value)}</span>
                                 <span>{ev.pipeline_count}</span>
@@ -245,16 +258,16 @@ const Reports: React.FC = () => {
                         ))}
                     </div>
                 )}
-            </section>
+            </Card>
 
             <div className={styles.grid2}>
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Najnowsi sponsorzy</h2>
-                        <span className={styles.sectionSub}>ostatnie 10 sukcesów</span>
-                    </div>
+                <Card>
+                    <CardHeader
+                        title="Najnowsi sponsorzy"
+                        subtitle="ostatnie 10 sukcesów"
+                    />
                     {newSponsors.length === 0 ? (
-                        <div className={styles.tableEmpty}>Brak nowych sponsorów.</div>
+                        <EmptyState compact>Brak nowych sponsorów.</EmptyState>
                     ) : (
                         <div className={styles.table}>
                             <div className={styles.sponsorHead}>
@@ -264,28 +277,28 @@ const Reports: React.FC = () => {
                                 <span>Data</span>
                             </div>
                             {newSponsors.map((sp) => (
-                                <div key={`${sp.company_id}-${sp.event_id}`} className={styles.sponsorRow}>
-                                    <span className={styles.eventCellTitle}>{sp.company_name}</span>
-                                    <span className={styles.eventCellSub}>{sp.event_name}</span>
-                                    <span className={styles.sponsorAmount}>
+                                <div
+                                    key={`${sp.company_id}-${sp.event_id}`}
+                                    className={styles.sponsorRow}
+                                >
+                                    <span className={styles.tableTitle}>{sp.company_name}</span>
+                                    <span className={styles.tableSub}>{sp.event_name}</span>
+                                    <span className={styles.tableAmountSuccess}>
                                         {formatPLN(sp.agreed_amount)}
                                     </span>
-                                    <span className={styles.eventCellSub}>
+                                    <span className={styles.tableSub}>
                                         {formatDate(sp.closed_at)}
                                     </span>
                                 </div>
                             ))}
                         </div>
                     )}
-                </section>
+                </Card>
 
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className={styles.sectionTitle}>Top firmy</h2>
-                        <span className={styles.sectionSub}>wg sumy umów</span>
-                    </div>
+                <Card>
+                    <CardHeader title="Top firmy" subtitle="wg sumy umów" />
                     {topCompanies.length === 0 ? (
-                        <div className={styles.tableEmpty}>Brak partnerstw.</div>
+                        <EmptyState compact>Brak partnerstw.</EmptyState>
                     ) : (
                         <div className={styles.table}>
                             <div className={styles.topHead}>
@@ -295,8 +308,8 @@ const Reports: React.FC = () => {
                             </div>
                             {topCompanies.map((c) => (
                                 <div key={c.company_id} className={styles.topRow}>
-                                    <span className={styles.eventCellTitle}>{c.company_name}</span>
-                                    <span className={styles.sponsorAmount}>
+                                    <span className={styles.tableTitle}>{c.company_name}</span>
+                                    <span className={styles.tableAmountSuccess}>
                                         {formatPLN(c.total_value)}
                                     </span>
                                     <span>{c.partnerships_count}</span>
@@ -304,24 +317,10 @@ const Reports: React.FC = () => {
                             ))}
                         </div>
                     )}
-                </section>
+                </Card>
             </div>
-        </div>
+        </Page>
     );
 };
-
-interface KpiCardProps {
-    label: string;
-    value: string;
-    sub: string;
-}
-
-const KpiCard: React.FC<KpiCardProps> = ({ label, value, sub }) => (
-    <div className={styles.kpiCard}>
-        <span className={styles.kpiLabel}>{label}</span>
-        <span className={styles.kpiValue}>{value}</span>
-        <span className={styles.kpiSub}>{sub}</span>
-    </div>
-);
 
 export default Reports;

@@ -14,13 +14,30 @@ import ActivityFeed from '../components/EventDetail/ActivityFeed';
 import UpcomingActions from '../components/EventDetail/UpcomingActions';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
+import {
+    Badge,
+    Button,
+    Card,
+    EmptyState,
+    Page,
+    PageHeader,
+} from '../components/ui';
+import type { BadgeTone } from '../components/ui';
+import type { EventStatus } from '../types/api';
 import styles from './EventDetail.module.css';
 
-const STATUS_LABELS: Record<string, string> = {
+const STATUS_LABELS: Record<EventStatus, string> = {
     draft: 'Wersja robocza',
     active: 'Aktywne',
     closed: 'Zakończone',
     cancelled: 'Anulowane',
+};
+
+const STATUS_TONE: Record<EventStatus, BadgeTone> = {
+    draft: 'warning',
+    active: 'success',
+    closed: 'neutral',
+    cancelled: 'danger',
 };
 
 const EventDetail: React.FC = () => {
@@ -41,61 +58,66 @@ const EventDetail: React.FC = () => {
 
     if (event.isLoading) {
         return (
-            <div className={styles.page}>
-                <div className={styles.loading}>Ładowanie wydarzenia…</div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState>Ładowanie wydarzenia…</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     if (event.isError || !event.data) {
         return (
-            <div className={styles.page}>
-                <div className={styles.errorBox}>
-                    Nie udało się załadować wydarzenia. Wróć do{' '}
-                    <Link to="/events">listy wydarzeń</Link>.
-                </div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState title="Błąd">
+                        Nie udało się załadować wydarzenia. Wróć do{' '}
+                        <Link to="/events">listy wydarzeń</Link>.
+                    </EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     const ev = event.data;
 
     return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <nav className={styles.breadcrumb} aria-label="breadcrumb">
-                        <Link to="/events">Wydarzenia</Link>
-                        <span className={styles.breadcrumbSep}>›</span>
-                        <span className={styles.breadcrumbCurrent}>{ev.name}</span>
-                    </nav>
-                    <div className={styles.titleRow}>
-                        <h1 className={styles.title}>{ev.name}</h1>
-                        <span className={styles.dateChip}>
+        <Page width="wide">
+            <PageHeader
+                title={ev.name}
+                breadcrumb={[
+                    { label: 'Wydarzenia', to: '/events' },
+                    { label: ev.name },
+                ]}
+                chips={
+                    <>
+                        <Badge tone="info" pill>
                             {formatDateRange(ev.start_date, ev.end_date)}
-                        </span>
-                        <span className={styles.statusChip}>
-                            {STATUS_LABELS[ev.status] ?? ev.status}
-                        </span>
-                    </div>
-                </div>
-                <div className={styles.headerActions}>
-                    <button
-                        type="button"
-                        className={styles.secondaryButton}
-                        onClick={() => setAddPipelineOpen(true)}
-                    >
-                        <Plus size={14} /> Dodaj firmę
-                    </button>
-                    <button
-                        type="button"
-                        className={styles.editButton}
-                        onClick={() => setAddActivityOpen(true)}
-                    >
-                        <Plus size={14} /> Nowy wpis
-                    </button>
-                </div>
-            </header>
+                        </Badge>
+                        <Badge tone={STATUS_TONE[ev.status]} pill>
+                            {STATUS_LABELS[ev.status]}
+                        </Badge>
+                    </>
+                }
+                actions={
+                    <>
+                        <Button
+                            variant="secondary"
+                            iconLeft={<Plus size={14} />}
+                            onClick={() => setAddPipelineOpen(true)}
+                        >
+                            Dodaj firmę
+                        </Button>
+                        <Button
+                            variant="primary"
+                            iconLeft={<Plus size={14} />}
+                            onClick={() => setAddActivityOpen(true)}
+                        >
+                            Nowy wpis
+                        </Button>
+                    </>
+                }
+            />
 
             <div className={styles.layout}>
                 <div className={styles.mainCol}>
@@ -137,7 +159,7 @@ const EventDetail: React.FC = () => {
                 eventId={ev.id}
                 onClose={() => setAddPipelineOpen(false)}
             />
-        </div>
+        </Page>
     );
 };
 

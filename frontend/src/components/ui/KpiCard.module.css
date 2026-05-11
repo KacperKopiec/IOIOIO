@@ -1,0 +1,80 @@
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    box-shadow: var(--shadow-1);
+}
+
+.iconWrap {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toneBrand {
+    background: var(--color-primary-bg);
+    color: var(--color-info);
+}
+
+.toneSuccess {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.toneWarning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.toneDanger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+.toneIndigo {
+    background: #EEF2FF;
+    color: #4F46E5;
+}
+
+.body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.label {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+}
+
+.value {
+    color: var(--color-text-strong);
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-3xl);
+    line-height: var(--line-tight);
+    letter-spacing: -0.3px;
+    word-break: break-word;
+}
+
+.sub {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
+.subAccent {
+    color: var(--color-success);
+}

@@ -1,5 +1,5 @@
 .tag {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 500;
     font-size: 12px;
     line-height: 16px;

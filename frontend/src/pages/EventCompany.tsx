@@ -7,7 +7,6 @@ import { useEvent } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
 import { usePipelineStages } from '../hooks/api/reference';
 import CompanyInfo from '../components/CompanyDetail/CompanyInfo';
-import SectionCard from '../components/CompanyDetail/SectionCard';
 import CompanySummary from '../components/EventCompany/CompanySummary';
 import EventCompanyMetrics from '../components/EventCompany/EventCompanyMetrics';
 import EventContactsCard from '../components/EventCompany/EventContactsCard';
@@ -15,6 +14,13 @@ import EventHistoryTimeline from '../components/EventCompany/EventHistoryTimelin
 import EventNotesCard from '../components/EventCompany/EventNotesCard';
 import PipelineStatusBar from '../components/EventCompany/PipelineStatusBar';
 import AddContactModal from '../components/modals/AddContactModal';
+import {
+    Card,
+    CardHeader,
+    EmptyState,
+    Page,
+    PageHeader,
+} from '../components/ui';
 import styles from './EventCompany.module.css';
 
 const EventCompany: React.FC = () => {
@@ -42,17 +48,17 @@ const EventCompany: React.FC = () => {
 
     const notes = useMemo(
         () =>
-            (activities.data ?? []).filter(
-                (a) => a.activity_type === 'note',
-            ),
+            (activities.data ?? []).filter((a) => a.activity_type === 'note'),
         [activities.data],
     );
 
     if (company.isLoading || event.isLoading) {
         return (
-            <div className={styles.page}>
-                <div className={styles.loading}>Ładowanie danych…</div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState>Ładowanie danych…</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
@@ -63,12 +69,16 @@ const EventCompany: React.FC = () => {
         !event.data
     ) {
         return (
-            <div className={styles.page}>
-                <div className={styles.errorBox}>
-                    Nie udało się załadować widoku.{' '}
-                    <Link to={`/events/${eventId ?? ''}`}>Wróć do wydarzenia</Link>.
-                </div>
-            </div>
+            <Page width="wide">
+                <Card>
+                    <EmptyState title="Błąd">
+                        Nie udało się załadować widoku.{' '}
+                        <Link to={`/events/${eventId ?? ''}`}>
+                            Wróć do wydarzenia
+                        </Link>.
+                    </EmptyState>
+                </Card>
+            </Page>
         );
     }
 
@@ -76,40 +86,35 @@ const EventCompany: React.FC = () => {
     const ev = event.data;
 
     return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <nav className={styles.breadcrumb} aria-label="breadcrumb">
-                    <Link to="/events">Wydarzenia</Link>
-                    <span className={styles.breadcrumbSep}>›</span>
-                    <Link to={`/events/${ev.id}`}>{ev.name}</Link>
-                    <span className={styles.breadcrumbSep}>›</span>
-                    <span className={styles.breadcrumbCurrent}>{c.name}</span>
-                </nav>
-                <h1 className={styles.title}>{c.name}</h1>
-                <div className={styles.subtitle}>
-                    Kontekst wydarzenia:{' '}
-                    <Link
-                        to={`/events/${ev.id}`}
-                        style={{ color: '#64748B' }}
-                    >
-                        {ev.name}
-                    </Link>
-                </div>
-            </header>
+        <Page width="wide">
+            <PageHeader
+                breadcrumb={[
+                    { label: 'Wydarzenia', to: '/events' },
+                    { label: ev.name, to: `/events/${ev.id}` },
+                    { label: c.name },
+                ]}
+                title={c.name}
+                subtitle={
+                    <>
+                        Kontekst wydarzenia:{' '}
+                        <Link to={`/events/${ev.id}`} className={styles.subLink}>
+                            {ev.name}
+                        </Link>
+                    </>
+                }
+            />
 
             <div className={styles.layout}>
                 <div className={styles.leftCol}>
                     <CompanySummary company={c} />
-                    <SectionCard title="Informacje ogólne" icon={<Info size={18} />}>
+                    <Card padding="compact">
+                        <CardHeader title="Informacje ogólne" icon={<Info size={18} />} />
                         <CompanyInfo company={c} />
-                    </SectionCard>
+                    </Card>
                 </div>
 
                 <div className={styles.centerCol}>
-                    <PipelineStatusBar
-                        stages={stages.data ?? []}
-                        entry={entry}
-                    />
+                    <PipelineStatusBar stages={stages.data ?? []} entry={entry} />
                     <EventCompanyMetrics
                         entry={entry}
                         activities={activities.data ?? []}
@@ -140,7 +145,7 @@ const EventCompany: React.FC = () => {
                 companyId={c.id}
                 onClose={() => setAddContactOpen(false)}
             />
-        </div>
+        </Page>
     );
 };
 

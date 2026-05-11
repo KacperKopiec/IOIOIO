@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import styles from './Firms.module.css';
 import FilterSidebar from '../components/Firms/FilterSidebar';
 import FirmsTable from '../components/Firms/FirmsTable';
 import ActionBar from '../components/Firms/ActionBar';
 import AddCompanyModal from '../components/modals/AddCompanyModal';
+import { Button, Page, PageHeader } from '../components/ui';
 import { useCompanies, type CompanyFilters } from '../hooks/api/companies';
 
 const DEFAULT_FILTERS: CompanyFilters = { page: 1, page_size: 25 };
@@ -22,23 +23,24 @@ const Firms: React.FC = () => {
     const query = useCompanies(filters);
 
     return (
-        <div className={styles.page}>
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <div>
-                        <nav className={styles.breadcrumb}>Baza Firm</nav>
-                        <h1 className={styles.title}>Baza Firm</h1>
-                    </div>
-                    <button
-                        type="button"
-                        className={styles.primaryBtn}
+        <Page width="wide">
+            <PageHeader
+                title="Baza firm"
+                breadcrumb={[{ label: 'Baza firm' }]}
+                actions={
+                    <Button
+                        variant="primary"
+                        iconLeft={<Plus size={14} />}
                         onClick={() => setAddOpen(true)}
                     >
-                        <Plus size={14} /> Dodaj firmę
-                    </button>
-                </div>
+                        Dodaj firmę
+                    </Button>
+                }
+            />
 
-                <form onSubmit={handleSubmitSearch} className={styles.searchRow}>
+            <form onSubmit={handleSubmitSearch} className={styles.searchRow}>
+                <div className={styles.searchField}>
+                    <Search size={16} className={styles.searchIcon} />
                     <input
                         type="search"
                         className={styles.searchInput}
@@ -46,32 +48,33 @@ const Firms: React.FC = () => {
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                     />
-                    <button type="submit" className={styles.searchBtn}>
-                        Szukaj
-                    </button>
-                </form>
-
-                <div className={styles.mainSplit}>
-                    <aside className={styles.leftCol}>
-                        <FilterSidebar filters={filters} onChange={setFilters} />
-                    </aside>
-
-                    <section className={styles.rightCol}>
-                        <ActionBar />
-                        <FirmsTable
-                            companies={query.data?.items ?? []}
-                            meta={query.data?.meta}
-                            isLoading={query.isLoading}
-                            isError={query.isError}
-                            onPageChange={(page) =>
-                                setFilters((prev) => ({ ...prev, page }))
-                            }
-                        />
-                    </section>
                 </div>
+                <Button type="submit" variant="primary">
+                    Szukaj
+                </Button>
+            </form>
+
+            <div className={styles.mainSplit}>
+                <aside className={styles.leftCol}>
+                    <FilterSidebar filters={filters} onChange={setFilters} />
+                </aside>
+
+                <section className={styles.rightCol}>
+                    <ActionBar />
+                    <FirmsTable
+                        companies={query.data?.items ?? []}
+                        meta={query.data?.meta}
+                        isLoading={query.isLoading}
+                        isError={query.isError}
+                        onPageChange={(page) =>
+                            setFilters((prev) => ({ ...prev, page }))
+                        }
+                    />
+                </section>
             </div>
+
             <AddCompanyModal open={addOpen} onClose={() => setAddOpen(false)} />
-        </div>
+        </Page>
     );
 };
 

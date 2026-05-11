@@ -4,8 +4,33 @@ import { ArrowRight, CalendarDays, Megaphone, Users } from 'lucide-react';
 import { usePromotionDashboard } from '../../hooks/api/dashboard';
 import { useEvents } from '../../hooks/api/events';
 import { formatDateRange, formatPercent } from '../../lib/format';
-import type { PromotionEventCard } from '../../types/api';
+import {
+    Badge,
+    Card,
+    CardHeader,
+    EmptyState,
+    KpiCard,
+    Page,
+    PageHeader,
+    ProgressBar,
+} from '../../components/ui';
+import type { BadgeTone } from '../../components/ui';
+import type { EventStatus, PromotionEventCard } from '../../types/api';
 import styles from './Dashboards.module.css';
+
+const STATUS_TONE: Record<EventStatus, BadgeTone> = {
+    active: 'success',
+    draft: 'warning',
+    closed: 'neutral',
+    cancelled: 'danger',
+};
+
+const STATUS_LABEL: Record<EventStatus, string> = {
+    active: 'Aktywne',
+    draft: 'Wersja robocza',
+    closed: 'Zakończone',
+    cancelled: 'Anulowane',
+};
 
 function shortDate(iso: string | null): string {
     if (!iso) return '—';
@@ -14,20 +39,6 @@ function shortDate(iso: string | null): string {
         .toUpperCase()
         .replace('.', '');
 }
-
-const STATUS_CLASS: Record<string, string> = {
-    active: styles.chipGreen,
-    draft: styles.chipAmber,
-    closed: styles.chipSlate,
-    cancelled: styles.chipSlate,
-};
-
-const STATUS_LABEL: Record<string, string> = {
-    active: 'Aktywne',
-    draft: 'Wersja robocza',
-    closed: 'Zakończone',
-    cancelled: 'Anulowane',
-};
 
 const DashboardPromotion: React.FC = () => {
     const dashboard = usePromotionDashboard();
@@ -39,128 +50,101 @@ const DashboardPromotion: React.FC = () => {
     const draftCount = cards.filter((c) => c.status === 'draft').length;
 
     return (
-        <div className={styles.page}>
-            <header className={styles.headerBlock}>
-                <span className={styles.breadcrumb}>Dashboard / Dział promocji</span>
-                <h1 className={styles.title}>Dział promocji</h1>
-                <span className={styles.subtitle}>
-                    Nadchodzące wydarzenia i status promocji w lejku.
-                </span>
-            </header>
+        <Page width="wide">
+            <PageHeader
+                title="Dział promocji"
+                breadcrumb={[{ label: 'Dashboard' }, { label: 'Dział promocji' }]}
+                subtitle="Nadchodzące wydarzenia i status promocji w lejku."
+            />
 
             <div className={styles.kpiRow}>
                 <KpiCard
                     icon={<CalendarDays size={20} />}
-                    iconClass={styles.kpiIcon}
+                    tone="brand"
                     label="Aktywne wydarzenia"
                     value={`${activeCount}`}
                     sub={`${draftCount} w przygotowaniu`}
                 />
                 <KpiCard
                     icon={<Users size={20} />}
-                    iconClass={styles.kpiIconGreen}
+                    tone="success"
                     label="Pozyskani partnerzy"
                     value={`${totalPartners}`}
                     sub="łącznie we wszystkich wydarzeniach"
                 />
                 <KpiCard
                     icon={<Megaphone size={20} />}
-                    iconClass={styles.kpiIconIndigo}
+                    tone="indigo"
                     label="W bazie"
                     value={`${events.data?.meta.total ?? 0}`}
                     sub="wydarzeń w systemie"
                 />
             </div>
 
-            <section className={styles.section}>
-                <div className={styles.sectionHead}>
-                    <h2 className={styles.sectionTitle}>
-                        Nadchodzące wydarzenia do promocji
-                    </h2>
-                    <Link to="/events" className={styles.sectionAction}>
-                        Zobacz wszystkie
-                    </Link>
-                </div>
-
+            <Card padding="compact">
+                <CardHeader
+                    title="Nadchodzące wydarzenia do promocji"
+                    action={
+                        <Link to="/events" className={styles.sectionAction}>
+                            Zobacz wszystkie
+                        </Link>
+                    }
+                />
                 {dashboard.isLoading ? (
-                    <div className={styles.emptyState}>Ładowanie wydarzeń…</div>
+                    <EmptyState compact>Ładowanie wydarzeń…</EmptyState>
                 ) : cards.length === 0 ? (
-                    <div className={styles.emptyState}>
+                    <EmptyState compact>
                         Brak aktywnych ani planowanych wydarzeń.
-                    </div>
+                    </EmptyState>
                 ) : (
                     <div className={styles.cardGrid}>
                         {cards.map((card) => (
-                            <PromotionCard key={card.id} card={card} />
+                            <PromotionCardItem key={card.id} card={card} />
                         ))}
                     </div>
                 )}
-            </section>
-        </div>
+            </Card>
+        </Page>
     );
 };
-
-interface KpiCardProps {
-    icon: React.ReactNode;
-    iconClass: string;
-    label: string;
-    value: string;
-    sub: string;
-}
-
-const KpiCard: React.FC<KpiCardProps> = ({ icon, iconClass, label, value, sub }) => (
-    <div className={styles.kpiCard}>
-        <span className={iconClass}>{icon}</span>
-        <div className={styles.kpiBody}>
-            <div className={styles.kpiLabel}>{label}</div>
-            <div className={styles.kpiValue}>{value}</div>
-            <div className={styles.kpiSub}>{sub}</div>
-        </div>
-    </div>
-);
 
 interface PromotionCardProps {
     card: PromotionEventCard;
 }
 
-const PromotionCard: React.FC<PromotionCardProps> = ({ card }) => {
-    return (
-        <article className={styles.eventCard}>
-            <div className={styles.eventCardChips}>
-                <span className={`${styles.chip} ${styles.chipBlue}`}>
-                    {shortDate(card.start_date)}
-                </span>
-                <span
-                    className={`${styles.chip} ${STATUS_CLASS[card.status] ?? styles.chipSlate}`}
-                >
-                    {STATUS_LABEL[card.status] ?? card.status}
-                </span>
-            </div>
-            <div className={styles.eventCardName}>{card.name}</div>
-            <div className={styles.eventCardDescription}>
-                {formatDateRange(card.start_date, card.end_date)}
-            </div>
+const PromotionCardItem: React.FC<PromotionCardProps> = ({ card }) => (
+    <article className={styles.eventCard}>
+        <div className={styles.eventCardChips}>
+            <Badge tone="info" pill size="sm">
+                {shortDate(card.start_date)}
+            </Badge>
+            <Badge tone={STATUS_TONE[card.status]} pill size="sm">
+                {STATUS_LABEL[card.status]}
+            </Badge>
+        </div>
+        <div className={styles.eventCardName}>{card.name}</div>
+        <div className={styles.eventCardDescription}>
+            {formatDateRange(card.start_date, card.end_date)}
+        </div>
 
-            <div className={styles.progressBar}>
-                <div
-                    className={`${styles.progressFill} ${styles.progressFillGreen}`}
-                    style={{ width: `${Math.min(card.progress_pct, 1) * 100}%` }}
-                />
-            </div>
-
-            <div className={styles.progressLabel}>
+        <ProgressBar
+            value={card.progress_pct}
+            tone="success"
+            leftLabel={
                 <span>
                     Partnerzy: {card.partners_count}
-                    {card.target_partners_count ? ` / ${card.target_partners_count}` : ''}
+                    {card.target_partners_count
+                        ? ` / ${card.target_partners_count}`
+                        : ''}
                 </span>
-                <span>{formatPercent(card.progress_pct)} budżetu</span>
-            </div>
+            }
+            rightLabel={<span>{formatPercent(card.progress_pct)} budżetu</span>}
+        />
 
-            <Link to={`/events/${card.id}`} className={styles.ctaBtn}>
-                Otwórz wydarzenie <ArrowRight size={12} />
-            </Link>
-        </article>
-    );
-};
+        <Link to={`/events/${card.id}`} className={styles.eventCardCta}>
+            Otwórz wydarzenie <ArrowRight size={12} />
+        </Link>
+    </article>
+);
 
 export default DashboardPromotion;

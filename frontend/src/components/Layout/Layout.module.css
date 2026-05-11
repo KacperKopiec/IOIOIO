@@ -1,15 +1,13 @@
 .page {
-    background: linear-gradient(0deg, #F8FBFF, #F8FBFF);
+    background: var(--color-canvas);
     min-height: 100vh;
-    font-family: Manrope, Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    box-sizing: border-box;
+    font-family: var(--font-body);
 }
 
 .layout {
     display: flex;
     min-height: 100vh;
     align-items: stretch;
-    gap: 0;
 }
 
 .main {
@@ -20,10 +18,8 @@
 }
 
 .container {
-    width: 100%;
-    margin: 0;
-    padding: 24px;
-    background: transparent;
-    box-sizing: border-box;
     flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }

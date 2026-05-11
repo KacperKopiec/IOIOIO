@@ -6,7 +6,13 @@ import { usePipelineStages } from '../hooks/api/reference';
 import PipelineStats from '../components/EventPipeline/PipelineStats';
 import KanbanBoard from '../components/EventPipeline/KanbanBoard';
 import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
-import styles from './EventPipeline.module.css';
+import {
+    Button,
+    Card,
+    EmptyState,
+    Page,
+    PageHeader,
+} from '../components/ui';
 
 const EventPipeline: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,63 +27,64 @@ const EventPipeline: React.FC = () => {
 
     if (event.isLoading) {
         return (
-            <div className={styles.page}>
-                <div className={styles.loading}>Ładowanie lejka…</div>
-            </div>
+            <Page width="full">
+                <Card>
+                    <EmptyState>Ładowanie lejka…</EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     if (event.isError || !event.data) {
         return (
-            <div className={styles.page}>
-                <div className={styles.errorBox}>
-                    Nie udało się załadować wydarzenia. Wróć do{' '}
-                    <Link to="/events">listy wydarzeń</Link>.
-                </div>
-            </div>
+            <Page width="full">
+                <Card>
+                    <EmptyState title="Błąd">
+                        Nie udało się załadować wydarzenia. Wróć do{' '}
+                        <Link to="/events">listy wydarzeń</Link>.
+                    </EmptyState>
+                </Card>
+            </Page>
         );
     }
 
     const ev = event.data;
 
     return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <nav className={styles.breadcrumb} aria-label="breadcrumb">
-                        <Link to="/events">Wydarzenia</Link>
-                        <span className={styles.breadcrumbSep}>›</span>
-                        <Link to={`/events/${ev.id}`}>{ev.name}</Link>
-                        <span className={styles.breadcrumbSep}>›</span>
-                        <span className={styles.breadcrumbCurrent}>Lejek</span>
-                    </nav>
-                    <h1 className={styles.title}>Wydarzenie: {ev.name}</h1>
-                    {ev.description && (
-                        <div className={styles.subtitle}>{ev.description}</div>
-                    )}
-                </div>
-
-                <div className={styles.toolbar}>
-                    <button type="button" className={styles.toolbarBtn} disabled>
-                        Filtruj
-                    </button>
-                    <button type="button" className={styles.toolbarBtn} disabled>
-                        Sortuj
-                    </button>
-                    <button
-                        type="button"
-                        className={styles.primaryBtn}
-                        onClick={() => setAddOpen(true)}
-                    >
-                        <Plus size={14} /> Dodaj firmę
-                    </button>
-                </div>
-            </header>
+        <Page width="full">
+            <PageHeader
+                title={`Lejek: ${ev.name}`}
+                breadcrumb={[
+                    { label: 'Wydarzenia', to: '/events' },
+                    { label: ev.name, to: `/events/${ev.id}` },
+                    { label: 'Lejek' },
+                ]}
+                subtitle={ev.description ?? undefined}
+                actions={
+                    <>
+                        <Button variant="ghost" size="md" disabled>
+                            Filtruj
+                        </Button>
+                        <Button variant="ghost" size="md" disabled>
+                            Sortuj
+                        </Button>
+                        <Button
+                            variant="primary"
+                            iconLeft={<Plus size={14} />}
+                            onClick={() => setAddOpen(true)}
+                        >
+                            Dodaj firmę
+                        </Button>
+                    </>
+                }
+            />
 
             <PipelineStats kpi={kpi.data} />
 
             {pipeline.isLoading || stages.isLoading ? (
-                <div className={styles.loading}>Ładowanie kart…</div>
+                <Card>
+                    <EmptyState>Ładowanie kart…</EmptyState>
+                </Card>
             ) : (
                 <KanbanBoard
                     eventId={ev.id}
@@ -91,7 +98,7 @@ const EventPipeline: React.FC = () => {
                 eventId={ev.id}
                 onClose={() => setAddOpen(false)}
             />
-        </div>
+        </Page>
     );
 };
 

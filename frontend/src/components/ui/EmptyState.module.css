@@ -1,0 +1,18 @@
+.wrap {
+    padding: var(--space-7);
+    text-align: center;
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-base);
+    line-height: var(--line-normal);
+}
+
+.compact {
+    padding: var(--space-4);
+    font-size: var(--font-size-sm);
+}
+
+.title {
+    color: var(--color-text);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-1);
+}

@@ -41,7 +41,7 @@
 .labelText,
 .actionText,
 .reportText {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-style: normal;
     display: flex;
     align-items: center;
@@ -79,7 +79,7 @@
     background: #FFFFFF;
     padding: 8px 12px;
     color: #515F74;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     cursor: pointer;
     transition: all 0.2s ease;
     height: 32px;
