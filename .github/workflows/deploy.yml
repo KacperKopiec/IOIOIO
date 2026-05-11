@@ -38,11 +38,22 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Rsync dist to server
+      - name: Rsync dist to server (with retry)
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/id_ed25519" \
-            frontend/dist/ \
-            ubuntu@"$SSH_HOST":/home/ubuntu/IOIOIO/frontend/dist/
+          SSH_OPTS="-i ~/.ssh/id_ed25519 -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
+          for attempt in 1 2 3 4 5; do
+            if rsync -avz --delete \
+                -e "ssh $SSH_OPTS" \
+                frontend/dist/ \
+                ubuntu@"$SSH_HOST":/home/ubuntu/IOIOIO/frontend/dist/; then
+              echo "Deploy succeeded on attempt $attempt"
+              exit 0
+            fi
+            delay=$((5 * 2 ** (attempt - 1)))
+            echo "Attempt $attempt failed, retrying in ${delay}s..."
+            sleep "$delay"
+          done
+          echo "All 5 retries exhausted"
+          exit 1
