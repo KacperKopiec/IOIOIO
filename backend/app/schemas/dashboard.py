@@ -5,14 +5,6 @@ from app.models.enums import ActivityType, EventStatus
 from app.schemas.common import OrmBase
 
 
-class ManagementStats(OrmBase):
-    active_partnerships: int
-    total_value: Decimal
-    currency: str = "PLN"
-    conversion_rate: float | None
-    pipeline_count: int
-
-
 class EventOwnerBrief(OrmBase):
     user_id: int
     first_name: str
@@ -35,12 +27,6 @@ class ActiveEventBrief(OrmBase):
     status: EventStatus
 
 
-class UpcomingEventBrief(OrmBase):
-    id: int
-    name: str
-    start_date: date | None
-
-
 class RecentActivityBrief(OrmBase):
     id: int
     activity_type: ActivityType
@@ -50,13 +36,6 @@ class RecentActivityBrief(OrmBase):
     company_name: str | None
     event_id: int | None
     event_name: str | None
-
-
-class ManagementDashboard(OrmBase):
-    stats: ManagementStats
-    active_events: list[ActiveEventBrief]
-    upcoming_events: list[UpcomingEventBrief]
-    recent_activities: list[RecentActivityBrief]
 
 
 class CoordinatorDashboard(OrmBase):
@@ -92,15 +71,3 @@ class PromotionEventCard(OrmBase):
 
 class PromotionDashboard(OrmBase):
     active_events: list[PromotionEventCard]
-
-
-class MerytorycznaInitiativeBrief(OrmBase):
-    event_id: int
-    event_name: str
-    status: EventStatus
-    pipeline_count: int
-
-
-class MerytorycznaDashboard(OrmBase):
-    user_id: int
-    initiatives_to_review: list[MerytorycznaInitiativeBrief]

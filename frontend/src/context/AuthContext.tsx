@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type UserRole = 'koordynator' | 'opiekun' | 'promocja' | 'zarzad';
+export type UserRole = 'koordynator' | 'opiekun' | 'promocja';
 
 interface AuthContextType {
     role: UserRole;
@@ -9,17 +9,16 @@ interface AuthContextType {
 }
 
 const roleNames: Record<UserRole, string> = {
-    koordynator: 'Koordynator inicjatywy',
-    opiekun: 'Opiekun relacji',
+    koordynator: 'Koordynator wydarzenia',
+    opiekun: 'Opiekun partnerów',
     promocja: 'Dział promocji',
-    zarzad: 'Kadra zarządzająca',
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [role] = useState<UserRole>('zarzad');  // tymczasowo
-    const userName = 'Anna Nowak';
+    const [role] = useState<UserRole>('koordynator');
+    const userName = 'Marek Kowalski';
     return (
         <AuthContext.Provider value={{ role, userName, userRoleName: roleNames[role] }}>
             {children}

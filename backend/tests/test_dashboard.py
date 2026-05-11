@@ -1,9 +1,29 @@
-def test_management_dashboard_shape(client):
-    response = client.get("/dashboard/management")
+def test_coordinator_dashboard_shape(client):
+    response = client.get("/dashboard/coordinator", params={"event_id": 1})
     assert response.status_code == 200
     body = response.json()
-    assert {"stats", "active_events", "upcoming_events", "recent_activities"} <= body.keys()
-    assert {"active_partnerships", "total_value", "conversion_rate", "pipeline_count"} <= body["stats"].keys()
+    assert {
+        "event_id",
+        "event_name",
+        "kpi_partners_count",
+        "kpi_total_value",
+        "kpi_pipeline_count",
+        "upcoming_tasks",
+        "recent_activities",
+    } <= body.keys()
+
+
+def test_coordinator_unknown_event_returns_404(client):
+    response = client.get("/dashboard/coordinator", params={"event_id": 9999999})
+    assert response.status_code == 404
+
+
+def test_promotion_dashboard_shape(client):
+    response = client.get("/dashboard/promotion")
+    assert response.status_code == 200
+    body = response.json()
+    assert "active_events" in body
+    assert isinstance(body["active_events"], list)
 
 
 def test_relationship_manager_requires_user(client):

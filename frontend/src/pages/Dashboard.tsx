@@ -1,21 +1,20 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import DashboardManagement from './dashboards/DashboardManagement';
+import DashboardCoordinator from './dashboards/DashboardCoordinator';
+import DashboardPromotion from './dashboards/DashboardPromotion';
+import DashboardRelationshipManager from './dashboards/DashboardRelationshipManager';
 
 const Dashboard: React.FC = () => {
     const { role } = useAuth();
 
     switch (role) {
-        case 'zarzad':
-        // return <DashboardManagement />;
         case 'promocja':
-        // return <DashboardPromotion />;
-        case 'koordynator':
-        // return <DashboardCoordinator />;
+            return <DashboardPromotion />;
         case 'opiekun':
-        // return <DashboardRelationshipManager />;
+            return <DashboardRelationshipManager />;
+        case 'koordynator':
         default:
-            return <DashboardManagement />;
+            return <DashboardCoordinator />;
     }
 };
 

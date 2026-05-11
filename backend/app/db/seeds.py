@@ -26,7 +26,7 @@ PIPELINE_STAGES: list[tuple[str, int, int, StageOutcome]] = [
     ("Odrzucony", 5, 0, StageOutcome.LOST),
 ]
 
-ROLES: list[str] = ["koordynator", "opiekun", "promocja", "zarzad", "merytoryczna"]
+ROLES: list[str] = ["koordynator", "opiekun", "promocja"]
 
 RELATIONSHIP_TYPES: list[tuple[str, str]] = [
     ("sponsor", "Sponsor wydarzenia – wsparcie finansowe lub rzeczowe"),
@@ -67,11 +67,9 @@ TAGS: list[tuple[str, TagCategory]] = [
 ]
 
 DEMO_USERS: list[tuple[str, str, str, str]] = [
-    ("Anna", "Nowak", "anna.zarzad@agh.edu.pl", "zarzad"),
     ("Marek", "Kowalski", "marek.koordynator@agh.edu.pl", "koordynator"),
     ("Katarzyna", "Wiśniewska", "katarzyna.opiekun@agh.edu.pl", "opiekun"),
     ("Tomasz", "Lewandowski", "tomasz.promocja@agh.edu.pl", "promocja"),
-    ("Joanna", "Wójcik", "joanna.merytoryczna@agh.edu.pl", "merytoryczna"),
 ]
 
 

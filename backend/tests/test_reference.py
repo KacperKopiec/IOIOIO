@@ -21,8 +21,8 @@ def test_industries_seeded(client):
     assert {"IT", "Fintech", "Telco"}.issubset(names)
 
 
-def test_roles_include_merytoryczna(client):
+def test_roles_are_three_canonical(client):
     response = client.get("/roles")
     assert response.status_code == 200
     names = {row["name"] for row in response.json()}
-    assert "merytoryczna" in names
+    assert names == {"koordynator", "opiekun", "promocja"}

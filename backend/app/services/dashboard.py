@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from sqlalchemy import case, func, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from app.models.activity import Activity
 from app.models.company import Company
@@ -16,15 +16,10 @@ from app.schemas.dashboard import (
     ActiveEventBrief,
     CoordinatorDashboard,
     EventOwnerBrief,
-    ManagementDashboard,
-    ManagementStats,
-    MerytorycznaDashboard,
-    MerytorycznaInitiativeBrief,
     PromotionDashboard,
     PromotionEventCard,
     RecentActivityBrief,
     RelationshipManagerDashboard,
-    UpcomingEventBrief,
 )
 
 
@@ -130,75 +125,6 @@ def _event_brief(db: Session, event: Event) -> ActiveEventBrief:
     )
 
 
-def build_management_dashboard(db: Session) -> ManagementDashboard:
-    totals = db.execute(
-        select(
-            func.count(PipelineEntry.id).label("pipeline_count"),
-            func.sum(
-                case((PipelineStage.outcome == StageOutcome.WON, 1), else_=0)
-            ).label("won_count"),
-            func.sum(
-                case((PipelineStage.outcome == StageOutcome.LOST, 1), else_=0)
-            ).label("lost_count"),
-            func.sum(
-                case(
-                    (
-                        PipelineStage.outcome == StageOutcome.WON,
-                        func.coalesce(PipelineEntry.agreed_amount, 0),
-                    ),
-                    else_=0,
-                )
-            ).label("total_value"),
-        ).join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
-    ).one()
-
-    won_count = int(totals.won_count or 0)
-    lost_count = int(totals.lost_count or 0)
-    total_value = Decimal(totals.total_value or 0)
-    closed_total = won_count + lost_count
-    conversion = round(won_count / closed_total, 4) if closed_total > 0 else None
-
-    stats = ManagementStats(
-        active_partnerships=won_count,
-        total_value=total_value,
-        conversion_rate=conversion,
-        pipeline_count=int(totals.pipeline_count or 0),
-    )
-
-    active_events_rows = list(
-        db.scalars(
-            select(Event)
-            .options(selectinload(Event.owner))
-            .where(Event.status == EventStatus.ACTIVE)
-            .order_by(Event.start_date.asc().nullslast())
-        ).all()
-    )
-    active_events = [_event_brief(db, ev) for ev in active_events_rows]
-
-    today = datetime.now(timezone.utc).replace(tzinfo=None).date()
-    upcoming_rows = list(
-        db.scalars(
-            select(Event)
-            .where(Event.start_date >= today)
-            .order_by(Event.start_date.asc())
-            .limit(5)
-        ).all()
-    )
-    upcoming = [
-        UpcomingEventBrief(id=ev.id, name=ev.name, start_date=ev.start_date)
-        for ev in upcoming_rows
-    ]
-
-    recent = _load_recent_activities(db, limit=8)
-
-    return ManagementDashboard(
-        stats=stats,
-        active_events=active_events,
-        upcoming_events=upcoming,
-        recent_activities=recent,
-    )
-
-
 def build_coordinator_dashboard(db: Session, event: Event) -> CoordinatorDashboard:
     brief = _event_brief(db, event)
     pipeline_row = db.execute(
@@ -297,28 +223,3 @@ def build_promotion_dashboard(db: Session) -> PromotionDashboard:
             )
         )
     return PromotionDashboard(active_events=cards)
-
-
-def build_merytoryczna_dashboard(db: Session, user: User) -> MerytorycznaDashboard:
-    rows = db.execute(
-        select(
-            Event.id,
-            Event.name,
-            Event.status,
-            func.count(PipelineEntry.id).label("pipeline_count"),
-        )
-        .join(PipelineEntry, PipelineEntry.event_id == Event.id, isouter=True)
-        .where(Event.status.in_([EventStatus.DRAFT, EventStatus.ACTIVE]))
-        .group_by(Event.id, Event.name, Event.status)
-        .order_by(Event.start_date.asc().nullslast())
-    ).all()
-    initiatives = [
-        MerytorycznaInitiativeBrief(
-            event_id=row.id,
-            event_name=row.name,
-            status=row.status,
-            pipeline_count=int(row.pipeline_count or 0),
-        )
-        for row in rows
-    ]
-    return MerytorycznaDashboard(user_id=user.id, initiatives_to_review=initiatives)

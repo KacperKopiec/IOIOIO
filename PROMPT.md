@@ -6,7 +6,7 @@
 
 ## Kontekst
 
-Buduję lekki CRM dla **Wydziału Informatyki AGH** wspierający pozyskiwanie firm‑partnerów na wydarzenia (konferencje, hackatony, dni kariery). Klient nazywa to „CRM do zarządzania partnerami i sponsoringiem wydarzeń”. Główni użytkownicy: **Dział promocji**, **Koordynator wydarzenia**, **Opiekun relacji**, **Kadra zarządzająca**, **Osoba merytoryczna** (eksperci oceniający dopasowanie firm do inicjatyw).
+Buduję lekki CRM dla **Wydziału Informatyki AGH** wspierający pozyskiwanie firm‑partnerów na wydarzenia (konferencje, hackatony, dni kariery). Klient nazywa to „CRM do zarządzania partnerami i sponsoringiem wydarzeń”. Główni użytkownicy (3 role): **Dział promocji** (`promocja`), **Koordynator wydarzenia** (`koordynator`), **Opiekun partnerów** (`opiekun`).
 
 **Język całego UI: polski.** Dokumentacja i komunikaty błędów też po polsku. Kod, nazwy plików, identyfikatory – po angielsku.
 
@@ -88,8 +88,8 @@ Frontend Vite na dev: `axios` z `baseURL: "/api"`; Vite serwowany jest przez ten
   - `firmTypes.ts` – `tech_startup | corporation | sme | government | ngo | university | research_institute | consultant`.
   - `eventTypes.ts` – `workshop | conference | hackathon | networking`.
   - `eventStatuses.ts` – `planned | ongoing | completed | cancelled`.
-- `src/context/AuthContext.tsx`: trzyma `role: 'koordynator' | 'opiekun' | 'promocja' | 'zarzad'`, na sztywno `'zarzad'`. **Trzeba dorzucić `merytoryczna`** (5. rola z Figmy) i dev role switcher.
-- Strony: `pages/Dashboard.tsx` (deleguje wg roli – jedyna pełna to `dashboards/DashboardManagement.tsx`; pozostałe to stuby `DashboardCoordinator/DashboardPromotion/DashboardRelationshipManager`), `pages/Firms.tsx`, `pages/Events.tsx`.
+- `src/context/AuthContext.tsx`: trzyma `role: 'koordynator' | 'opiekun' | 'promocja'`, na sztywno `'koordynator'`. Trzeba dodać dev role switcher.
+- Strony: `pages/Dashboard.tsx` (deleguje wg roli do `DashboardCoordinator/DashboardPromotion/DashboardRelationshipManager` – wszystkie 3 są na razie stubami), `pages/Firms.tsx`, `pages/Events.tsx`.
 - Routing (`App.tsx`): `/dashboard`, `/firms`, `/events` pod `Layout`.
 - Tokens w `src/index.css`:
   ```css
@@ -104,17 +104,17 @@ File `1OBvTrBmTXd0BL5FpPT1ZX`, canvas `105:3608`. 11 ekranów 1920×1080. **Insp
 
 | Cel | nodeId | Stan |
 |---|---|---|
-| Dashboard – Kadra zarządzająca | `105:3609` | UI gotowe (mock) – podpiąć do API |
 | Baza Firm (lista) | `105:3978` | UI gotowe (mock) – podpiąć do API |
 | Pipeline kanban | `105:4451` | **do zrobienia** |
-| Dashboard – Osoba merytoryczna | `105:4792` | **do zrobienia + nowa rola** |
 | Firma w kontekście wydarzenia | `105:5107` | **do zrobienia** |
-| Dashboard – Opiekun relacji | `105:5431` | stub do wymiany |
-| Raporty | `105:5721` | **do zrobienia** |
+| Dashboard – Opiekun partnerów | `105:5431` | stub do wymiany |
+| Raporty | `105:5721` | **do zrobienia** (widok dla koordynatorów, nie zarządu) |
 | Wydarzenia (lista) | `105:6030` | UI gotowe (mock) – podpiąć do API |
 | Szczegóły firmy (taby) | `105:6344` | **do zrobienia** |
 | Dashboard – Dział promocji | `105:6590` | stub do wymiany |
-| Wydarzenie – widok koordynatora (szczegóły) | `105:6851` | **do zrobienia** |
+| Wydarzenie – widok koordynatora (szczegóły, pełni rolę „dashboardu koordynatora”) | `105:6851` | **do zrobienia** |
+
+Uwaga: ekrany Figma 105:3609 (Kadra zarządzająca) i 105:4792 (Osoba merytoryczna) zostały świadomie pominięte – te role nie są częścią produktu.
 
 Aby pobrać design konkretnego ekranu użyj MCP `mcp__claude_ai_Figma__get_design_context` z `fileKey="1OBvTrBmTXd0BL5FpPT1ZX"` i odpowiednim `nodeId`. Wynik to React + Tailwind – **przeanalizuj jak referencję** i przetłumacz na nasze CSS Modules + tokeny. Screenshot pobieraj jeśli potrzebny: `mcp__claude_ai_Figma__get_screenshot`.
 
@@ -205,7 +205,7 @@ Wszystkie FK NULL‑owalne dopuszczają wartości `NULL` (pola opisane jako „?
   | 3 | Negocjacje | 70 | open |
   | 4 | Decyzja: TAK | 100 | won |
   | 5 | Odrzucony | 0 | lost |
-- **`roles`**: `koordynator`, `opiekun`, `promocja`, `zarzad`, `merytoryczna`.
+- **`roles`**: `koordynator`, `opiekun`, `promocja`.
 - **`relationship_types`**: `sponsor`, `partner`, `recruitment`, `r_and_d`, `media_partner`.
 - **`industries`**: IT, Fintech, Automotive, Energy, E‑commerce, Telco, R&D, Cybersecurity.
 - **`tags`** (po category z enum):
@@ -213,7 +213,7 @@ Wszystkie FK NULL‑owalne dopuszczają wartości `NULL` (pola opisane jako „?
   - interest: recruitment, branding, technology,
   - relationship: partner, sponsor, alumni,
   - collaboration: workshop, hackathon, mentoring.
-- **5 użytkowników demo**, po jednym na rolę (`anna.zarzad@agh.edu.pl`, `marek.koordynator@…`, itd.).
+- **3 użytkowników demo**, po jednym na rolę (`marek.koordynator@agh.edu.pl`, `katarzyna.opiekun@agh.edu.pl`, `tomasz.promocja@agh.edu.pl`).
 - **`db/seeds_demo.py`**: ~20 firm z kontaktami, 3 eventy (np. „SFI 2024”, „KrakHack 2025”, „AGH Career Fair 2025”), ~30 `pipeline_entries`, ~50 `activities`.
 
 ---
@@ -260,18 +260,18 @@ Wszystkie FK NULL‑owalne dopuszczają wartości `NULL` (pola opisane jako „?
 3. **Faza 2 – backend API**
    - Pydantic schemas + routers wg tabelki w `PLAN.md` (Faza 2).
    - Services dla pipeline transitions i KPI.
-   - Endpoint `/dashboard/management` zwraca strukturę pasującą 1:1 do komponentu `Stats` + `ActiveEvents` + `RecentActivity` + `UpcomingEvents`.
+   - Dashboardy: `/dashboard/coordinator?event_id=`, `/dashboard/promotion`, `/dashboard/relationship-manager?user_id=`. Brak globalnego `/dashboard/management` – nie ma takiej roli.
    - Pisz pytesty per router (przynajmniej happy path + 1 błąd walidacji).
 4. **Faza 3 – frontend warstwa API**
    - `src/lib/api.ts`, `src/lib/queryClient.ts`, `src/hooks/api/*`.
    - Refaktor istniejących 3 stron z mocków na hooki.
-   - Rozszerz `AuthContext` o rolę `'merytoryczna'` + dev role switcher w `TopBar`.
+   - Dodaj dev role switcher w `TopBar` (przełącznik między 3 rolami: `promocja`, `koordynator`, `opiekun`).
 5. **Faza 4 – nowe ekrany** (kolejność z PLAN.md, sekcja „Faza 4”):
    1. Wydarzenie – szczegóły (`/events/:id`).
    2. Pipeline kanban (`/events/:id/pipeline`) z `@dnd-kit`.
    3. Szczegóły firmy (`/companies/:id`) z tabami.
    4. Firma w kontekście wydarzenia (`/events/:id/companies/:companyId`).
-   5. Dashboardy: `Coordinator`, `RelationshipManager`, `Promotion`, `Merytoryczna`.
+   5. Dashboardy: `Coordinator`, `RelationshipManager`, `Promotion` (po jednym na każdą z 3 ról).
    6. Raporty (`/reports`) z `recharts`.
    7. Modale formularzowe: `AddCompany`, `AddEvent`, `AddActivity`, `AddPipelineEntry`, `AddContact`.
 6. **Faza 5 – design system** (równolegle): wydzielić `src/components/ui/` (Button, Card, Input, Select, Checkbox, Slider, Badge, Tabs, Modal, Drawer, Table, Pagination, Avatar, Tooltip, EmptyState, Toast). Rozszerzyć tokeny w `index.css`.
