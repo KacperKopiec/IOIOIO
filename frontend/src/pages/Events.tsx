@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import EventsFilterSidebar from '../components/Events/EventsFilterSidebar';
 import EventsTable from '../components/Events/EventsTable';
 import type { EventRowData } from '../components/Events/EventRow';
@@ -7,14 +7,20 @@ import AddEventModal from '../components/modals/AddEventModal';
 import { Button, Page, PageHeader } from '../components/ui';
 import { useEvents, type EventFilters } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
-import { ownerInitials } from '../lib/format';
 import styles from './Events.module.css';
 
 const DEFAULT_FILTERS: EventFilters = { page: 1, page_size: 25 };
 
 const Events: React.FC = () => {
     const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
+    const [searchInput, setSearchInput] = useState('');
     const [addOpen, setAddOpen] = useState(false);
+
+    const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setFilters((prev) => ({ ...prev, q: searchInput || undefined, page: 1 }));
+    };
+
     const eventsQuery = useEvents(filters);
     const allEntries = usePipelineEntries({});
 
@@ -38,10 +44,9 @@ const Events: React.FC = () => {
             owner_name: e.owner
                 ? `${e.owner.first_name} ${e.owner.last_name}`
                 : null,
-            owner_initials: e.owner
-                ? ownerInitials(e.owner.first_name, e.owner.last_name)
-                : '?',
+            tags: e.tags,
             partners_count: wonCountByEvent.get(e.id) ?? 0,
+            target_partners_count: e.target_partners_count,
         }));
     }, [eventsQuery.data, allEntries.data]);
 
@@ -49,10 +54,7 @@ const Events: React.FC = () => {
         <Page width="wide">
             <PageHeader
                 title="Wydarzenia"
-                breadcrumb={[
-                    { label: 'Panel', to: '/dashboard' },
-                    { label: 'Wydarzenia' },
-                ]}
+                breadcrumb={[{ label: 'Wydarzenia' }]}
                 actions={
                     <Button
                         variant="primary"
@@ -64,11 +66,28 @@ const Events: React.FC = () => {
                 }
             />
 
-            <div className={styles.mainContent}>
-                <div className={styles.filterColumn}>
-                    <EventsFilterSidebar filters={filters} onChange={setFilters} />
+            <form onSubmit={handleSubmitSearch} className={styles.searchRow}>
+                <div className={styles.searchField}>
+                    <Search size={16} className={styles.searchIcon} />
+                    <input
+                        type="search"
+                        className={styles.searchInput}
+                        placeholder="Szukaj po nazwie lub opisie wydarzenia…"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                    />
                 </div>
-                <div className={styles.tableColumn}>
+                <Button type="submit" variant="primary">
+                    Szukaj
+                </Button>
+            </form>
+
+            <div className={styles.mainSplit}>
+                <aside className={styles.leftCol}>
+                    <EventsFilterSidebar filters={filters} onChange={setFilters} />
+                </aside>
+
+                <section className={styles.rightCol}>
                     <EventsTable
                         events={rows}
                         meta={eventsQuery.data?.meta}
@@ -78,7 +97,7 @@ const Events: React.FC = () => {
                             setFilters((prev) => ({ ...prev, page }))
                         }
                     />
-                </div>
+                </section>
             </div>
 
             <AddEventModal open={addOpen} onClose={() => setAddOpen(false)} />

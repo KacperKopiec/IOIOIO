@@ -9,11 +9,10 @@ interface EventsFilterSidebarProps {
     onChange: (next: EventFilters) => void;
 }
 
-const STATUS_OPTIONS: { value: EventStatus | ''; label: string }[] = [
-    { value: '', label: 'Wszystkie statusy' },
+const STATUS_OPTIONS: { value: EventStatus; label: string }[] = [
     { value: 'draft', label: 'Wersja robocza' },
     { value: 'active', label: 'Aktywne' },
-    { value: 'closed', label: 'Ukończone' },
+    { value: 'closed', label: 'Zakończone' },
     { value: 'cancelled', label: 'Anulowane' },
 ];
 
@@ -29,70 +28,64 @@ const EventsFilterSidebar: React.FC<EventsFilterSidebarProps> = ({
 
     return (
         <div className={styles.card}>
-            <div className={styles.header}>
-                <h3 className={styles.title}>Filtry</h3>
-                <button className={styles.resetBtn} onClick={handleReset}>
+            <div className={styles.headerRow}>
+                <div className={styles.titleWrap}>
+                    <div className={styles.icon} />
+                    <div className={styles.heading}>Filtry</div>
+                </div>
+                <button className={styles.reset} onClick={handleReset}>
                     Resetuj
                 </button>
             </div>
 
             <div className={styles.content}>
                 <div className={styles.section}>
-                    <label className={styles.sectionLabel}>WYSZUKAJ</label>
-                    <input
-                        type="text"
-                        className={styles.searchInput}
-                        placeholder="Nazwa lub opis…"
-                        value={filters.q ?? ''}
-                        onChange={(e) =>
-                            onChange({ ...filters, q: e.target.value || undefined, page: 1 })
-                        }
-                    />
+                    <label className={styles.label}>Status</label>
+                    {STATUS_OPTIONS.map((opt) => {
+                        const checked = filters.status === opt.value;
+                        return (
+                            <label key={opt.value} className={styles.checkRow}>
+                                <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() =>
+                                        onChange({
+                                            ...filters,
+                                            status: checked ? null : opt.value,
+                                            page: 1,
+                                        })
+                                    }
+                                />
+                                <span>{opt.label}</span>
+                            </label>
+                        );
+                    })}
                 </div>
 
                 <div className={styles.section}>
-                    <label className={styles.sectionLabel}>STATUS</label>
-                    <select
-                        className={styles.select}
-                        value={filters.status ?? ''}
-                        onChange={(e) =>
-                            onChange({
-                                ...filters,
-                                status: (e.target.value || null) as EventStatus | null,
-                                page: 1,
-                            })
-                        }
-                    >
-                        {STATUS_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className={styles.section}>
-                    <label className={styles.sectionLabel}>KOORDYNATOR</label>
-                    <select
-                        className={styles.select}
-                        value={filters.owner_user_id ?? ''}
-                        onChange={(e) =>
-                            onChange({
-                                ...filters,
-                                owner_user_id: e.target.value
-                                    ? Number.parseInt(e.target.value, 10)
-                                    : null,
-                                page: 1,
-                            })
-                        }
-                    >
-                        <option value="">Dowolny</option>
-                        {users.data?.map((u) => (
-                            <option key={u.id} value={u.id}>
-                                {u.first_name} {u.last_name}
-                            </option>
-                        ))}
-                    </select>
+                    <label className={styles.label}>Koordynator</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={filters.owner_user_id ?? ''}
+                            onChange={(e) =>
+                                onChange({
+                                    ...filters,
+                                    owner_user_id: e.target.value
+                                        ? Number.parseInt(e.target.value, 10)
+                                        : null,
+                                    page: 1,
+                                })
+                            }
+                        >
+                            <option value="">Dowolny koordynator</option>
+                            {users.data?.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u.first_name} {u.last_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

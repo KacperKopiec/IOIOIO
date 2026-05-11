@@ -8,18 +8,14 @@ const TopBar: React.FC = () => {
 
     return (
         <header className={styles.topbar}>
-            <div className={styles.leftArea}>
-                <div className={styles.searchIcon} aria-hidden />
-                <input
-                    className={styles.searchInput}
-                    placeholder="Szukaj firm, wydarzeń..."
-                />
-            </div>
+            <div className={styles.leftArea} aria-hidden />
 
             <div className={styles.rightArea}>
                 {isDev && (
                     <div className={styles.roleSwitcher}>
-                        <label className={styles.roleSwitcherLabel}>Tryb dev — rola:</label>
+                        <label className={styles.roleSwitcherLabel}>
+                            Tryb dev — rola:
+                        </label>
                         <select
                             className={styles.roleSwitcherSelect}
                             value={role}

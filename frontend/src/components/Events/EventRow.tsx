@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import TagBadge from '../Firms/TagBadge';
 import { getEventStatusConfig } from '../../constants/eventStatuses';
 import { eventStatusToDisplayId, formatDateRange } from '../../lib/format';
-import type { EventStatus } from '../../types/api';
+import type { EventStatus, Tag } from '../../types/api';
 import styles from './EventRow.module.css';
 
 export interface EventRowData {
@@ -12,8 +13,9 @@ export interface EventRowData {
     end_date: string | null;
     status: EventStatus;
     owner_name: string | null;
-    owner_initials: string;
-    partners_count: number | null;
+    tags: Tag[];
+    partners_count: number;
+    target_partners_count: number | null;
 }
 
 interface EventRowProps {
@@ -23,12 +25,14 @@ interface EventRowProps {
 const EventRow: React.FC<EventRowProps> = ({ event }) => {
     const statusConfig = getEventStatusConfig(eventStatusToDisplayId(event.status));
     const dateLabel = formatDateRange(event.start_date, event.end_date);
-    const partners = event.partners_count ?? 0;
+    const partnersLabel = event.target_partners_count
+        ? `${event.partners_count} / ${event.target_partners_count}`
+        : `${event.partners_count}`;
 
     return (
         <div className={styles.row}>
             <div className={styles.checkboxCell}>
-                <input type="checkbox" className={styles.checkbox} />
+                <input type="checkbox" className={styles.rowCheckbox} />
             </div>
 
             <Link
@@ -36,60 +40,26 @@ const EventRow: React.FC<EventRowProps> = ({ event }) => {
                 className={styles.nameCell}
                 style={{ textDecoration: 'none', color: 'inherit' }}
             >
-                <div className={styles.initial}>
-                    {event.name.charAt(0).toUpperCase()}
-                </div>
-                <div className={styles.nameInfo}>
-                    <div className={styles.eventName}>{event.name}</div>
-                    <div className={styles.eventDate}>{dateLabel}</div>
-                </div>
+                <div className={styles.eventName}>{event.name}</div>
+                <div className={styles.eventDate}>{dateLabel}</div>
             </Link>
 
-            <div className={styles.typeCell}>
-                <span className={styles.eventDate}>{dateLabel}</span>
+            <div className={styles.tagsCell}>
+                <div className={styles.tagsList}>
+                    {event.tags.length === 0 ? (
+                        <span className={styles.emptyValue}>—</span>
+                    ) : (
+                        event.tags.map((tag) => (
+                            <TagBadge key={tag.id} tagId={tag.name} />
+                        ))
+                    )}
+                </div>
             </div>
 
             <div className={styles.coordinatorCell}>
-                <div className={styles.coordinatorAvatar}>
-                    <span className={styles.avatarInitial}>
-                        {event.owner_initials || '?'}
-                    </span>
-                </div>
                 <span className={styles.coordinatorName}>
                     {event.owner_name ?? '—'}
                 </span>
-            </div>
-
-            <div className={styles.partnersCell}>
-                <div className={styles.partnerAvatars}>
-                    {partners === 0 ? (
-                        <span className={styles.coordinatorName}>0</span>
-                    ) : (
-                        <>
-                            {Array.from({ length: Math.min(partners, 3) }).map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={styles.partnerAvatar}
-                                    style={{ marginLeft: i > 0 ? '-8px' : '0' }}
-                                >
-                                    <span className={styles.partnerInitial}>
-                                        {String.fromCharCode(65 + i)}
-                                    </span>
-                                </div>
-                            ))}
-                            {partners > 3 && (
-                                <div
-                                    className={styles.partnerAvatar}
-                                    style={{ marginLeft: '-8px' }}
-                                >
-                                    <span className={styles.partnerInitial}>
-                                        +{partners - 3}
-                                    </span>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
             </div>
 
             <div className={styles.statusCell}>
@@ -99,12 +69,15 @@ const EventRow: React.FC<EventRowProps> = ({ event }) => {
                         style={{
                             backgroundColor: statusConfig.bgColor,
                             color: statusConfig.textColor,
-                            border: `1px solid ${statusConfig.textColor}`,
                         }}
                     >
                         {statusConfig.label}
                     </span>
                 )}
+            </div>
+
+            <div className={styles.partnersCell}>
+                <span className={styles.partnersValue}>{partnersLabel}</span>
             </div>
         </div>
     );

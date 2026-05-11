@@ -1,179 +1,117 @@
 .card {
-    width: 332px;
-    height: 592px;
+    box-sizing: border-box;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 2px;
+    border-radius: 12px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 24px;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    width: 288px;
 }
 
-.header {
+.headerRow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--color-border);
+    gap: 16px;
 }
 
-.title {
-    font-family: var(--font-heading);
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
-    color: var(--color-primary-dark);
-    margin: 0;
+.titleWrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.resetBtn {
-    background: transparent;
-    border: none;
-    color: var(--color-primary-dark);
+.icon {
+    width: 18px;
+    height: 18px;
+    background: var(--color-success);
+    border-radius: 4px;
+}
+
+.heading {
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    cursor: pointer;
-    padding: 0;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: -0.2px;
+    color: var(--color-text-strong);
 }
 
-.resetBtn:hover {
-    text-decoration: underline;
+.reset {
+    background: transparent;
+    color: var(--color-success);
+    border: none;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    cursor: pointer;
 }
 
 .content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     flex: 1;
-    overflow-y: auto;
+    width: 100%;
 }
 
 .section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-}
-
-.sectionLabel {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-}
-
-.dateInputsContainer {
-    display: flex;
-    flex-direction: column;
     gap: 8px;
-}
-
-.dateInput {
     width: 100%;
-    padding: 8px 16px 9px 40px;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    background: var(--color-surface);
+}
+
+.label {
     font-family: var(--font-body);
-    font-size: 12px;
-    line-height: 15px;
-    color: var(--color-text-subtle);
-    box-sizing: border-box;
-    position: relative;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-strong);
 }
 
-.dateInput::placeholder {
-    color: var(--color-text-subtle);
-}
-
-.checkboxGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.checkboxLabel {
+.checkRow {
     display: flex;
     align-items: center;
     gap: 8px;
     font-family: var(--font-body);
     font-size: 14px;
     line-height: 20px;
-    color: var(--color-text-muted);
+    color: var(--color-text-strong);
     cursor: pointer;
 }
 
-.checkbox {
+.checkRow input {
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 2px;
-    background: var(--color-surface);
-    cursor: pointer;
-    accent-color: var(--color-primary-dark);
+    accent-color: var(--color-success);
+}
+
+.selectBox {
+    box-sizing: border-box;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-text-subtle);
+    border-radius: 8px;
+    padding: 8px 12px;
 }
 
 .select {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    background: var(--color-surface);
     font-family: var(--font-body);
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--color-text-muted);
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.select:focus {
+    font-size: 14px;
+    line-height: 20px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-strong);
     outline: none;
-    border-color: var(--color-primary-dark);
+    appearance: none;
 }
 
-.searchInput {
-    width: 100%;
-    padding: 8px 16px 9px 40px;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    background: var(--color-surface);
-    font-family: var(--font-body);
-    font-size: 12px;
-    line-height: 15px;
-    color: var(--color-text-subtle);
-    box-sizing: border-box;
-}
-
-.searchInput::placeholder {
-    color: var(--color-text-subtle);
-}
-
-.applyBtn {
-    width: 100%;
-    padding: 10px 0;
-    background: var(--color-surface-muted);
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--color-primary-dark);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.applyBtn:hover {
-    background: var(--color-primary-bg);
-    border-color: var(--color-primary-dark);
+@media (max-width: 1000px) {
+    .card {
+        width: 100%;
+    }
 }

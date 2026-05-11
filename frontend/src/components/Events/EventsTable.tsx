@@ -26,54 +26,42 @@ const EventsTable: React.FC<EventsTableProps> = ({
 
     return (
         <div className={styles.card}>
-            <div className={styles.table}>
-                <div className={styles.headerRow}>
-                    <div className={styles.headerCell} style={{ width: '64px' }}>
-                        <input type="checkbox" className={styles.headerCheckbox} />
-                    </div>
-                    <div className={styles.headerCell} style={{ width: '310px' }}>
-                        NAZWA
-                    </div>
-                    <div className={styles.headerCell} style={{ width: '125px' }}>
-                        DATA
-                    </div>
-                    <div className={styles.headerCell} style={{ width: '190px' }}>
-                        KOORDYNATOR
-                    </div>
-                    <div className={styles.headerCell} style={{ width: '125px' }}>
-                        PARTNERZY
-                    </div>
-                    <div className={styles.headerCell} style={{ width: '153px' }}>
-                        STATUS
-                    </div>
-                </div>
+            <div className={styles.headerRow}>
+                <div className={styles.checkboxHeader}></div>
+                <div className={styles.nameHeader}>Nazwa wydarzenia / Data</div>
+                <div className={styles.tagsHeader}>Tagi</div>
+                <div className={styles.coordinatorHeader}>Koordynator</div>
+                <div className={styles.statusHeader}>Status</div>
+                <div className={styles.partnersHeader}>Partnerzy</div>
+            </div>
 
-                <div className={styles.body}>
-                    {isLoading && (
-                        <div className={styles.emptyState}>Ładowanie wydarzeń…</div>
-                    )}
-                    {isError && !isLoading && (
-                        <div className={styles.emptyState}>
-                            Nie udało się pobrać wydarzeń.
-                        </div>
-                    )}
-                    {!isLoading && !isError && events.length === 0 && (
-                        <div className={styles.emptyState}>
-                            Brak wydarzeń spełniających wybrane filtry.
-                        </div>
-                    )}
-                    {!isLoading &&
-                        !isError &&
-                        events.map((event) => <EventRow key={event.id} event={event} />)}
-                </div>
+            <div className={styles.body}>
+                {isLoading && (
+                    <div className={styles.emptyState}>Ładowanie wydarzeń…</div>
+                )}
+                {isError && !isLoading && (
+                    <div className={styles.emptyState}>
+                        Nie udało się pobrać wydarzeń. Spróbuj odświeżyć stronę.
+                    </div>
+                )}
+                {!isLoading && !isError && events.length === 0 && (
+                    <div className={styles.emptyState}>
+                        Brak wydarzeń spełniających wybrane filtry.
+                    </div>
+                )}
+                {!isLoading &&
+                    !isError &&
+                    events.map((event) => <EventRow key={event.id} event={event} />)}
             </div>
 
             <div className={styles.pagination}>
-                <span className={styles.paginationText}>
-                    {meta && totalShown > 0
-                        ? `Pokazano ${startIdx}-${endIdx} z ${meta.total} wydarzeń`
-                        : '—'}
-                </span>
+                {meta && totalShown > 0 ? (
+                    <span>
+                        Pokazano {startIdx}-{endIdx} z {meta.total} wydarzeń
+                    </span>
+                ) : (
+                    <span>—</span>
+                )}
                 <div className={styles.paginationControls}>
                     <button
                         type="button"
