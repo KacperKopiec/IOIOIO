@@ -4,8 +4,13 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+const unusedConstant = 'lint should catch this'
+
+function brokenHelper() {}
+
 function App() {
   const [count, setCount] = useState(0)
+  const alsoUnused: number = 42
 
   return (
     <>
@@ -16,7 +21,7 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
+          <h1>Deployed via GitHub Actions ✓</h1>
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
