@@ -1,6 +1,6 @@
 .card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 2px;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
     display: flex;
@@ -16,8 +16,8 @@
     display: flex;
     align-items: flex-start;
     padding: 0;
-    background: #F8FAFC;
-    border-bottom: 1px solid #E2E8F0;
+    background: var(--color-surface-muted);
+    border-bottom: 1px solid var(--color-border);
     margin: -1px 0;
 }
 
@@ -29,7 +29,7 @@
     line-height: 16px;
     letter-spacing: 0.6px;
     text-transform: uppercase;
-    color: #475569;
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -44,9 +44,9 @@
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid #CBD5E1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 2px;
-    accent-color: #1E3A8A;
+    accent-color: var(--color-primary-dark);
     cursor: pointer;
 }
 
@@ -61,8 +61,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 24px;
-    border-top: 1px solid #F1F5F9;
-    background: #FFFFFF;
+    border-top: 1px solid var(--color-border-subtle);
+    background: var(--color-surface);
 }
 
 .paginationText {
@@ -70,7 +70,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #64748B;
+    color: var(--color-text-subtle);
 }
 
 .paginationControls {
@@ -92,14 +92,14 @@
     font-weight: 500;
     font-size: 12px;
     line-height: 16px;
-    color: #475569;
+    color: var(--color-text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .paginationBtn:hover:not(:disabled) {
-    background: #EFF6FF;
-    border-color: #1E3A8A;
+    background: var(--color-primary-bg);
+    border-color: var(--color-primary-dark);
 }
 
 .paginationBtn:disabled {
@@ -110,7 +110,7 @@
 .paginationCurrent {
     min-width: 56px;
     text-align: center;
-    color: #1F2937;
+    color: var(--color-text);
     font-weight: 600;
     font-family: var(--font-body);
     font-size: 12px;
@@ -119,6 +119,6 @@
 .emptyState {
     padding: 32px 24px;
     text-align: center;
-    color: #64748B;
+    color: var(--color-text-subtle);
     font-size: 14px;
 }

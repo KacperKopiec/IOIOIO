@@ -13,7 +13,7 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background: #E9E8E7;
+    background: var(--color-border-subtle);
 }
 
 .item {
@@ -27,7 +27,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid #FFFFFF;
+    border: 2px solid var(--color-surface);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -40,40 +40,40 @@
 }
 
 .dotWon {
-    background: #D9E9F5;
+    background: var(--color-primary-soft);
 }
 
 .dotWon .dotInner {
-    background: #2A5E94;
+    background: var(--color-primary-dark);
 }
 
 .dotOpen {
-    background: #FFEDD5;
+    background: var(--color-warning-bg);
 }
 
 .dotOpen .dotInner {
-    background: #EA580C;
+    background: var(--color-warning);
 }
 
 .dotLost {
-    background: #FEE2E2;
+    background: var(--color-danger-border);
 }
 
 .dotLost .dotInner {
-    background: #DC2626;
+    background: var(--color-danger);
 }
 
 .dotNeutral {
-    background: #E3E2E2;
+    background: var(--color-border-subtle);
 }
 
 .dotNeutral .dotInner {
-    background: #727780;
+    background: var(--color-text-muted);
 }
 
 .card {
-    background: #FFFFFF;
-    border: 1px solid #C2C7D1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 13px;
     display: flex;
@@ -91,21 +91,21 @@
 .cardTitle {
     font-weight: 600;
     font-size: 13px;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     letter-spacing: 0.3px;
     line-height: 16px;
 }
 
 .cardDate {
     font-size: 10px;
-    color: #42474F;
+    color: var(--color-text-muted);
     line-height: 15px;
     white-space: nowrap;
 }
 
 .cardBody {
     font-size: 14px;
-    color: #42474F;
+    color: var(--color-text-muted);
     line-height: 20px;
 }
 
@@ -113,15 +113,15 @@
     margin-top: 4px;
     font-size: 12px;
     font-weight: 700;
-    color: #047857;
+    color: var(--color-success);
 }
 
 .cardAmountLost {
-    color: #DC2626;
+    color: var(--color-danger);
 }
 
 .empty {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
     font-size: 14px;
     padding: 16px;
     text-align: center;

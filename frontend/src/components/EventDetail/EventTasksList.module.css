@@ -13,14 +13,14 @@
 .title {
     font-size: 18px;
     font-weight: 700;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     line-height: 28px;
     margin: 0;
 }
 
 .card {
-    background: #FFFFFF;
-    border: 1px solid #C2C7D1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -31,7 +31,7 @@
     justify-content: space-between;
     gap: 16px;
     padding: 16px;
-    border-bottom: 1px solid #F8FAFC;
+    border-bottom: 1px solid var(--color-surface-muted);
 }
 
 .row:last-child {
@@ -48,34 +48,34 @@
 .checkbox {
     width: 18px;
     height: 18px;
-    border: 1px solid #CBD5E1;
+    border: 1px solid var(--color-border-strong);
     border-radius: 2px;
-    accent-color: var(--color-primary, #03467B);
+    accent-color: var(--color-primary, var(--color-primary-dark));
     flex-shrink: 0;
 }
 
 .taskTitle {
     font-weight: 500;
     font-size: 16px;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     line-height: 24px;
 }
 
 .taskTitleDone {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
     text-decoration: line-through;
 }
 
 .taskMeta {
     font-weight: 600;
     font-size: 12px;
-    color: #42474F;
+    color: var(--color-text-muted);
     letter-spacing: 0.5px;
     text-transform: capitalize;
 }
 
 .taskMetaDone {
-    color: #CBD5E1;
+    color: var(--color-border-strong);
 }
 
 .badge {
@@ -91,22 +91,22 @@
 
 .badgeOverdue {
     background: rgba(255, 218, 214, 0.4);
-    color: #BA1A1A;
+    color: var(--color-danger);
 }
 
 .badgeUpcoming {
-    background: #F1F5F9;
-    color: #42474F;
+    background: var(--color-border-subtle);
+    color: var(--color-text-muted);
 }
 
 .badgeDone {
-    background: #F0FDF4;
-    color: #16A34A;
+    background: var(--color-success-bg);
+    color: var(--color-success);
 }
 
 .empty {
     padding: 24px;
     text-align: center;
-    color: #6B7280;
+    color: var(--color-text-subtle);
     font-size: 14px;
 }

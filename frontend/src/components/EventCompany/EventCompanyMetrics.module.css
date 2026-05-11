@@ -11,8 +11,8 @@
 }
 
 .card {
-    background: #FFFFFF;
-    border: 1px solid #C3C6D2;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 24px;
     display: flex;
@@ -24,11 +24,11 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #64748B;
+    color: var(--color-text-subtle);
 }
 
 .label {
-    color: #64748B;
+    color: var(--color-text-subtle);
     font-weight: 600;
     font-size: 12px;
     letter-spacing: 0.6px;
@@ -37,7 +37,7 @@
 }
 
 .value {
-    color: #002A5C;
+    color: var(--color-primary-dark);
     font-weight: 800;
     font-size: 28px;
     letter-spacing: -0.5px;
@@ -46,11 +46,11 @@
 }
 
 .foot {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
     font-size: 12px;
     line-height: 16px;
 }
 
 .footWon {
-    color: #047857;
+    color: var(--color-success);
 }

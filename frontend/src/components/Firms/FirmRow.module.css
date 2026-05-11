@@ -3,13 +3,13 @@
     align-items: center;
     gap: 0;
     padding: 0;
-    border-bottom: 1px solid #F3F4F6;
-    background: #FFFFFF;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-surface);
     min-height: 64px;
 }
 
 .row:hover {
-    background: #FAFBFF;
+    background: var(--color-surface-muted);
 }
 
 .checkboxCell,
@@ -33,9 +33,9 @@
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid #6B7280;
+    border: 1px solid var(--color-text-subtle);
     border-radius: 4px;
-    accent-color: #006C49;
+    accent-color: var(--color-success);
     cursor: pointer;
 }
 
@@ -51,7 +51,7 @@
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .cityName {
@@ -59,7 +59,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
+    color: var(--color-text-subtle);
 }
 
 .tagsCell {
@@ -80,8 +80,8 @@
     font-weight: 500;
     font-size: 12px;
     line-height: 16px;
-    color: #006C49;
-    background: #ECFDF5;
+    color: var(--color-success);
+    background: var(--color-success-bg);
     padding: 2px 8px;
     border-radius: 4px;
     white-space: nowrap;
@@ -92,7 +92,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
+    color: var(--color-text-subtle);
     font-style: italic;
 }
 
@@ -105,7 +105,7 @@
     font-weight: 500;
     font-size: 13px;
     line-height: 18px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .statusCell {
@@ -126,18 +126,18 @@
 }
 
 .statusActive {
-    background: #ECFDF5;
-    color: #065F46;
+    background: var(--color-success-bg);
+    color: var(--color-success);
 }
 
 .statusPending {
-    background: #FEF3C7;
-    color: #92400E;
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
 }
 
 .statusDefault {
-    background: #F3F4F6;
-    color: #374151;
+    background: var(--color-border-subtle);
+    color: var(--color-text-muted);
 }
 
 .statusDot {
@@ -162,5 +162,5 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
+    color: var(--color-text-subtle);
 }

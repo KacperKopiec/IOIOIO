@@ -19,7 +19,7 @@
 .label {
     font-weight: 600;
     font-size: 12px;
-    color: #42474F;
+    color: var(--color-text-muted);
     letter-spacing: 0.5px;
     line-height: 16px;
 }
@@ -27,7 +27,7 @@
 .value {
     font-weight: 500;
     font-size: 16px;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     line-height: 24px;
     white-space: pre-line;
 }
@@ -39,7 +39,7 @@
 }
 
 .link {
-    color: #03467B;
+    color: var(--color-primary-dark);
     text-decoration: none;
 }
 
@@ -54,9 +54,9 @@
 }
 
 .tag {
-    background: #F8FBFF;
-    border: 1px solid #E2E8F0;
-    color: #475569;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
     font-weight: 600;
     font-size: 11px;
     padding: 5px 13px;

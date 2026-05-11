@@ -1,7 +1,7 @@
 .card {
     box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     padding: 24px;
     display: flex;
@@ -27,7 +27,7 @@
 .icon {
     width: 18px;
     height: 18px;
-    background: #006C49;
+    background: var(--color-success);
     border-radius: 4px;
 }
 
@@ -37,12 +37,12 @@
     font-size: 20px;
     line-height: 28px;
     letter-spacing: -0.2px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .reset {
     background: transparent;
-    color: #006C49;
+    color: var(--color-success);
     border: none;
     padding: 0;
     font-family: var(--font-body);
@@ -71,7 +71,7 @@
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 24px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .sectionHeader {
@@ -85,13 +85,13 @@
     font-size: 12px;
     line-height: 16px;
     font-weight: 500;
-    color: #006C49;
+    color: var(--color-success);
 }
 
 .selectBox {
     box-sizing: border-box;
-    background: #F8F9FF;
-    border: 1px solid #6B7280;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-text-subtle);
     border-radius: 8px;
     padding: 8px 12px;
 }
@@ -103,7 +103,7 @@
     line-height: 20px;
     border: 0;
     background: transparent;
-    color: #0B1C30;
+    color: var(--color-text-strong);
     outline: none;
     appearance: none;
 }
@@ -115,14 +115,14 @@
     font-family: var(--font-body);
     font-size: 14px;
     line-height: 20px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .checkRow input {
     width: 16px;
     height: 16px;
     margin: 0;
-    accent-color: #006C49;
+    accent-color: var(--color-success);
 }
 
 .tags {
@@ -145,13 +145,13 @@
 }
 
 .tag {
-    background: #E5EEFF;
-    color: #0B1C30;
+    background: var(--color-primary-bg);
+    color: var(--color-text-strong);
 }
 
 .tagGreen {
-    background: #10B981;
-    color: #00422B;
+    background: var(--color-success);
+    color: var(--color-success);
 }
 
 .tagButton {
@@ -175,9 +175,9 @@
 }
 
 .tagUnselected {
-    background: #F3F4F6 !important;
-    color: #6B7280 !important;
-    border: 1px solid #E5E7EB !important;
+    background: var(--color-border-subtle) !important;
+    color: var(--color-text-subtle) !important;
+    border: 1px solid var(--color-border) !important;
 }
 
 .tagSelected {
@@ -188,7 +188,7 @@
     width: 100%;
     height: 8px;
     border-radius: 9999px;
-    background: #DCE9FF;
+    background: var(--color-primary-soft);
     position: relative;
 }
 
@@ -196,7 +196,7 @@
     width: 62%;
     height: 100%;
     border-radius: inherit;
-    background: #BFD3F8;
+    background: var(--color-primary-soft);
 }
 
 @media (max-width: 1000px) {

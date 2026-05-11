@@ -1,6 +1,6 @@
 .card {
-    background: #FFFFFF;
-    border: 1px solid #C2C7D1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 24px;
     display: flex;
@@ -11,7 +11,7 @@
 .title {
     font-size: 16px;
     font-weight: 700;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     margin: 0;
     line-height: 24px;
 }
@@ -31,14 +31,14 @@
 .dialValue {
     font-size: 24px;
     font-weight: 700;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     line-height: 1;
 }
 
 .dialLabel {
     font-weight: 600;
     font-size: 12px;
-    color: #42474F;
+    color: var(--color-text-muted);
     letter-spacing: 0.5px;
 }
 
@@ -57,13 +57,13 @@
 .amountLabel {
     font-weight: 600;
     font-size: 12px;
-    color: #42474F;
+    color: var(--color-text-muted);
     letter-spacing: 0.5px;
 }
 
 .amountValue {
     font-weight: 700;
     font-size: 13px;
-    color: #1B1C1C;
+    color: var(--color-text-strong);
     letter-spacing: 0.4px;
 }

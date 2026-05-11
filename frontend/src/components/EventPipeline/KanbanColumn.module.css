@@ -31,7 +31,7 @@
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 13px;
-    color: #334155;
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.3px;
     line-height: 20px;
@@ -41,8 +41,8 @@
 }
 
 .countBadge {
-    background: #E2E8F0;
-    color: #475569;
+    background: var(--color-border);
+    color: var(--color-text-muted);
     font-weight: 700;
     font-size: 11px;
     padding: 2px 8px;
@@ -62,16 +62,16 @@
 
 .dropZoneActive {
     background: rgba(0, 69, 142, 0.04);
-    outline: 2px dashed var(--color-primary, #00458E);
+    outline: 2px dashed var(--color-primary, var(--color-primary));
     outline-offset: -4px;
 }
 
 .empty {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
     font-size: 12px;
     padding: 16px;
     text-align: center;
-    border: 1px dashed #E2E8F0;
+    border: 1px dashed var(--color-border);
     border-radius: 8px;
-    background: #FAFBFD;
+    background: var(--color-surface-muted);
 }

@@ -1,6 +1,6 @@
 .card {
-    background: #FFFFFF;
-    border: 1px solid #C3C6D2;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 24px;
     display: flex;
@@ -11,14 +11,14 @@
 .title {
     font-size: 18px;
     font-weight: 600;
-    color: #141D23;
+    color: var(--color-text-strong);
     line-height: 28px;
     margin: 0;
 }
 
 .latest {
     background: rgba(131, 252, 142, 0.2);
-    border-left: 4px solid #4CC55F;
+    border-left: 4px solid var(--color-success);
     border-radius: 0 4px 4px 0;
     padding: 14px 16px;
     display: flex;
@@ -28,7 +28,7 @@
 
 .latestBody {
     font-size: 13px;
-    color: #141D23;
+    color: var(--color-text-strong);
     line-height: 17px;
     white-space: pre-line;
 }
@@ -36,7 +36,7 @@
 .latestMeta {
     font-size: 10px;
     font-weight: 600;
-    color: #00531A;
+    color: var(--color-success);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -49,10 +49,10 @@
     width: 100%;
     min-height: 78px;
     padding: 13px 50px 13px 13px;
-    border: 1px solid #C3C6D2;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #FFFFFF;
-    color: #141D23;
+    background: var(--color-surface);
+    color: var(--color-text-strong);
     font-family: inherit;
     font-size: 14px;
     line-height: 20px;
@@ -61,20 +61,20 @@
 }
 
 .editor:focus {
-    outline: 2px solid var(--color-primary, #00458E);
+    outline: 2px solid var(--color-primary, var(--color-primary));
     outline-offset: 1px;
 }
 
 .editor::placeholder {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
 }
 
 .submitBtn {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    background: #002A5C;
-    color: #FFFFFF;
+    background: var(--color-primary-dark);
+    color: var(--color-surface);
     border: none;
     border-radius: 6px;
     width: 32px;
@@ -86,7 +86,7 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-    background: var(--color-primary, #00458E);
+    background: var(--color-primary, var(--color-primary));
 }
 
 .submitBtn:disabled {
@@ -95,11 +95,11 @@
 }
 
 .empty {
-    color: #94A3B8;
+    color: var(--color-text-placeholder);
     font-size: 13px;
 }
 
 .errorRow {
-    color: #B91C1C;
+    color: var(--color-danger);
     font-size: 12px;
 }
