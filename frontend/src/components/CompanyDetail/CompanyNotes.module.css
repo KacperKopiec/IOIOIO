@@ -1,0 +1,82 @@
+.box {
+    border: 1px solid #C2C7D1;
+    border-radius: 2px;
+    padding: 13px;
+    background: #FFFFFF;
+    font-size: 14px;
+    color: #1B1C1C;
+    line-height: 20px;
+    white-space: pre-wrap;
+    min-height: 150px;
+    box-sizing: border-box;
+}
+
+.empty {
+    color: #94A3B8;
+    font-size: 14px;
+}
+
+.editor {
+    width: 100%;
+    min-height: 150px;
+    padding: 13px;
+    border: 1px solid #2A5E94;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    color: #1B1C1C;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.editor:focus {
+    outline: 2px solid var(--color-primary, #00458E);
+    outline-offset: 1px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.actionBtn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.actionBtnPrimary {
+    background: #03467B;
+    color: #FFFFFF;
+}
+
+.actionBtnPrimary:hover {
+    background: var(--color-primary, #00458E);
+}
+
+.actionBtnGhost {
+    background: #FFFFFF;
+    border-color: #C2C7D1;
+    color: #42474F;
+}
+
+.actionBtnGhost:hover {
+    background: #F8FAFC;
+}
+
+.actionBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.errorRow {
+    color: #B91C1C;
+    font-size: 12px;
+    margin-top: 6px;
+}

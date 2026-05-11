@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
+import CompanyDetail from './pages/CompanyDetail';
 import Dashboard from './pages/Dashboard';
 import EventDetail from './pages/EventDetail';
 import EventPipeline from './pages/EventPipeline';
@@ -16,6 +17,7 @@ function App() {
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="firms" element={<Firms />} />
+                        <Route path="companies/:id" element={<CompanyDetail />} />
                         <Route path="events" element={<Events />} />
                         <Route path="events/:id" element={<EventDetail />} />
                         <Route path="events/:id/pipeline" element={<EventPipeline />} />

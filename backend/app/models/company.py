@@ -27,6 +27,7 @@ class Company(Base, TimestampMixin):
     )
     country: Mapped[str | None] = mapped_column(String(80))
     city: Mapped[str | None] = mapped_column(String(120))
+    notes: Mapped[str | None] = mapped_column(Text)
 
     industry: Mapped["Industry | None"] = relationship(back_populates="companies")
     contacts: Mapped[list["Contact"]] = relationship(

@@ -80,6 +80,7 @@ export interface Company {
     company_size: CompanySize | null;
     country: string | null;
     city: string | null;
+    notes: string | null;
     created_at: string;
     updated_at: string;
     industry: Industry | null;
@@ -98,6 +99,7 @@ export interface CompanyCreate {
     company_size?: CompanySize | null;
     country?: string | null;
     city?: string | null;
+    notes?: string | null;
     tag_ids?: number[];
 }
 

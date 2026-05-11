@@ -1,0 +1,54 @@
+.card {
+    border: 1px solid #C2C7D1;
+    border-radius: 8px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(159.34deg, #FFFFFF 0%, #F5F3F3 100%);
+}
+
+.label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #42474F;
+    letter-spacing: 0.5px;
+    line-height: 16px;
+}
+
+.value {
+    font-weight: 700;
+    font-size: 40px;
+    color: #03467B;
+    letter-spacing: -1px;
+    line-height: 48px;
+}
+
+.breakdown {
+    border-top: 1px solid #C2C7D1;
+    padding-top: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    color: #1B1C1C;
+}
+
+.rowValue {
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.empty {
+    color: #94A3B8;
+    font-size: 13px;
+}

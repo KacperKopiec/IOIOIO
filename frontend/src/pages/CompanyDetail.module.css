@@ -1,0 +1,219 @@
+.page {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 1700px;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.headerLeft {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-width: 0;
+}
+
+.headerBody {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+    color: #64748B;
+}
+
+.breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumbSep {
+    color: #94A3B8;
+}
+
+.breadcrumbCurrent {
+    color: #2563EB;
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.title {
+    color: var(--color-primary, #00458E);
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.64px;
+    line-height: 38.4px;
+    margin: 0;
+}
+
+.companyIcon {
+    width: 64px;
+    height: 64px;
+    background: #FFFFFF;
+    border: 1px solid #C2C7D1;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+    color: var(--color-primary, #00458E);
+    font-weight: 700;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 13px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.statusBadgePartner {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border: 1px solid #C8E6C9;
+}
+
+.statusBadgeContact {
+    background: #F1F5F9;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+}
+
+.headerActions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 9px 17px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    line-height: 16px;
+}
+
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btnSecondary {
+    border: 1px solid #2A5E94;
+    color: #2A5E94;
+    background: transparent;
+}
+
+.btnSecondary:hover:not(:disabled) {
+    background: #F0F7FF;
+}
+
+.btnPrimary {
+    background: #2A5E94;
+    color: #FFFFFF;
+    border: none;
+    padding: 9px 16px;
+}
+
+.btnPrimary:hover:not(:disabled) {
+    background: var(--color-primary, #00458E);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.leftCol,
+.rightCol {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.loading,
+.errorBox {
+    background: #FFFFFF;
+    border: 1px solid #F3F4F6;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: #6B7280;
+}
+
+.errorBox {
+    color: #B91C1C;
+    background: #FEF2F2;
+    border-color: #FECACA;
+}
+
+.linkSubtle {
+    color: #03467B;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.linkSubtle:hover {
+    text-decoration: underline;
+}
+
+.iconButton {
+    background: transparent;
+    border: 1px solid #E2E8F0;
+    color: #03467B;
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.iconButton:hover:not(:disabled) {
+    background: #EFF6FF;
+}
+
+.iconButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

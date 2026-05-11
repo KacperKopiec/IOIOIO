@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 import TagBadge from './TagBadge';
 import TypeBadge from './TypeBadge';
@@ -20,10 +21,14 @@ const FirmRow: React.FC<FirmRowProps> = ({ company }) => {
                 <input type="checkbox" className={styles.rowCheckbox} />
             </div>
 
-            <div className={styles.nameCell}>
+            <Link
+                to={`/companies/${company.id}`}
+                className={styles.nameCell}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+            >
                 <div className={styles.companyName}>{company.name}</div>
                 <div className={styles.cityName}>{company.city ?? '—'}</div>
-            </div>
+            </Link>
 
             <div className={styles.tagsCell}>
                 <div className={styles.tagsList}>

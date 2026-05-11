@@ -1,0 +1,128 @@
+.timeline {
+    position: relative;
+    padding-left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #E9E8E7;
+}
+
+.item {
+    position: relative;
+}
+
+.dot {
+    position: absolute;
+    left: -30px;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dotInner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dotWon {
+    background: #D9E9F5;
+}
+
+.dotWon .dotInner {
+    background: #2A5E94;
+}
+
+.dotOpen {
+    background: #FFEDD5;
+}
+
+.dotOpen .dotInner {
+    background: #EA580C;
+}
+
+.dotLost {
+    background: #FEE2E2;
+}
+
+.dotLost .dotInner {
+    background: #DC2626;
+}
+
+.dotNeutral {
+    background: #E3E2E2;
+}
+
+.dotNeutral .dotInner {
+    background: #727780;
+}
+
+.card {
+    background: #FFFFFF;
+    border: 1px solid #C2C7D1;
+    border-radius: 4px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.cardTitle {
+    font-weight: 600;
+    font-size: 13px;
+    color: #1B1C1C;
+    letter-spacing: 0.3px;
+    line-height: 16px;
+}
+
+.cardDate {
+    font-size: 10px;
+    color: #42474F;
+    line-height: 15px;
+    white-space: nowrap;
+}
+
+.cardBody {
+    font-size: 14px;
+    color: #42474F;
+    line-height: 20px;
+}
+
+.cardAmount {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #047857;
+}
+
+.cardAmountLost {
+    color: #DC2626;
+}
+
+.empty {
+    color: #94A3B8;
+    font-size: 14px;
+    padding: 16px;
+    text-align: center;
+}

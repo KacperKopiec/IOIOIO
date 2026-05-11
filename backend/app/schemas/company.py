@@ -18,6 +18,7 @@ class CompanyBase(OrmBase):
     company_size: CompanySize | None = None
     country: str | None = Field(default=None, max_length=80)
     city: str | None = Field(default=None, max_length=120)
+    notes: str | None = None
 
 
 class CompanyCreate(CompanyBase):
@@ -34,6 +35,7 @@ class CompanyUpdate(OrmBase):
     company_size: CompanySize | None = None
     country: str | None = Field(default=None, max_length=80)
     city: str | None = Field(default=None, max_length=120)
+    notes: str | None = None
     tag_ids: list[int] | None = None
 
 
