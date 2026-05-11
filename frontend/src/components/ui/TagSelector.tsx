@@ -27,7 +27,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ value, onChange }) => {
     const [newCategory, setNewCategory] = useState<TagCategory>('interest');
     const [error, setError] = useState<string | null>(null);
 
-    const allTags: Tag[] = tags.data ?? [];
+    const allTags: Tag[] = useMemo(() => tags.data ?? [], [tags.data]);
     const byId = useMemo(() => {
         const map = new Map<number, Tag>();
         for (const t of allTags) map.set(t.id, t);

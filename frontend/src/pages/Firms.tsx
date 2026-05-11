@@ -24,7 +24,7 @@ const Firms: React.FC = () => {
     };
 
     const query = useCompanies(filters);
-    const companies = query.data?.items ?? [];
+    const companies = useMemo(() => query.data?.items ?? [], [query.data]);
     const visibleIds = useMemo(() => companies.map((c) => c.id), [companies]);
 
     function handleToggleRow(id: number, next: boolean) {

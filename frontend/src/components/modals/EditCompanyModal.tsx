@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import TagSelector from '../ui/TagSelector';
 import { useUpdateCompany } from '../../hooks/api/companies';
@@ -45,23 +45,26 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
         company.tags.map((t) => t.id),
     );
     const [error, setError] = useState<string | null>(null);
+    const [prevOpen, setPrevOpen] = useState(open);
 
-    useEffect(() => {
-        if (!open) return;
-        setName(company.name);
-        setLegalName(company.legal_name ?? '');
-        setNip(company.nip ?? '');
-        setWebsite(company.website ?? '');
-        setCity(company.city ?? '');
-        setCountry(company.country ?? 'Polska');
-        setIndustryId(
-            company.industry_id != null ? String(company.industry_id) : '',
-        );
-        setCompanySize(company.company_size ?? '');
-        setDescription(company.description ?? '');
-        setTagIds(company.tags.map((t) => t.id));
-        setError(null);
-    }, [open, company]);
+    if (open !== prevOpen) {
+        setPrevOpen(open);
+        if (open) {
+            setName(company.name);
+            setLegalName(company.legal_name ?? '');
+            setNip(company.nip ?? '');
+            setWebsite(company.website ?? '');
+            setCity(company.city ?? '');
+            setCountry(company.country ?? 'Polska');
+            setIndustryId(
+                company.industry_id != null ? String(company.industry_id) : '',
+            );
+            setCompanySize(company.company_size ?? '');
+            setDescription(company.description ?? '');
+            setTagIds(company.tags.map((t) => t.id));
+            setError(null);
+        }
+    }
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();

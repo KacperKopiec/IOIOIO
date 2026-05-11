@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Pencil, Plus } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import { useEvent, useEventKpi, useEventPipeline } from '../hooks/api/events';
 import { usePipelineStages } from '../hooks/api/reference';
 import { useCoordinatorDashboard } from '../hooks/api/dashboard';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useUpdateCompany } from '../../hooks/api/companies';
 import { toApiError } from '../../lib/api';
 import styles from './CompanyNotes.module.css';
@@ -18,14 +18,6 @@ const CompanyNotes: React.FC<CompanyNotesProps> = ({
     onCancel,
     onSaved,
 }) => {
-    const [draft, setDraft] = useState(notes ?? '');
-    const [error, setError] = useState<string | null>(null);
-    const update = useUpdateCompany(companyId);
-
-    useEffect(() => {
-        if (editing) setDraft(notes ?? '');
-    }, [editing, notes]);
-
     if (!editing) {
         if (!notes) {
             return (
@@ -36,6 +28,33 @@ const CompanyNotes: React.FC<CompanyNotesProps> = ({
         }
         return <div className={styles.box}>{notes}</div>;
     }
+
+    return (
+        <NotesEditor
+            companyId={companyId}
+            initial={notes ?? ''}
+            onCancel={onCancel}
+            onSaved={onSaved}
+        />
+    );
+};
+
+interface NotesEditorProps {
+    companyId: number;
+    initial: string;
+    onCancel: () => void;
+    onSaved: () => void;
+}
+
+const NotesEditor: React.FC<NotesEditorProps> = ({
+    companyId,
+    initial,
+    onCancel,
+    onSaved,
+}) => {
+    const [draft, setDraft] = useState(initial);
+    const [error, setError] = useState<string | null>(null);
+    const update = useUpdateCompany(companyId);
 
     function handleSave() {
         setError(null);

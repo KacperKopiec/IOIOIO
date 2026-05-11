@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Briefcase, CalendarDays, Target } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { useEvents } from '../../hooks/api/events';
 import { usePipelineEntries } from '../../hooks/api/pipeline';
 import { formatDateRange, formatPLN, formatPercent } from '../../lib/format';

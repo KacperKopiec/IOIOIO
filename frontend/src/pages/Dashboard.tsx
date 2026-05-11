@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import DashboardCoordinator from './dashboards/DashboardCoordinator';
 import DashboardPromotion from './dashboards/DashboardPromotion';
 import DashboardRelationshipManager from './dashboards/DashboardRelationshipManager';

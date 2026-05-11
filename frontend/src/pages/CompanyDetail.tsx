@@ -14,7 +14,7 @@ import CompanyNotes from '../components/CompanyDetail/CompanyNotes';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
 import EditCompanyModal from '../components/modals/EditCompanyModal';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth';
 import {
     Avatar,
     Badge,

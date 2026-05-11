@@ -1,5 +1,5 @@
 import React from 'react';
-import { ROLES, roleLabel, useAuth, type UserRole } from '../../context/AuthContext';
+import { ROLES, roleLabel, useAuth, type UserRole } from '../../context/auth';
 import styles from './TopBar.module.css';
 
 const TopBar: React.FC = () => {

@@ -44,8 +44,11 @@ const Reports: React.FC = () => {
     const reports = useReports();
 
     const totals = reports.data?.totals;
-    const events = reports.data?.events ?? [];
-    const newSponsors = reports.data?.new_sponsors ?? [];
+    const events = useMemo(() => reports.data?.events ?? [], [reports.data]);
+    const newSponsors = useMemo(
+        () => reports.data?.new_sponsors ?? [],
+        [reports.data],
+    );
     const topCompanies = reports.data?.top_companies ?? [];
 
     const eventsChartData = useMemo(

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, Briefcase, CheckCheck, Users } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { useRelationshipManagerDashboard } from '../../hooks/api/dashboard';
 import { formatPercent } from '../../lib/format';
 import {

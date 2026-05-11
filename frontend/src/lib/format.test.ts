@@ -16,8 +16,8 @@ describe('formatPLN', () => {
     });
 
     it('groups thousands using pl-PL', () => {
-        expect(formatPLN(45000)).toMatch(/^45[\s  ]?000 PLN$/);
-        expect(formatPLN('250000')).toMatch(/^250[\s  ]?000 PLN$/);
+        expect(formatPLN(45000)).toMatch(/^45\s?000 PLN$/);
+        expect(formatPLN('250000')).toMatch(/^250\s?000 PLN$/);
     });
 
     it('falls back to em-dash on garbage', () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import TagSelector from '../ui/TagSelector';
 import { useUpdateEvent } from '../../hooks/api/events';
@@ -44,24 +44,29 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     const [targetBudget, setTargetBudget] = useState(event.target_budget ?? '');
     const [tagIds, setTagIds] = useState<number[]>(event.tags.map((t) => t.id));
     const [error, setError] = useState<string | null>(null);
+    const [prevOpen, setPrevOpen] = useState(open);
 
-    useEffect(() => {
-        if (!open) return;
-        setName(event.name);
-        setDescription(event.description ?? '');
-        setStartDate(event.start_date ?? '');
-        setEndDate(event.end_date ?? '');
-        setStatus(event.status);
-        setOwnerId(event.owner_user_id != null ? String(event.owner_user_id) : '');
-        setTargetPartners(
-            event.target_partners_count != null
-                ? String(event.target_partners_count)
-                : '',
-        );
-        setTargetBudget(event.target_budget ?? '');
-        setTagIds(event.tags.map((t) => t.id));
-        setError(null);
-    }, [open, event]);
+    if (open !== prevOpen) {
+        setPrevOpen(open);
+        if (open) {
+            setName(event.name);
+            setDescription(event.description ?? '');
+            setStartDate(event.start_date ?? '');
+            setEndDate(event.end_date ?? '');
+            setStatus(event.status);
+            setOwnerId(
+                event.owner_user_id != null ? String(event.owner_user_id) : '',
+            );
+            setTargetPartners(
+                event.target_partners_count != null
+                    ? String(event.target_partners_count)
+                    : '',
+            );
+            setTargetBudget(event.target_budget ?? '');
+            setTagIds(event.tags.map((t) => t.id));
+            setError(null);
+        }
+    }
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
