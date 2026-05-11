@@ -43,3 +43,5 @@ class CompanyOut(CompanyBase):
     updated_at: datetime
     industry: IndustryOut | None = None
     tags: list[TagOut] = Field(default_factory=list)
+    is_partner: bool = False
+    last_contact_at: datetime | None = None

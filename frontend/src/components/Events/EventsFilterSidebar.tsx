@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-import { EVENT_TYPES, type EventTypeId } from '../../constants/eventTypes';
+import React from 'react';
+import type { EventFilters } from '../../hooks/api/events';
+import { useUsers } from '../../hooks/api/reference';
+import type { EventStatus } from '../../types/api';
 import styles from './EventsFilterSidebar.module.css';
 
-const EventsFilterSidebar: React.FC = () => {
-    const [dateFrom, setDateFrom] = useState('');
-    const [dateTo, setDateTo] = useState('');
-    const [selectedTypes, setSelectedTypes] = useState<Set<EventTypeId>>(new Set());
-    const [status, setStatus] = useState('all');
-    const [coordinator, setCoordinator] = useState('');
+interface EventsFilterSidebarProps {
+    filters: EventFilters;
+    onChange: (next: EventFilters) => void;
+}
 
-    const toggleEventType = (typeId: EventTypeId) => {
-        const newSelected = new Set(selectedTypes);
-        if (newSelected.has(typeId)) {
-            newSelected.delete(typeId);
-        } else {
-            newSelected.add(typeId);
-        }
-        setSelectedTypes(newSelected);
-    };
+const STATUS_OPTIONS: { value: EventStatus | ''; label: string }[] = [
+    { value: '', label: 'Wszystkie statusy' },
+    { value: 'draft', label: 'Wersja robocza' },
+    { value: 'active', label: 'Aktywne' },
+    { value: 'closed', label: 'Ukończone' },
+    { value: 'cancelled', label: 'Anulowane' },
+];
+
+const EventsFilterSidebar: React.FC<EventsFilterSidebarProps> = ({
+    filters,
+    onChange,
+}) => {
+    const users = useUsers('koordynator');
 
     const handleReset = () => {
-        setDateFrom('');
-        setDateTo('');
-        setSelectedTypes(new Set());
-        setStatus('all');
-        setCoordinator('');
+        onChange({ page: 1, page_size: filters.page_size });
     };
 
     return (
@@ -37,75 +37,63 @@ const EventsFilterSidebar: React.FC = () => {
             </div>
 
             <div className={styles.content}>
-                {/* Date Range */}
                 <div className={styles.section}>
-                    <label className={styles.sectionLabel}>DATA (ZAKRES)</label>
-                    <div className={styles.dateInputsContainer}>
-                        <input
-                            type="date"
-                            className={styles.dateInput}
-                            placeholder="Od: DD.MM.RRRR"
-                            value={dateFrom}
-                            onChange={(e) => setDateFrom(e.target.value)}
-                        />
-                        <input
-                            type="date"
-                            className={styles.dateInput}
-                            placeholder="Do: DD.MM.RRRR"
-                            value={dateTo}
-                            onChange={(e) => setDateTo(e.target.value)}
-                        />
-                    </div>
+                    <label className={styles.sectionLabel}>WYSZUKAJ</label>
+                    <input
+                        type="text"
+                        className={styles.searchInput}
+                        placeholder="Nazwa lub opis…"
+                        value={filters.q ?? ''}
+                        onChange={(e) =>
+                            onChange({ ...filters, q: e.target.value || undefined, page: 1 })
+                        }
+                    />
                 </div>
 
-                {/* Event Type */}
-                <div className={styles.section}>
-                    <label className={styles.sectionLabel}>TYP WYDARZENIA</label>
-                    <div className={styles.checkboxGroup}>
-                        {Object.values(EVENT_TYPES).map((type) => (
-                            <label key={type.id} className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    className={styles.checkbox}
-                                    checked={selectedTypes.has(type.id as EventTypeId)}
-                                    onChange={() => toggleEventType(type.id as EventTypeId)}
-                                />
-                                <span>{type.label}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Status */}
                 <div className={styles.section}>
                     <label className={styles.sectionLabel}>STATUS</label>
                     <select
                         className={styles.select}
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        value={filters.status ?? ''}
+                        onChange={(e) =>
+                            onChange({
+                                ...filters,
+                                status: (e.target.value || null) as EventStatus | null,
+                                page: 1,
+                            })
+                        }
                     >
-                        <option value="all">Wszystkie statusy</option>
-                        <option value="planned">Zaplanowane</option>
-                        <option value="ongoing">W trakcie</option>
-                        <option value="completed">Ukończone</option>
-                        <option value="cancelled">Anulowane</option>
+                        {STATUS_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
-                {/* Coordinator */}
                 <div className={styles.section}>
                     <label className={styles.sectionLabel}>KOORDYNATOR</label>
-                    <input
-                        type="text"
-                        className={styles.searchInput}
-                        placeholder="Wyszukaj osobę..."
-                        value={coordinator}
-                        onChange={(e) => setCoordinator(e.target.value)}
-                    />
+                    <select
+                        className={styles.select}
+                        value={filters.owner_user_id ?? ''}
+                        onChange={(e) =>
+                            onChange({
+                                ...filters,
+                                owner_user_id: e.target.value
+                                    ? Number.parseInt(e.target.value, 10)
+                                    : null,
+                                page: 1,
+                            })
+                        }
+                    >
+                        <option value="">Dowolny</option>
+                        {users.data?.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u.first_name} {u.last_name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
-
-                {/* Apply Button */}
-                <button className={styles.applyBtn}>ZASTOSUJ FILTRY</button>
             </div>
         </div>
     );

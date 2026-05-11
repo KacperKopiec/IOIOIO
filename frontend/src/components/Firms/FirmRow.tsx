@@ -2,52 +2,17 @@ import React from 'react';
 import StatusBadge from './StatusBadge';
 import TagBadge from './TagBadge';
 import TypeBadge from './TypeBadge';
-import type { FirmStatusId } from '../../constants/firmStatus';
-import type { FirmTagId } from '../../constants/firmTags';
-import type { FirmTypeId } from '../../constants/firmTypes';
-import { mapLegacyStatus } from '../../constants/firmStatus';
-import { mapLegacyTag } from '../../constants/firmTags';
-import { mapLegacyType } from '../../constants/firmTypes';
+import { companySizeToTypeId, formatDate } from '../../lib/format';
+import type { Company } from '../../types/api';
 import styles from './FirmRow.module.css';
 
 interface FirmRowProps {
-    id: number;
-    name: string;
-    city: string;
-    tags: (FirmTagId | string)[];
-    type: FirmTypeId | string;
-    coordinator: string;
-    /** Status ID from database, e.g. 'contact', 'active_partner', 'umowa' */
-    status: FirmStatusId | 'Aktywny partner' | 'Kontakt' | 'Prospect';
-    lastContact: string;
+    company: Company;
 }
 
-const FirmRow: React.FC<FirmRowProps> = ({
-    name,
-    city,
-    tags,
-    type,
-    coordinator,
-    status,
-    lastContact
-}) => {
-    // Handle legacy string statuses for backward compatibility
-    const statusId: FirmStatusId = typeof status === 'string' && !status.includes('_')
-        ? mapLegacyStatus(status)
-        : (status as FirmStatusId);
-
-    // Map tags from legacy format if needed
-    const tagIds = tags.map(tag => {
-        if (typeof tag === 'string' && !tag.includes('_')) {
-            return mapLegacyTag(tag);
-        }
-        return tag;
-    });
-
-    // Map type from legacy format if needed
-    const typeId = typeof type === 'string' && !type.includes('_')
-        ? mapLegacyType(type)
-        : type;
+const FirmRow: React.FC<FirmRowProps> = ({ company }) => {
+    const typeId = companySizeToTypeId(company.company_size);
+    const statusId = company.is_partner ? 'active_partner' : 'contact';
 
     return (
         <div className={styles.row}>
@@ -56,21 +21,21 @@ const FirmRow: React.FC<FirmRowProps> = ({
             </div>
 
             <div className={styles.nameCell}>
-                <div className={styles.companyName}>{name}</div>
-                <div className={styles.cityName}>{city}</div>
+                <div className={styles.companyName}>{company.name}</div>
+                <div className={styles.cityName}>{company.city ?? '—'}</div>
             </div>
 
             <div className={styles.tagsCell}>
                 <div className={styles.tagsList}>
-                    {tagIds.map((tagId, idx) => (
-                        <TagBadge key={idx} tagId={tagId} />
+                    {company.tags.map((tag) => (
+                        <TagBadge key={tag.id} tagId={tag.name} />
                     ))}
-                    {type && <TypeBadge typeId={typeId} />}
+                    {typeId && <TypeBadge typeId={typeId} />}
                 </div>
             </div>
 
             <div className={styles.coordinatorCell}>
-                <span className={styles.coordinatorName}>{coordinator}</span>
+                <span className={styles.coordinatorName}>—</span>
             </div>
 
             <div className={styles.statusCell}>
@@ -78,7 +43,9 @@ const FirmRow: React.FC<FirmRowProps> = ({
             </div>
 
             <div className={styles.dateCell}>
-                <span className={styles.dateText}>{lastContact}</span>
+                <span className={styles.dateText}>
+                    {formatDate(company.last_contact_at)}
+                </span>
             </div>
         </div>
     );

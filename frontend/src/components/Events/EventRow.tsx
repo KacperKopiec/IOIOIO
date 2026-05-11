@@ -1,30 +1,28 @@
 import React from 'react';
-import type { EventTypeId } from '../../constants/eventTypes';
-import type { EventStatusId } from '../../constants/eventStatuses';
-import { getEventTypeConfig } from '../../constants/eventTypes';
 import { getEventStatusConfig } from '../../constants/eventStatuses';
+import { eventStatusToDisplayId, formatDateRange } from '../../lib/format';
+import type { EventStatus } from '../../types/api';
 import styles from './EventRow.module.css';
 
-interface EventRowProps {
+export interface EventRowData {
     id: number;
     name: string;
-    date: string;
-    type: EventTypeId;
-    coordinator: string;
-    partners: number;
-    status: EventStatusId;
+    start_date: string | null;
+    end_date: string | null;
+    status: EventStatus;
+    owner_name: string | null;
+    owner_initials: string;
+    partners_count: number | null;
 }
 
-const EventRow: React.FC<EventRowProps> = ({
-    name,
-    date,
-    type,
-    coordinator,
-    partners,
-    status
-}) => {
-    const typeConfig = getEventTypeConfig(type);
-    const statusConfig = getEventStatusConfig(status);
+interface EventRowProps {
+    event: EventRowData;
+}
+
+const EventRow: React.FC<EventRowProps> = ({ event }) => {
+    const statusConfig = getEventStatusConfig(eventStatusToDisplayId(event.status));
+    const dateLabel = formatDateRange(event.start_date, event.end_date);
+    const partners = event.partners_count ?? 0;
 
     return (
         <div className={styles.row}>
@@ -33,53 +31,58 @@ const EventRow: React.FC<EventRowProps> = ({
             </div>
 
             <div className={styles.nameCell}>
-                <div className={styles.initial}>A</div>
+                <div className={styles.initial}>
+                    {event.name.charAt(0).toUpperCase()}
+                </div>
                 <div className={styles.nameInfo}>
-                    <div className={styles.eventName}>{name}</div>
-                    <div className={styles.eventDate}>{date}</div>
+                    <div className={styles.eventName}>{event.name}</div>
+                    <div className={styles.eventDate}>{dateLabel}</div>
                 </div>
             </div>
 
             <div className={styles.typeCell}>
-                {typeConfig && (
-                    <span
-                        className={styles.typeBadge}
-                        style={{
-                            backgroundColor: typeConfig.bgColor,
-                            color: typeConfig.textColor
-                        }}
-                    >
-                        {typeConfig.label}
-                    </span>
-                )}
+                <span className={styles.eventDate}>{dateLabel}</span>
             </div>
 
             <div className={styles.coordinatorCell}>
                 <div className={styles.coordinatorAvatar}>
-                    <span className={styles.avatarInitial}>K</span>
+                    <span className={styles.avatarInitial}>
+                        {event.owner_initials || '?'}
+                    </span>
                 </div>
-                <span className={styles.coordinatorName}>{coordinator}</span>
+                <span className={styles.coordinatorName}>
+                    {event.owner_name ?? '—'}
+                </span>
             </div>
 
             <div className={styles.partnersCell}>
                 <div className={styles.partnerAvatars}>
-                    {Array.from({ length: Math.min(partners, 3) }).map((_, i) => (
-                        <div
-                            key={i}
-                            className={styles.partnerAvatar}
-                            style={{
-                                marginLeft: i > 0 ? '-8px' : '0'
-                            }}
-                        >
-                            <span className={styles.partnerInitial}>
-                                {String.fromCharCode(65 + i)}
-                            </span>
-                        </div>
-                    ))}
-                    {partners > 3 && (
-                        <div className={styles.partnerAvatar} style={{ marginLeft: '-8px' }}>
-                            <span className={styles.partnerInitial}>+{partners - 3}</span>
-                        </div>
+                    {partners === 0 ? (
+                        <span className={styles.coordinatorName}>0</span>
+                    ) : (
+                        <>
+                            {Array.from({ length: Math.min(partners, 3) }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className={styles.partnerAvatar}
+                                    style={{ marginLeft: i > 0 ? '-8px' : '0' }}
+                                >
+                                    <span className={styles.partnerInitial}>
+                                        {String.fromCharCode(65 + i)}
+                                    </span>
+                                </div>
+                            ))}
+                            {partners > 3 && (
+                                <div
+                                    className={styles.partnerAvatar}
+                                    style={{ marginLeft: '-8px' }}
+                                >
+                                    <span className={styles.partnerInitial}>
+                                        +{partners - 3}
+                                    </span>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -91,7 +94,7 @@ const EventRow: React.FC<EventRowProps> = ({
                         style={{
                             backgroundColor: statusConfig.bgColor,
                             color: statusConfig.textColor,
-                            border: `1px solid ${statusConfig.textColor}`
+                            border: `1px solid ${statusConfig.textColor}`,
                         }}
                     >
                         {statusConfig.label}

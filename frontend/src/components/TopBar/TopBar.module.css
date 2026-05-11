@@ -37,8 +37,15 @@
 
 .rightArea {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+.userBlock {
+    display: flex;
     flex-direction: column;
-    align-items: flex-end
+    align-items: flex-end;
 }
 
 .userName {
@@ -50,6 +57,35 @@
     font-size: 10px;
     color: #6B7280;
     text-transform: uppercase
+}
+
+.roleSwitcher {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.roleSwitcherLabel {
+    font-size: 10px;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.roleSwitcherSelect {
+    padding: 4px 8px;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    background: #F9FAFB;
+    color: #1F2937;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.roleSwitcherSelect:focus {
+    outline: 2px solid var(--color-primary, #00458E);
+    outline-offset: 1px;
 }
 
 @media (max-width: 700px) {

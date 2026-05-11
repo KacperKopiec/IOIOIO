@@ -8,7 +8,7 @@ from app.api.deps import DbDep
 from app.models.activity import Activity
 from app.models.company import Company
 from app.models.contact import Contact
-from app.models.enums import CompanySize, RelationshipStatus
+from app.models.enums import CompanySize, RelationshipStatus, StageOutcome
 from app.models.event import Event
 from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.relationship import CompanyRelationship
@@ -49,6 +49,36 @@ def _load_company(db, company_id: int) -> Company:
             status_code=status.HTTP_404_NOT_FOUND, detail="Firma nie istnieje"
         )
     return company
+
+
+def _serialize_companies(db, companies: list[Company]) -> list[CompanyOut]:
+    if not companies:
+        return []
+    ids = [c.id for c in companies]
+    partner_ids = set(
+        db.scalars(
+            select(PipelineEntry.company_id)
+            .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
+            .where(
+                PipelineEntry.company_id.in_(ids),
+                PipelineStage.outcome == StageOutcome.WON,
+            )
+        ).all()
+    )
+    last_contact_rows = db.execute(
+        select(Activity.company_id, func.max(Activity.activity_date))
+        .where(Activity.company_id.in_(ids))
+        .group_by(Activity.company_id)
+    ).all()
+    last_contact_by_id = {cid: ts for cid, ts in last_contact_rows}
+
+    out: list[CompanyOut] = []
+    for c in companies:
+        model = CompanyOut.model_validate(c)
+        model.is_partner = c.id in partner_ids
+        model.last_contact_at = last_contact_by_id.get(c.id)
+        out.append(model)
+    return out
 
 
 @router.get("", response_model=Page[CompanyOut])
@@ -105,7 +135,7 @@ def list_companies(
     )
     items = list(db.scalars(stmt).all())
     return Page[CompanyOut].build(
-        items=[CompanyOut.model_validate(c) for c in items],
+        items=_serialize_companies(db, items),
         total=total,
         page=page_params.page,
         page_size=page_params.page_size,
@@ -113,12 +143,13 @@ def list_companies(
 
 
 @router.get("/{company_id}", response_model=CompanyOut)
-def get_company(company_id: int, db: DbDep) -> Company:
-    return _load_company(db, company_id)
+def get_company(company_id: int, db: DbDep) -> CompanyOut:
+    company = _load_company(db, company_id)
+    return _serialize_companies(db, [company])[0]
 
 
 @router.post("", response_model=CompanyOut, status_code=status.HTTP_201_CREATED)
-def create_company(payload: CompanyCreate, db: DbDep) -> Company:
+def create_company(payload: CompanyCreate, db: DbDep) -> CompanyOut:
     data = payload.model_dump(exclude={"tag_ids"})
     company = Company(**data)
     if payload.tag_ids:
@@ -128,11 +159,11 @@ def create_company(payload: CompanyCreate, db: DbDep) -> Company:
     db.add(company)
     db.commit()
     db.refresh(company)
-    return _load_company(db, company.id)
+    return _serialize_companies(db, [_load_company(db, company.id)])[0]
 
 
 @router.patch("/{company_id}", response_model=CompanyOut)
-def update_company(company_id: int, payload: CompanyUpdate, db: DbDep) -> Company:
+def update_company(company_id: int, payload: CompanyUpdate, db: DbDep) -> CompanyOut:
     company = _load_company(db, company_id)
     data = payload.model_dump(exclude_unset=True)
     tag_ids = data.pop("tag_ids", None)
@@ -142,7 +173,7 @@ def update_company(company_id: int, payload: CompanyUpdate, db: DbDep) -> Compan
         company.tags = list(db.scalars(select(Tag).where(Tag.id.in_(tag_ids))).all())
     db.commit()
     db.refresh(company)
-    return _load_company(db, company.id)
+    return _serialize_companies(db, [_load_company(db, company.id)])[0]
 
 
 @router.delete("/{company_id}", status_code=status.HTTP_204_NO_CONTENT)

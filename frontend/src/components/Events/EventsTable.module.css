@@ -106,3 +106,19 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.paginationCurrent {
+    min-width: 56px;
+    text-align: center;
+    color: #1F2937;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+
+.emptyState {
+    padding: 32px 24px;
+    text-align: center;
+    color: #64748B;
+    font-size: 14px;
+}
