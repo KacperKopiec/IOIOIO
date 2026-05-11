@@ -7,6 +7,7 @@ import EventDetail from './pages/EventDetail';
 import EventPipeline from './pages/EventPipeline';
 import Events from './pages/Events';
 import Firms from './pages/Firms';
+import Reports from './pages/Reports';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
                         <Route path="events/:id" element={<EventDetail />} />
                         <Route path="events/:id/pipeline" element={<EventPipeline />} />
                         <Route path="events/:id/companies/:companyId" element={<EventCompany />} />
+                        <Route path="reports" element={<Reports />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
