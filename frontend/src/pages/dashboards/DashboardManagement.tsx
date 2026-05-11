@@ -1,11 +1,11 @@
 import React from 'react';
-import styles from './Management.module.css';
-import Stats from '../components/Stats/Stats';
-import ActiveEvents from '../components/ActiveEvents/ActiveEvents';
-import UpcomingEvents from '../components/UpcomingEvents/UpcomingEvents';
-import RecentActivity from '../components/RecentActivity/RecentActivity';
+import styles from '../Dashboard.module.css';
+import Stats from '../../components/Stats/Stats';
+import ActiveEvents from '../../components/ActiveEvents/ActiveEvents';
+import UpcomingEvents from '../../components/UpcomingEvents/UpcomingEvents';
+import RecentActivity from '../../components/RecentActivity/RecentActivity';
 
-const Management: React.FC = () => {
+const DashboardManagement: React.FC = () => {
     return (
         <>
             <nav className={styles.breadcrumb}>Dashboard / Kadra zarządzająca</nav>
@@ -25,4 +25,4 @@ const Management: React.FC = () => {
     );
 };
 
-export default Management;
+export default DashboardManagement;
