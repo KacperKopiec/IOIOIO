@@ -9,16 +9,24 @@ import styles from './FirmRow.module.css';
 
 interface FirmRowProps {
     company: Company;
+    selected: boolean;
+    onToggle: (id: number, next: boolean) => void;
 }
 
-const FirmRow: React.FC<FirmRowProps> = ({ company }) => {
+const FirmRow: React.FC<FirmRowProps> = ({ company, selected, onToggle }) => {
     const typeId = companySizeToTypeId(company.company_size);
     const statusId = company.is_partner ? 'active_partner' : 'contact';
 
     return (
         <div className={styles.row}>
             <div className={styles.checkboxCell}>
-                <input type="checkbox" className={styles.rowCheckbox} />
+                <input
+                    type="checkbox"
+                    className={styles.rowCheckbox}
+                    checked={selected}
+                    onChange={(e) => onToggle(company.id, e.target.checked)}
+                    aria-label={`Zaznacz firmę ${company.name}`}
+                />
             </div>
 
             <Link

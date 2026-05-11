@@ -9,6 +9,8 @@ interface FirmsTableProps {
     isLoading: boolean;
     isError: boolean;
     onPageChange: (page: number) => void;
+    selectedIds: Set<number>;
+    onToggleRow: (id: number, next: boolean) => void;
 }
 
 const FirmsTable: React.FC<FirmsTableProps> = ({
@@ -17,6 +19,8 @@ const FirmsTable: React.FC<FirmsTableProps> = ({
     isLoading,
     isError,
     onPageChange,
+    selectedIds,
+    onToggleRow,
 }) => {
     const totalShown = companies.length;
     const startIdx = meta ? (meta.page - 1) * meta.page_size + 1 : 0;
@@ -52,7 +56,12 @@ const FirmsTable: React.FC<FirmsTableProps> = ({
                 {!isLoading &&
                     !isError &&
                     companies.map((company) => (
-                        <FirmRow key={company.id} company={company} />
+                        <FirmRow
+                            key={company.id}
+                            company={company}
+                            selected={selectedIds.has(company.id)}
+                            onToggle={onToggleRow}
+                        />
                     ))}
             </div>
 

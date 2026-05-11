@@ -152,9 +152,15 @@
     color: var(--color-text-muted);
 }
 
-.actionButton:hover,
-.reportButton:hover {
+.actionButton:hover:not(:disabled),
+.reportButton:hover:not(:disabled) {
     background: var(--color-canvas);
+}
+
+.actionButton:disabled,
+.reportButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 @media (max-width: 1000px) {

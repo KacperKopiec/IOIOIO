@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Check, Clock, X } from 'lucide-react';
+import { ArrowUpRight, Check, Clock, X } from 'lucide-react';
 import { formatPLN, ownerInitials } from '../../lib/format';
 import type { PipelineEntry } from '../../types/api';
 import { formatRelativeDate, getStageTone } from './stageStyle';
@@ -112,9 +113,16 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ entry }) => {
                         {cat}
                     </span>
                 )}
-                <span className={styles.dragHandle} aria-hidden>
-                    ⋮
-                </span>
+                <Link
+                    to={`/events/${entry.event_id}/companies/${entry.company_id}`}
+                    className={styles.detailLink}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label="Otwórz szczegóły firmy w kontekście wydarzenia"
+                    title="Szczegóły firmy w kontekście wydarzenia"
+                >
+                    <ArrowUpRight size={14} />
+                </Link>
             </header>
 
             <div className={styles.body}>
