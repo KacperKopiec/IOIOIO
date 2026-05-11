@@ -4,13 +4,8 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
-const unusedConstant = 'lint should catch this'
-
-function brokenHelper() {}
-
 function App() {
   const [count, setCount] = useState(0)
-  const alsoUnused: number = 42
 
   return (
     <>
