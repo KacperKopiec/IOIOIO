@@ -14,6 +14,7 @@ export interface EventFilters {
     status?: EventStatus | null;
     owner_user_id?: number | null;
     q?: string;
+    tag_ids?: number[];
     page?: number;
     page_size?: number;
 }
@@ -31,6 +32,9 @@ function buildParams(filters: EventFilters) {
     if (filters.status) params.status = filters.status;
     if (filters.owner_user_id != null) params.owner_user_id = filters.owner_user_id;
     if (filters.q) params.q = filters.q;
+    if (filters.tag_ids && filters.tag_ids.length > 0) {
+        params.tag_ids = filters.tag_ids.join(',');
+    }
     params.page = filters.page ?? 1;
     params.page_size = filters.page_size ?? 25;
     return params;

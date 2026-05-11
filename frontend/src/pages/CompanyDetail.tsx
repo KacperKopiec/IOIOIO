@@ -13,6 +13,8 @@ import ContactsList from '../components/CompanyDetail/ContactsList';
 import CompanyNotes from '../components/CompanyDetail/CompanyNotes';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
+import EditCompanyModal from '../components/modals/EditCompanyModal';
+import { useAuth } from '../context/AuthContext';
 import {
     Avatar,
     Badge,
@@ -29,9 +31,13 @@ const CompanyDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const companyId = id ? Number.parseInt(id, 10) : null;
 
+    const { role } = useAuth();
+    const canEditCompany = role === 'opiekun';
+
     const [editingNotes, setEditingNotes] = useState(false);
     const [addContactOpen, setAddContactOpen] = useState(false);
     const [addActivityOpen, setAddActivityOpen] = useState(false);
+    const [editCompanyOpen, setEditCompanyOpen] = useState(false);
 
     const company = useCompany(companyId);
     const contacts = useCompanyContacts(companyId);
@@ -88,7 +94,17 @@ const CompanyDetail: React.FC = () => {
                     }
                     actions={
                         <>
-                            <Button variant="secondary" disabled>
+                            <Button
+                                variant="secondary"
+                                onClick={() => setEditCompanyOpen(true)}
+                                disabled={!canEditCompany}
+                                title={
+                                    canEditCompany
+                                        ? undefined
+                                        : 'Edycja danych firmy zarezerwowana dla opiekuna partnerów'
+                                }
+                                iconLeft={<Pencil size={14} />}
+                            >
                                 Edytuj dane
                             </Button>
                             <Button
@@ -197,6 +213,11 @@ const CompanyDetail: React.FC = () => {
                 open={addActivityOpen}
                 onClose={() => setAddActivityOpen(false)}
                 defaults={{ companyId: c.id }}
+            />
+            <EditCompanyModal
+                open={editCompanyOpen}
+                company={c}
+                onClose={() => setEditCompanyOpen(false)}
             />
         </Page>
     );

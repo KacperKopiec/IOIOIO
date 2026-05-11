@@ -110,6 +110,42 @@
     appearance: none;
 }
 
+.tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tagButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.24px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tagButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+}
+
+.tagUnselected {
+    background: var(--color-border-subtle);
+    color: var(--color-text-subtle);
+    border: 1px solid var(--color-border);
+}
+
+.tagSelected {
+    border-width: 2px;
+}
+
 @media (max-width: 1000px) {
     .card {
         width: 100%;

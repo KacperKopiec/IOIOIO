@@ -1,6 +1,7 @@
 import React from 'react';
+import { FIRM_TAGS } from '../../constants/firmTags';
 import type { EventFilters } from '../../hooks/api/events';
-import { useUsers } from '../../hooks/api/reference';
+import { useTags, useUsers } from '../../hooks/api/reference';
 import type { EventStatus } from '../../types/api';
 import styles from './EventsFilterSidebar.module.css';
 
@@ -21,9 +22,30 @@ const EventsFilterSidebar: React.FC<EventsFilterSidebarProps> = ({
     onChange,
 }) => {
     const users = useUsers('koordynator');
+    const tags = useTags();
+
+    const selectedTagIds = new Set(filters.tag_ids ?? []);
+
+    const toggleTag = (tagId: number) => {
+        const next = new Set(selectedTagIds);
+        if (next.has(tagId)) next.delete(tagId);
+        else next.add(tagId);
+        onChange({ ...filters, tag_ids: Array.from(next), page: 1 });
+    };
 
     const handleReset = () => {
         onChange({ page: 1, page_size: filters.page_size });
+    };
+
+    const tagColor = (tagName: string) => {
+        const known = Object.values(FIRM_TAGS).find((t) => t.id === tagName);
+        return (
+            known ?? {
+                bgColor: 'var(--color-border-subtle)',
+                textColor: 'var(--color-text-muted)',
+                label: tagName,
+            }
+        );
     };
 
     return (
@@ -85,6 +107,36 @@ const EventsFilterSidebar: React.FC<EventsFilterSidebarProps> = ({
                                 </option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Tagi</label>
+                    <div className={styles.tags}>
+                        {tags.data?.map((tag) => {
+                            const isSelected = selectedTagIds.has(tag.id);
+                            const colors = tagColor(tag.name);
+                            return (
+                                <button
+                                    key={tag.id}
+                                    type="button"
+                                    className={`${styles.tagButton} ${isSelected ? styles.tagSelected : styles.tagUnselected
+                                        }`}
+                                    onClick={() => toggleTag(tag.id)}
+                                    style={
+                                        isSelected
+                                            ? {
+                                                backgroundColor: colors.bgColor,
+                                                color: colors.textColor,
+                                                border: `2px solid ${colors.textColor}`,
+                                            }
+                                            : undefined
+                                    }
+                                >
+                                    {colors.label ?? tag.name}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
