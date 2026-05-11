@@ -7,6 +7,8 @@ from app.api.deps import DbDep
 from app.models.company import Company
 from app.models.event import Event
 from app.models.pipeline import PipelineEntry, PipelineStage
+from app.models.role import Role
+from app.models.user import User
 from app.schemas.pipeline_entry import (
     PipelineEntryCreate,
     PipelineEntryOut,
@@ -27,6 +29,7 @@ def _load_entry(db, entry_id: int) -> PipelineEntry:
             selectinload(PipelineEntry.stage),
             selectinload(PipelineEntry.company).selectinload(Company.industry),
             selectinload(PipelineEntry.company).selectinload(Company.tags),
+            selectinload(PipelineEntry.owner).selectinload(User.role),
         )
         .where(PipelineEntry.id == entry_id)
     )
@@ -51,6 +54,7 @@ def list_pipeline_entries(
             selectinload(PipelineEntry.stage),
             selectinload(PipelineEntry.company).selectinload(Company.industry),
             selectinload(PipelineEntry.company).selectinload(Company.tags),
+            selectinload(PipelineEntry.owner).selectinload(User.role),
         )
         .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
         .order_by(PipelineStage.order_number, PipelineEntry.id)

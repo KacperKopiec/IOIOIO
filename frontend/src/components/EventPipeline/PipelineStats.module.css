@@ -1,0 +1,100 @@
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.iconCircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.iconBlue {
+    background: #EFF6FF;
+    color: #2563EB;
+}
+
+.iconGreen {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.iconIndigo {
+    background: #EEF2FF;
+    color: #4F46E5;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.label {
+    color: #64748B;
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.value {
+    color: #0F172A;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.24px;
+    line-height: 31px;
+}
+
+.valueUnit {
+    color: #94A3B8;
+    font-size: 14px;
+    margin-left: 6px;
+}
+
+.progressTrack {
+    height: 6px;
+    background: #F1F5F9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.progressFill {
+    height: 100%;
+    background: #2563EB;
+    border-radius: 999px;
+}
+
+.progressFillGreen {
+    background: #059669;
+}
+
+.trendRow {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #059669;
+    font-weight: 600;
+}

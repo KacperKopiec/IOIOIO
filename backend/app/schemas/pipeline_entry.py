@@ -6,6 +6,7 @@ from pydantic import Field
 from app.schemas.common import OrmBase
 from app.schemas.company import CompanyOut
 from app.schemas.pipeline_stage import PipelineStageOut
+from app.schemas.user import UserOut
 
 
 class PipelineEntryBase(OrmBase):
@@ -56,3 +57,4 @@ class PipelineEntryOut(PipelineEntryBase):
     updated_at: datetime
     stage: PipelineStageOut | None = None
     company: CompanyOut | None = None
+    owner: UserOut | None = None

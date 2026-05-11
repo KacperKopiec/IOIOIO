@@ -10,6 +10,7 @@ from app.models.enums import EventStatus
 from app.models.event import Event
 from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.tag import Tag
+from app.models.user import User
 from app.schemas.common import Page, PageParams
 from app.schemas.event import EventCreate, EventKpi, EventOut, EventUpdate
 from app.schemas.pipeline_entry import PipelineEntryOut
@@ -111,6 +112,7 @@ def list_event_pipeline(event_id: int, db: DbDep) -> list[PipelineEntry]:
             selectinload(PipelineEntry.stage),
             selectinload(PipelineEntry.company).selectinload(Company.industry),
             selectinload(PipelineEntry.company).selectinload(Company.tags),
+            selectinload(PipelineEntry.owner).selectinload(User.role),
         )
         .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
         .where(PipelineEntry.event_id == event_id)

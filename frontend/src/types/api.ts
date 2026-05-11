@@ -191,6 +191,7 @@ export interface PipelineEntry {
     updated_at: string;
     stage: PipelineStage | null;
     company: Company | null;
+    owner: User | null;
 }
 
 export interface PipelineEntryCreate {
