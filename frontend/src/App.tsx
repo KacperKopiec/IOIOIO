@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import CompanyDetail from './pages/CompanyDetail';
 import Dashboard from './pages/Dashboard';
+import EventCompany from './pages/EventCompany';
 import EventDetail from './pages/EventDetail';
 import EventPipeline from './pages/EventPipeline';
 import Events from './pages/Events';
@@ -21,6 +22,7 @@ function App() {
                         <Route path="events" element={<Events />} />
                         <Route path="events/:id" element={<EventDetail />} />
                         <Route path="events/:id/pipeline" element={<EventPipeline />} />
+                        <Route path="events/:id/companies/:companyId" element={<EventCompany />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

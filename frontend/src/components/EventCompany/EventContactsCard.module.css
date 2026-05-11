@@ -1,0 +1,135 @@
+.card {
+    background: #FFFFFF;
+    border: 1px solid #C3C6D2;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid #C3C6D2;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #141D23;
+    line-height: 28px;
+    margin: 0;
+}
+
+.addBtn {
+    background: transparent;
+    border: none;
+    color: #305EA4;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.addBtn:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.addBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #E9E8E7;
+    color: #2A5E94;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #141D23;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.position {
+    font-size: 12px;
+    color: #64748B;
+    line-height: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.iconBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #F1F5F9;
+    color: #002A5C;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.iconBtn:hover:not(:disabled) {
+    background: #E2E8F0;
+}
+
+.iconBtnDisabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.empty {
+    padding: 24px;
+    text-align: center;
+    color: #94A3B8;
+    font-size: 14px;
+}

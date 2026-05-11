@@ -1,0 +1,124 @@
+.section {
+    background: #FFFFFF;
+    border: 1px solid #C3C6D2;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #141D23;
+    line-height: 28px;
+    margin: 0;
+}
+
+.stepper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 16px;
+}
+
+.track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 15px;
+    height: 4px;
+    background: #F1F5F9;
+    z-index: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+}
+
+.circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+    box-shadow: 0 0 0 4px #FFFFFF;
+}
+
+.circleDone {
+    background: #002A5C;
+    color: #FFFFFF;
+}
+
+.circleCurrent {
+    background: #FFFFFF;
+    border-color: #002A5C;
+    color: #002A5C;
+}
+
+.circleCurrent .dot {
+    background: #002A5C;
+}
+
+.circlePending {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    color: #94A3B8;
+}
+
+.circlePending .dot {
+    background: #E2E8F0;
+}
+
+.circleLost {
+    background: #DC2626;
+    color: #FFFFFF;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #002A5C;
+    line-height: 16px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.labelPending {
+    color: #94A3B8;
+    font-weight: 400;
+}
+
+.labelLost {
+    color: #DC2626;
+}
+
+.summary {
+    color: #64748B;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.summaryError {
+    color: #B91C1C;
+}

@@ -1,0 +1,56 @@
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 700px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: #FFFFFF;
+    border: 1px solid #C3C6D2;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748B;
+}
+
+.label {
+    color: #64748B;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    line-height: 16px;
+}
+
+.value {
+    color: #002A5C;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    line-height: 36px;
+    margin-top: 4px;
+}
+
+.foot {
+    color: #94A3B8;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.footWon {
+    color: #047857;
+}
