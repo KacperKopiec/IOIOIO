@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { useEvent, useEventKpi, useEventPipeline } from '../hooks/api/events';
 import { usePipelineStages } from '../hooks/api/reference';
 import { useCoordinatorDashboard } from '../hooks/api/dashboard';
@@ -14,6 +15,7 @@ import ActivityFeed from '../components/EventDetail/ActivityFeed';
 import UpcomingActions from '../components/EventDetail/UpcomingActions';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
+import EditEventModal from '../components/modals/EditEventModal';
 import {
     Badge,
     Button,
@@ -44,8 +46,12 @@ const EventDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const eventId = id ? Number.parseInt(id, 10) : null;
 
+    const { role } = useAuth();
+    const canEditEvent = role === 'koordynator';
+
     const [addActivityOpen, setAddActivityOpen] = useState(false);
     const [addPipelineOpen, setAddPipelineOpen] = useState(false);
+    const [editEventOpen, setEditEventOpen] = useState(false);
 
     const event = useEvent(eventId);
     const kpi = useEventKpi(eventId);
@@ -101,6 +107,19 @@ const EventDetail: React.FC = () => {
                 }
                 actions={
                     <>
+                        <Button
+                            variant="ghost"
+                            iconLeft={<Pencil size={14} />}
+                            onClick={() => setEditEventOpen(true)}
+                            disabled={!canEditEvent}
+                            title={
+                                canEditEvent
+                                    ? undefined
+                                    : 'Edycja wydarzenia zarezerwowana dla koordynatora'
+                            }
+                        >
+                            Edytuj
+                        </Button>
                         <Button
                             variant="secondary"
                             iconLeft={<Plus size={14} />}
@@ -158,6 +177,11 @@ const EventDetail: React.FC = () => {
                 open={addPipelineOpen}
                 eventId={ev.id}
                 onClose={() => setAddPipelineOpen(false)}
+            />
+            <EditEventModal
+                open={editEventOpen}
+                event={ev}
+                onClose={() => setEditEventOpen(false)}
             />
         </Page>
     );

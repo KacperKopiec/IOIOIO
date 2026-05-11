@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../ui/Modal';
+import TagSelector from '../ui/TagSelector';
 import { useCreateCompany } from '../../hooks/api/companies';
 import { useIndustries } from '../../hooks/api/reference';
 import { toApiError } from '../../lib/api';
@@ -32,6 +33,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
     const [industryId, setIndustryId] = useState<string>('');
     const [companySize, setCompanySize] = useState<CompanySize | ''>('');
     const [description, setDescription] = useState('');
+    const [tagIds, setTagIds] = useState<number[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     function reset() {
@@ -43,6 +45,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
         setIndustryId('');
         setCompanySize('');
         setDescription('');
+        setTagIds([]);
         setError(null);
     }
 
@@ -69,6 +72,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
                 industry_id: industryId ? Number.parseInt(industryId, 10) : null,
                 company_size: (companySize || null) as CompanySize | null,
                 description: description.trim() || null,
+                tag_ids: tagIds,
             },
             {
                 onSuccess: (company) => {
@@ -202,6 +206,11 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
+                </div>
+
+                <div className={styles.row}>
+                    <label className={styles.label}>Tagi</label>
+                    <TagSelector value={tagIds} onChange={setTagIds} />
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

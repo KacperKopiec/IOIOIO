@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import type {
     Industry,
@@ -51,6 +51,24 @@ export function useTags(category?: TagCategory) {
             return data;
         },
         staleTime: 60 * 60_000,
+    });
+}
+
+export interface TagCreatePayload {
+    name: string;
+    category: TagCategory;
+}
+
+export function useCreateTag() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: TagCreatePayload): Promise<Tag> => {
+            const { data } = await api.post<Tag>('/tags', payload);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['reference', 'tags'] });
+        },
     });
 }
 

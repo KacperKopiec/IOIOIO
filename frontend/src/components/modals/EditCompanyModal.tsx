@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '../ui/Modal';
+import TagSelector from '../ui/TagSelector';
 import { useUpdateCompany } from '../../hooks/api/companies';
 import { useIndustries } from '../../hooks/api/reference';
 import { toApiError } from '../../lib/api';
@@ -40,6 +41,9 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
         company.company_size ?? '',
     );
     const [description, setDescription] = useState(company.description ?? '');
+    const [tagIds, setTagIds] = useState<number[]>(
+        company.tags.map((t) => t.id),
+    );
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -55,6 +59,7 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
         );
         setCompanySize(company.company_size ?? '');
         setDescription(company.description ?? '');
+        setTagIds(company.tags.map((t) => t.id));
         setError(null);
     }, [open, company]);
 
@@ -76,6 +81,7 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
                 industry_id: industryId ? Number.parseInt(industryId, 10) : null,
                 company_size: (companySize || null) as CompanySize | null,
                 description: description.trim() || null,
+                tag_ids: tagIds,
             },
             {
                 onSuccess: () => onClose(),
@@ -205,6 +211,11 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
+                </div>
+
+                <div className={styles.row}>
+                    <label className={styles.label}>Tagi</label>
+                    <TagSelector value={tagIds} onChange={setTagIds} />
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}
