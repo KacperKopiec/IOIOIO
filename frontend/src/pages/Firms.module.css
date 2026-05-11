@@ -1,0 +1,55 @@
+.page {
+    padding: 0;
+}
+
+.container {
+    padding: 24px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.breadcrumb {
+    color: #6B7280;
+    font-size: 12px;
+}
+
+.title {
+    color: #00458E;
+    font-weight: 800;
+    font-size: 32px;
+    margin: 0;
+}
+
+.mainSplit {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.leftCol {
+    width: 288px;
+    flex: 0 0 288px;
+}
+
+.rightCol {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* responsive */
+@media (max-width: 1000px) {
+    .mainSplit {
+        flex-direction: column;
+    }
+
+    .leftCol {
+        width: 100%;
+    }
+}

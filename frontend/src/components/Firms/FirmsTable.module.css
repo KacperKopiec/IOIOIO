@@ -1,0 +1,83 @@
+.card {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.headerRow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    background: #F8F9FF;
+    border-bottom: 1px solid #E5E7EB;
+    font-weight: 700;
+    font-size: 13px;
+    color: #0B1C30;
+    min-height: 48px;
+}
+
+.checkboxHeader,
+.nameHeader,
+.tagsHeader,
+.coordinatorHeader,
+.statusHeader,
+.dateHeader {
+    padding: 16px 12px;
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.checkboxHeader {
+    width: 48px;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+.nameHeader {
+    width: 260px;
+}
+
+.tagsHeader {
+    width: 220px;
+}
+
+.coordinatorHeader {
+    width: 180px;
+}
+
+.statusHeader {
+    width: 180px;
+}
+
+.dateHeader {
+    width: 140px;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.pagination {
+    padding: 16px 24px;
+    background: #F8F9FF;
+    border-top: 1px solid #E5E7EB;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6B7280;
+    text-align: center;
+}

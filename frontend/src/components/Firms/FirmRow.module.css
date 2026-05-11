@@ -1,0 +1,166 @@
+.row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    border-bottom: 1px solid #F3F4F6;
+    background: #FFFFFF;
+    min-height: 64px;
+}
+
+.row:hover {
+    background: #FAFBFF;
+}
+
+.checkboxCell,
+.nameCell,
+.tagsCell,
+.coordinatorCell,
+.statusCell,
+.dateCell {
+    padding: 16px 12px;
+    display: flex;
+    align-items: center;
+}
+
+.checkboxCell {
+    width: 48px;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+.rowCheckbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid #6B7280;
+    border-radius: 4px;
+    accent-color: #006C49;
+    cursor: pointer;
+}
+
+.nameCell {
+    width: 260px;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+
+.companyName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #0B1C30;
+}
+
+.cityName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6B7280;
+}
+
+.tagsCell {
+    width: 220px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.tagsList {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #006C49;
+    background: #ECFDF5;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.typeText {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6B7280;
+    font-style: italic;
+}
+
+.coordinatorCell {
+    width: 180px;
+}
+
+.coordinatorName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 18px;
+    color: #0B1C30;
+}
+
+.statusCell {
+    width: 180px;
+}
+
+.statusBadge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    width: fit-content;
+}
+
+.statusActive {
+    background: #ECFDF5;
+    color: #065F46;
+}
+
+.statusPending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.statusDefault {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.statusDot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.statusText {
+    white-space: nowrap;
+}
+
+.dateCell {
+    width: 140px;
+}
+
+.dateText {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6B7280;
+}
