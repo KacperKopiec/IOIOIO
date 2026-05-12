@@ -1,0 +1,108 @@
+.card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.table {
+    display: flex;
+    flex-direction: column;
+}
+
+.headerRow {
+    display: flex;
+    align-items: flex-start;
+    padding: 0;
+    background: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    margin: -1px 0;
+}
+
+.headerCell {
+    padding: 16px 24px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.headerCell:first-child {
+    padding: 16px 24px;
+    justify-content: center;
+}
+
+.headerCheckbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid #CBD5E1;
+    border-radius: 2px;
+    accent-color: #1E3A8A;
+    cursor: pointer;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+}
+
+.pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid #F1F5F9;
+    background: #FFFFFF;
+}
+
+.paginationText {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #64748B;
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.paginationBtn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 2px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginationBtn:hover:not(:disabled) {
+    background: #EFF6FF;
+    border-color: #1E3A8A;
+}
+
+.paginationBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

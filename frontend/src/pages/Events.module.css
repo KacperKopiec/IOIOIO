@@ -1,0 +1,82 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px;
+    min-height: 1024px;
+}
+
+.header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.headerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 21px;
+    color: #64748B;
+}
+
+.breadcrumbItem {
+    color: #64748B;
+}
+
+.breadcrumbSeparator {
+    color: #64748B;
+}
+
+.title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    line-height: 38px;
+    letter-spacing: -0.64px;
+    color: #00458E;
+    margin: 0;
+}
+
+.mainContent {
+    display: flex;
+    gap: 32px;
+    position: relative;
+}
+
+.filterColumn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 332px;
+}
+
+.tableColumn {
+    position: absolute;
+    left: 406px;
+    top: 0;
+    right: 0;
+    width: calc(100% - 406px);
+    max-width: 1194px;
+}
+
+@media (max-width: 1400px) {
+    .mainContent {
+        flex-direction: column;
+    }
+
+    .filterColumn,
+    .tableColumn {
+        position: static;
+        width: 100%;
+        max-width: 100%;
+    }
+}

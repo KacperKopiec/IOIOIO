@@ -1,0 +1,111 @@
+.sidebar {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 0 0 256px;
+    width: 256px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    border-right: 1px solid #f3f4f6;
+    box-shadow: 4px 0px 20px rgba(0, 0, 0, 0.04);
+    padding: 12px 0;
+    gap: 8px;
+}
+
+.logoArea {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+.logoMark {
+    width: 36px;
+    height: 36px;
+    background: #00458e;
+    border-radius: 6px;
+}
+
+.logoText {
+    font-weight: 700;
+    color: #00458e;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 8px;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.navItem:hover {
+    background: #f8fafc;
+}
+
+.icon {
+    width: 15px;
+    height: 15px;
+    background: #6b7280;
+    border-radius: 3px;
+}
+
+.label {
+    font-weight: 500;
+    font-size: 14px;
+    color: inherit;
+}
+
+.active {
+    background: #eff6ff;
+    border-left: 4px solid #00458e;
+    color: #00458e;
+}
+
+.footer {
+    margin-top: auto;
+    width: 100%;
+    padding-bottom: 12px;
+}
+
+@media (max-width: 1000px) {
+    .sidebar {
+        position: relative;
+        top: auto;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        padding: 8px;
+        gap: 12px;
+        flex: 1 1 auto;
+    }
+
+    .nav {
+        flex-direction: row;
+        gap: 8px;
+        overflow: auto;
+    }
+
+    .navItem {
+        padding: 8px 12px;
+    }
+
+    .footer {
+        margin-top: 0;
+        margin-left: auto;
+        width: auto;
+        padding-bottom: 0;
+    }
+}

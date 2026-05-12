@@ -1,0 +1,25 @@
+.activityCard {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.heading {
+    margin: 0 0 8px 0;
+}
+
+.activityItem {
+    padding: 8px 0;
+    border-bottom: 1px dashed #F1F5F9;
+}
+
+.activityTitle {
+    font-weight: 700;
+    color: #1E3A8A;
+}
+
+.activitySub {
+    font-size: 11px;
+    color: #94A3B8;
+}

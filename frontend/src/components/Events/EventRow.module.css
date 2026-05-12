@@ -1,0 +1,190 @@
+.row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0;
+    width: 1192px;
+    min-height: 73px;
+    border-bottom: 1px solid #F1F5F9;
+    background: #FFFFFF;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.row:hover {
+    background: #F8FAFC;
+}
+
+.checkboxCell {
+    width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28.5px 24px;
+    flex-shrink: 0;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid #CBD5E1;
+    border-radius: 2px;
+    accent-color: #1E3A8A;
+    cursor: pointer;
+}
+
+.nameCell {
+    width: 310px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.initial {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #DBEAFE;
+    border: 1px solid #BFDBFE;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 28px;
+    color: #1E3A8A;
+    flex-shrink: 0;
+}
+
+.nameInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.eventName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #1E3A8A;
+}
+
+.eventDate {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #94A3B8;
+}
+
+.typeCell {
+    width: 125px;
+    padding: 26px 16px 27px 24px;
+}
+
+.typeBadge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 12px;
+    text-transform: uppercase;
+    letter-spacing: -0.25px;
+}
+
+.coordinatorCell {
+    width: 190px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px 0 32px;
+}
+
+.coordinatorAvatar {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E2E8F0;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.avatarInitial {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 12px;
+    color: #141D23;
+}
+
+.coordinatorName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #334155;
+}
+
+.partnersCell {
+    width: 125px;
+    padding: 0 16px;
+}
+
+.partnerAvatars {
+    display: flex;
+    align-items: center;
+}
+
+.partnerAvatar {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E2E8F0;
+    border: 2px solid #FFFFFF;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.partnerAvatar:nth-child(3n) {
+    background: #1E3A8A;
+}
+
+.partnerInitial {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 12px;
+    color: #141D23;
+    text-align: center;
+}
+
+.partnerAvatar:nth-child(3n) .partnerInitial {
+    color: #FFFFFF;
+}
+
+.statusCell {
+    width: 153px;
+    padding: 24.5px 24px;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 13px;
+}
