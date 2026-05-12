@@ -1,0 +1,128 @@
+.timeline {
+    position: relative;
+    padding-left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border-subtle);
+}
+
+.item {
+    position: relative;
+}
+
+.dot {
+    position: absolute;
+    left: -30px;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dotInner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dotWon {
+    background: var(--color-primary-soft);
+}
+
+.dotWon .dotInner {
+    background: var(--color-primary-dark);
+}
+
+.dotOpen {
+    background: var(--color-warning-bg);
+}
+
+.dotOpen .dotInner {
+    background: var(--color-warning);
+}
+
+.dotLost {
+    background: var(--color-danger-border);
+}
+
+.dotLost .dotInner {
+    background: var(--color-danger);
+}
+
+.dotNeutral {
+    background: var(--color-border-subtle);
+}
+
+.dotNeutral .dotInner {
+    background: var(--color-text-muted);
+}
+
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.cardTitle {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-strong);
+    letter-spacing: 0.3px;
+    line-height: 16px;
+}
+
+.cardDate {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    line-height: 15px;
+    white-space: nowrap;
+}
+
+.cardBody {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    line-height: 20px;
+}
+
+.cardAmount {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.cardAmountLost {
+    color: var(--color-danger);
+}
+
+.empty {
+    color: var(--color-text-placeholder);
+    font-size: 14px;
+    padding: 16px;
+    text-align: center;
+}

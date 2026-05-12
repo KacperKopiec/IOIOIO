@@ -1,87 +1,65 @@
 import React from 'react';
-import type { EventTypeId } from '../../constants/eventTypes';
-import type { EventStatusId } from '../../constants/eventStatuses';
-import { getEventTypeConfig } from '../../constants/eventTypes';
+import { Link } from 'react-router-dom';
+import TagBadge from '../Firms/TagBadge';
 import { getEventStatusConfig } from '../../constants/eventStatuses';
+import { eventStatusToDisplayId, formatDateRange } from '../../lib/format';
+import type { EventStatus, Tag } from '../../types/api';
 import styles from './EventRow.module.css';
 
-interface EventRowProps {
+export interface EventRowData {
     id: number;
     name: string;
-    date: string;
-    type: EventTypeId;
-    coordinator: string;
-    partners: number;
-    status: EventStatusId;
+    start_date: string | null;
+    end_date: string | null;
+    status: EventStatus;
+    owner_name: string | null;
+    tags: Tag[];
+    partners_count: number;
+    target_partners_count: number | null;
 }
 
-const EventRow: React.FC<EventRowProps> = ({
-    name,
-    date,
-    type,
-    coordinator,
-    partners,
-    status
-}) => {
-    const typeConfig = getEventTypeConfig(type);
-    const statusConfig = getEventStatusConfig(status);
+interface EventRowProps {
+    event: EventRowData;
+}
+
+const EventRow: React.FC<EventRowProps> = ({ event }) => {
+    const statusConfig = getEventStatusConfig(eventStatusToDisplayId(event.status));
+    const dateLabel = formatDateRange(event.start_date, event.end_date);
+    const partnersLabel = event.target_partners_count
+        ? `${event.partners_count} / ${event.target_partners_count}`
+        : `${event.partners_count}`;
 
     return (
         <div className={styles.row}>
             <div className={styles.checkboxCell}>
-                <input type="checkbox" className={styles.checkbox} />
+                <input type="checkbox" className={styles.rowCheckbox} />
             </div>
 
-            <div className={styles.nameCell}>
-                <div className={styles.initial}>A</div>
-                <div className={styles.nameInfo}>
-                    <div className={styles.eventName}>{name}</div>
-                    <div className={styles.eventDate}>{date}</div>
+            <Link
+                to={`/events/${event.id}`}
+                className={styles.nameCell}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+                <div className={styles.eventName}>{event.name}</div>
+                <div className={styles.eventDate}>{dateLabel}</div>
+            </Link>
+
+            <div className={styles.tagsCell}>
+                <div className={styles.tagsList}>
+                    {event.tags.length === 0 ? (
+                        <span className={styles.emptyValue}>—</span>
+                    ) : (
+                        event.tags.map((tag) => (
+                            <TagBadge key={tag.id} tagId={tag.name} />
+                        ))
+                    )}
                 </div>
-            </div>
-
-            <div className={styles.typeCell}>
-                {typeConfig && (
-                    <span
-                        className={styles.typeBadge}
-                        style={{
-                            backgroundColor: typeConfig.bgColor,
-                            color: typeConfig.textColor
-                        }}
-                    >
-                        {typeConfig.label}
-                    </span>
-                )}
             </div>
 
             <div className={styles.coordinatorCell}>
-                <div className={styles.coordinatorAvatar}>
-                    <span className={styles.avatarInitial}>K</span>
-                </div>
-                <span className={styles.coordinatorName}>{coordinator}</span>
-            </div>
-
-            <div className={styles.partnersCell}>
-                <div className={styles.partnerAvatars}>
-                    {Array.from({ length: Math.min(partners, 3) }).map((_, i) => (
-                        <div
-                            key={i}
-                            className={styles.partnerAvatar}
-                            style={{
-                                marginLeft: i > 0 ? '-8px' : '0'
-                            }}
-                        >
-                            <span className={styles.partnerInitial}>
-                                {String.fromCharCode(65 + i)}
-                            </span>
-                        </div>
-                    ))}
-                    {partners > 3 && (
-                        <div className={styles.partnerAvatar} style={{ marginLeft: '-8px' }}>
-                            <span className={styles.partnerInitial}>+{partners - 3}</span>
-                        </div>
-                    )}
-                </div>
+                <span className={styles.coordinatorName}>
+                    {event.owner_name ?? '—'}
+                </span>
             </div>
 
             <div className={styles.statusCell}>
@@ -91,12 +69,15 @@ const EventRow: React.FC<EventRowProps> = ({
                         style={{
                             backgroundColor: statusConfig.bgColor,
                             color: statusConfig.textColor,
-                            border: `1px solid ${statusConfig.textColor}`
                         }}
                     >
                         {statusConfig.label}
                     </span>
                 )}
+            </div>
+
+            <div className={styles.partnersCell}>
+                <span className={styles.partnersValue}>{partnersLabel}</span>
             </div>
         </div>
     );

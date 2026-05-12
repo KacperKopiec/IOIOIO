@@ -5,8 +5,8 @@
     align-items: center;
     padding: 16px 24px;
     gap: 24px;
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     width: 100%;
     height: 56px;
@@ -31,9 +31,9 @@
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid #6B7280;
+    border: 1px solid var(--color-text-subtle);
     border-radius: 4px;
-    accent-color: #006C49;
+    accent-color: var(--color-success);
     cursor: pointer;
     flex-shrink: 0;
 }
@@ -41,11 +41,11 @@
 .labelText,
 .actionText,
 .reportText {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-style: normal;
     display: flex;
     align-items: center;
-    color: #0B1C30;
+    color: var(--color-text-strong);
 }
 
 .labelText {
@@ -57,7 +57,7 @@
 .divider {
     width: 1px;
     height: 24px;
-    background: #E5E7EB;
+    background: var(--color-border);
     flex: 0 0 auto;
 }
 
@@ -75,27 +75,27 @@
     align-items: center;
     gap: 8px;
     border-radius: 8px;
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     padding: 8px 12px;
-    color: #515F74;
-    font-family: 'Inter', sans-serif;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
     cursor: pointer;
     transition: all 0.2s ease;
     height: 32px;
 }
 
 .actionButton:hover {
-    background: #F3F4F6;
-    border-color: #D1D5DB;
+    background: var(--color-border-subtle);
+    border-color: var(--color-border);
 }
 
 .reportButton {
-    background: #FFFFFF;
+    background: var(--color-surface);
 }
 
 .reportButton:hover {
-    background: #F3F4F6;
+    background: var(--color-border-subtle);
 }
 
 .actionText {
@@ -114,7 +114,7 @@
 
 .iconSmall,
 .reportIcon {
-    color: #515F74;
+    color: var(--color-text-muted);
     flex: 0 0 auto;
     width: 16px;
     height: 16px;
@@ -134,8 +134,8 @@
     min-width: 169.81px;
     height: 42px;
     padding: 8px 16px;
-    background: #F8F9FF;
-    border: 1px solid #E5E7EB;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border);
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -149,12 +149,18 @@
     font-size: 16px;
     line-height: 24px;
     white-space: nowrap;
-    color: #515F74;
+    color: var(--color-text-muted);
 }
 
-.actionButton:hover,
-.reportButton:hover {
-    background: #F8F9FF;
+.actionButton:hover:not(:disabled),
+.reportButton:hover:not(:disabled) {
+    background: var(--color-canvas);
+}
+
+.actionButton:disabled,
+.reportButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 @media (max-width: 1000px) {

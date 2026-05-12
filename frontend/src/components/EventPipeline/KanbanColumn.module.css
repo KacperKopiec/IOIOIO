@@ -1,0 +1,77 @@
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 240px;
+    flex: 1 1 240px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+}
+
+.titleGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.countBadge {
+    background: var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 80px;
+    padding: 4px;
+    border-radius: 12px;
+    transition: background 0.15s ease, outline 0.15s ease;
+}
+
+.dropZoneActive {
+    background: rgba(0, 69, 142, 0.04);
+    outline: 2px dashed var(--color-primary, var(--color-primary));
+    outline-offset: -4px;
+}
+
+.empty {
+    color: var(--color-text-placeholder);
+    font-size: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px dashed var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface-muted);
+}

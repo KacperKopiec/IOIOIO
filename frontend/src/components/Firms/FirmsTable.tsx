@@ -1,102 +1,33 @@
 import React from 'react';
 import FirmRow from './FirmRow';
+import type { Company, PageMeta } from '../../types/api';
 import styles from './FirmsTable.module.css';
 
-interface Firm {
-    id: number;
-    name: string;
-    city: string;
-    tags: string[];
-    type: string;
-    coordinator: string;
-    status: 'Aktywny partner' | 'Kontakt' | 'Prospect';
-    lastContact: string;
+interface FirmsTableProps {
+    companies: Company[];
+    meta: PageMeta | undefined;
+    isLoading: boolean;
+    isError: boolean;
+    onPageChange: (page: number) => void;
+    selectedIds: Set<number>;
+    onToggleRow: (id: number, next: boolean) => void;
 }
 
-const sample: Firm[] = [
-    {
-        id: 1,
-        name: 'CloudTech Solutions',
-        city: 'Warszawa',
-        tags: ['cloud', 'saas'],
-        type: 'tech_startup',
-        coordinator: 'Marek Nowak',
-        status: 'Aktywny partner',
-        lastContact: '12.10.2023'
-    },
-    {
-        id: 2,
-        name: 'DataAI Systems',
-        city: 'Kraków',
-        tags: ['ai_ml', 'research'],
-        type: 'research_institute',
-        coordinator: 'Anna Kowalski',
-        status: 'Kontakt',
-        lastContact: '05.11.2023'
-    },
-    {
-        id: 3,
-        name: 'Blockchain Ventures',
-        city: 'Wrocław',
-        tags: ['blockchain', 'startup'],
-        type: 'tech_startup',
-        coordinator: 'Piotr Lewandowski',
-        status: 'Prospect',
-        lastContact: '18.10.2023'
-    },
-    {
-        id: 4,
-        name: 'Enterprise Corp',
-        city: 'Poznań',
-        tags: ['enterprise', 'partner'],
-        type: 'corporation',
-        coordinator: 'Barbara Wójcik',
-        status: 'Aktywny partner',
-        lastContact: '02.11.2023'
-    },
-    {
-        id: 5,
-        name: 'FinTech Innovation',
-        city: 'Gdańsk',
-        tags: ['saas', 'startup'],
-        type: 'tech_startup',
-        coordinator: 'Marek Nowak',
-        status: 'Kontakt',
-        lastContact: '08.11.2023'
-    },
-    {
-        id: 6,
-        name: 'AGH Kraków',
-        city: 'Kraków',
-        tags: ['research', 'partner'],
-        type: 'university',
-        coordinator: 'Dr. Jarosław Zieliński',
-        status: 'Aktywny partner',
-        lastContact: '01.11.2023'
-    },
-    {
-        id: 7,
-        name: 'MicroStartup Pro',
-        city: 'Warszawa',
-        tags: ['cloud', 'ai_ml'],
-        type: 'sme',
-        coordinator: 'Anna Kowalski',
-        status: 'Prospect',
-        lastContact: '15.10.2023'
-    },
-    {
-        id: 8,
-        name: 'Global Consulting Ltd',
-        city: 'Wrocław',
-        tags: ['enterprise', 'consultant'],
-        type: 'consultant',
-        coordinator: 'Piotr Lewandowski',
-        status: 'Kontakt',
-        lastContact: '20.10.2023'
-    }
-];
+const FirmsTable: React.FC<FirmsTableProps> = ({
+    companies,
+    meta,
+    isLoading,
+    isError,
+    onPageChange,
+    selectedIds,
+    onToggleRow,
+}) => {
+    const totalShown = companies.length;
+    const startIdx = meta ? (meta.page - 1) * meta.page_size + 1 : 0;
+    const endIdx = meta ? startIdx + totalShown - 1 : 0;
+    const canPrev = meta ? meta.page > 1 : false;
+    const canNext = meta ? meta.page < meta.pages : false;
 
-const FirmsTable: React.FC = () => {
     return (
         <div className={styles.card}>
             <div className={styles.headerRow}>
@@ -109,12 +40,61 @@ const FirmsTable: React.FC = () => {
             </div>
 
             <div className={styles.body}>
-                {sample.map((firm) => (
-                    <FirmRow key={firm.id} {...firm} />
-                ))}
+                {isLoading && (
+                    <div className={styles.emptyState}>Ładowanie firm…</div>
+                )}
+                {isError && !isLoading && (
+                    <div className={styles.emptyState}>
+                        Nie udało się pobrać firm. Spróbuj odświeżyć stronę.
+                    </div>
+                )}
+                {!isLoading && !isError && companies.length === 0 && (
+                    <div className={styles.emptyState}>
+                        Brak firm spełniających wybrane filtry.
+                    </div>
+                )}
+                {!isLoading &&
+                    !isError &&
+                    companies.map((company) => (
+                        <FirmRow
+                            key={company.id}
+                            company={company}
+                            selected={selectedIds.has(company.id)}
+                            onToggle={onToggleRow}
+                        />
+                    ))}
             </div>
 
-            <div className={styles.pagination}>Pokazano 1-10 z 84 firm</div>
+            <div className={styles.pagination}>
+                {meta && totalShown > 0 ? (
+                    <span>
+                        Pokazano {startIdx}-{endIdx} z {meta.total} firm
+                    </span>
+                ) : (
+                    <span>—</span>
+                )}
+                <div className={styles.paginationControls}>
+                    <button
+                        type="button"
+                        className={styles.paginationBtn}
+                        disabled={!canPrev}
+                        onClick={() => meta && onPageChange(meta.page - 1)}
+                    >
+                        ‹
+                    </button>
+                    <span className={styles.paginationCurrent}>
+                        {meta ? `${meta.page} / ${meta.pages}` : '—'}
+                    </span>
+                    <button
+                        type="button"
+                        className={styles.paginationBtn}
+                        disabled={!canNext}
+                        onClick={() => meta && onPageChange(meta.page + 1)}
+                    >
+                        ›
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

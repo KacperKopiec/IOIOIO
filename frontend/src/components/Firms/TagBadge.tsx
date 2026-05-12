@@ -5,24 +5,23 @@ import styles from './TagBadge.module.css';
 
 interface TagBadgeProps {
     tagId: FirmTagId | string;
+    label?: string;
 }
 
-const TagBadge: React.FC<TagBadgeProps> = ({ tagId }) => {
+const FALLBACK = { bgColor: '#F3F4F6', textColor: '#374151' };
+
+const TagBadge: React.FC<TagBadgeProps> = ({ tagId, label }) => {
     const tagConfig = getTagConfig(tagId);
 
-    if (!tagConfig) {
-        return null;
-    }
+    const display = tagConfig?.label ?? label ?? tagId;
+    const colors = tagConfig ?? FALLBACK;
 
     return (
         <span
             className={styles.tag}
-            style={{
-                backgroundColor: tagConfig.bgColor,
-                color: tagConfig.textColor
-            }}
+            style={{ backgroundColor: colors.bgColor, color: colors.textColor }}
         >
-            {tagConfig.label}
+            {display}
         </span>
     );
 };

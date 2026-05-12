@@ -1,5 +1,8 @@
 .env
 .venv
+__pycache__/
+*.py[cod]
+backend/storage/
 # Logs
 logs
 *.log

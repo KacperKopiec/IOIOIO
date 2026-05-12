@@ -1,9 +1,9 @@
 .type {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
+    color: var(--color-text-subtle);
     font-style: italic;
     padding: 2px 8px;
     border-radius: 4px;

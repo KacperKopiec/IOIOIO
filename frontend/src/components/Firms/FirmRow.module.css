@@ -1,15 +1,14 @@
 .row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px minmax(160px, 2.4fr) minmax(120px, 2fr) minmax(110px, 1.4fr) minmax(110px, 1.4fr) minmax(96px, 1.1fr);
     align-items: center;
-    gap: 0;
-    padding: 0;
-    border-bottom: 1px solid #F3F4F6;
-    background: #FFFFFF;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-surface);
     min-height: 64px;
 }
 
 .row:hover {
-    background: #FAFBFF;
+    background: var(--color-surface-muted);
 }
 
 .checkboxCell,
@@ -18,54 +17,55 @@
 .coordinatorCell,
 .statusCell,
 .dateCell {
-    padding: 16px 12px;
+    padding: 12px;
     display: flex;
     align-items: center;
+    min-width: 0;
 }
 
 .checkboxCell {
-    width: 48px;
-    flex-shrink: 0;
     justify-content: center;
+    padding: 12px 8px;
 }
 
 .rowCheckbox {
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 1px solid #6B7280;
+    border: 1px solid var(--color-text-subtle);
     border-radius: 4px;
-    accent-color: #006C49;
+    accent-color: var(--color-primary);
     cursor: pointer;
 }
 
 .nameCell {
-    width: 260px;
     flex-direction: column;
-    gap: 2px;
     align-items: flex-start;
+    gap: 2px;
 }
 
 .companyName {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
-    color: #0B1C30;
+    color: var(--color-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .cityName {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
-}
-
-.tagsCell {
-    width: 220px;
-    flex-wrap: wrap;
-    gap: 4px;
+    color: var(--color-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .tagsList {
@@ -73,94 +73,28 @@
     gap: 6px;
     align-items: center;
     flex-wrap: wrap;
-}
-
-.tag {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    color: #006C49;
-    background: #ECFDF5;
-    padding: 2px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.typeText {
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    color: #6B7280;
-    font-style: italic;
-}
-
-.coordinatorCell {
-    width: 180px;
+    min-width: 0;
 }
 
 .coordinatorName {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 500;
     font-size: 13px;
     line-height: 18px;
-    color: #0B1C30;
-}
-
-.statusCell {
-    width: 180px;
-}
-
-.statusBadge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    width: fit-content;
-}
-
-.statusActive {
-    background: #ECFDF5;
-    color: #065F46;
-}
-
-.statusPending {
-    background: #FEF3C7;
-    color: #92400E;
-}
-
-.statusDefault {
-    background: #F3F4F6;
-    color: #374151;
-}
-
-.statusDot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-}
-
-.statusText {
+    color: var(--color-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.dateCell {
-    width: 140px;
+    width: 100%;
 }
 
 .dateText {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
-    color: #6B7280;
+    color: var(--color-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
