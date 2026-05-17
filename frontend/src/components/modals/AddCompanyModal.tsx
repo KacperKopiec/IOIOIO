@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '../ui/Modal';
 import TagSelector from '../ui/TagSelector';
 import { useCreateCompany } from '../../hooks/api/companies';
-import { useIndustries } from '../../hooks/api/reference';
+import { useIndustries, useUsers } from '../../hooks/api/reference';
 import { toApiError } from '../../lib/api';
 import type { CompanySize } from '../../types/api';
 import styles from './FormFields.module.css';
@@ -24,6 +24,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
     const navigate = useNavigate();
     const create = useCreateCompany();
     const industries = useIndustries();
+    const users = useUsers();
 
     const [name, setName] = useState('');
     const [legalName, setLegalName] = useState('');
@@ -34,6 +35,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
     const [companySize, setCompanySize] = useState<CompanySize | ''>('');
     const [description, setDescription] = useState('');
     const [tagIds, setTagIds] = useState<number[]>([]);
+    const [ownerUserId, setOwnerUserId] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
     function reset() {
@@ -46,6 +48,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
         setCompanySize('');
         setDescription('');
         setTagIds([]);
+        setOwnerUserId('');
         setError(null);
     }
 
@@ -73,6 +76,7 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
                 company_size: (companySize || null) as CompanySize | null,
                 description: description.trim() || null,
                 tag_ids: tagIds,
+                owner_user_id: ownerUserId ? Number.parseInt(ownerUserId, 10) : null,
             },
             {
                 onSuccess: (company) => {
@@ -211,6 +215,22 @@ const AddCompanyModal: React.FC<AddCompanyModalProps> = ({ open, onClose }) => {
                 <div className={styles.row}>
                     <label className={styles.label}>Tagi</label>
                     <TagSelector value={tagIds} onChange={setTagIds} />
+                </div>
+
+                <div className={styles.row}>
+                    <label className={styles.label}>Opiekun</label>
+                    <select
+                        className={styles.select}
+                        value={ownerUserId}
+                        onChange={(e) => setOwnerUserId(e.target.value)}
+                    >
+                        <option value="">— brak —</option>
+                        {users.data?.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u.first_name} {u.last_name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

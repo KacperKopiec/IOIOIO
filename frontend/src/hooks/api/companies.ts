@@ -11,6 +11,7 @@ import type {
     CompanySize,
     CompanyUpdate,
     Contact,
+    Document,
     Page,
 } from '../../types/api';
 
@@ -26,6 +27,7 @@ export interface CompanyEventLink {
     stage_outcome: string;
     expected_amount: string | null;
     agreed_amount: string | null;
+    closed_at: string | null;
 }
 
 export interface CompanyFilters {
@@ -45,6 +47,7 @@ export const companyKeys = {
     contacts: (id: number) => ['companies', id, 'contacts'] as const,
     events: (id: number) => ['companies', id, 'events'] as const,
     activities: (id: number) => ['companies', id, 'activities'] as const,
+    documents: (id: number) => ['companies', id, 'documents'] as const,
 };
 
 function buildParams(filters: CompanyFilters) {
@@ -118,6 +121,102 @@ export function useCompanyActivities(id: number | null) {
     });
 }
 
+export function useCompanyDocuments(id: number | null, includeArchived: boolean = false) {
+    return useQuery({
+        queryKey:
+            id != null ? [...companyKeys.documents(id), includeArchived] : ['companies', 'documents', 'none'],
+        queryFn: async (): Promise<Document[]> => {
+            const { data } = await api.get<Document[]>(`/companies/${id}/documents?include_archived=${includeArchived}`);
+            return data;
+        },
+        enabled: id != null,
+    });
+}
+
+export interface DocumentCreate {
+    file_name: string;
+    file_url: string;
+    document_type?: string;
+}
+
+export function useCreateCompanyDocument(companyId: number, userId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: DocumentCreate): Promise<Document> => {
+            const { data } = await api.post<Document>(
+                `/companies/${companyId}/documents?user_id=${userId}`,
+                payload,
+            );
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: companyKeys.documents(companyId) });
+        },
+    });
+}
+
+export function useUploadCompanyDocument(companyId: number, userId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { file: File; document_type?: string }): Promise<Document> => {
+            const formData = new FormData();
+            formData.append('file', payload.file);
+            const params = new URLSearchParams();
+            if (payload.document_type) {
+                params.append('document_type', payload.document_type);
+            }
+            params.append('user_id', String(userId));
+            const queryString = params.toString();
+            const url = queryString
+                ? `/companies/${companyId}/documents/upload?${queryString}`
+                : `/companies/${companyId}/documents/upload`;
+            const { data } = await api.post<Document>(url, formData);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: companyKeys.documents(companyId) });
+        },
+    });
+}
+
+export function useDeleteCompanyDocument(companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<void> => {
+            await api.delete(`/companies/${companyId}/documents/${documentId}`);
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: companyKeys.documents(companyId) });
+        },
+    });
+}
+
+export function useArchiveCompanyDocument(companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<Document> => {
+            const { data } = await api.post<Document>(`/companies/${companyId}/documents/${documentId}/archive`);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['companies', companyId, 'documents'] });
+        },
+    });
+}
+
+export function useUnarchiveCompanyDocument(companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<Document> => {
+            const { data } = await api.post<Document>(`/companies/${companyId}/documents/${documentId}/unarchive`);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['companies', companyId, 'documents'] });
+        },
+    });
+}
+
 export function useCreateCompany() {
     const qc = useQueryClient();
     return useMutation({
@@ -153,6 +252,102 @@ export function useDeleteCompany() {
         },
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: companyKeys.all });
+        },
+    });
+}
+
+export const eventCompanyDocumentKeys = {
+    list: (eventId: number, companyId: number) => ['events', eventId, 'companies', companyId, 'documents'] as const,
+};
+
+export function useEventCompanyDocuments(eventId: number | null, companyId: number | null, includeArchived: boolean = false) {
+    return useQuery({
+        queryKey: eventId != null && companyId != null
+            ? [...eventCompanyDocumentKeys.list(eventId, companyId), includeArchived]
+            : ['events', 'documents', 'none'],
+        queryFn: async (): Promise<Document[]> => {
+            if (eventId == null || companyId == null) return [];
+            const { data } = await api.get<Document[]>(`/events/${eventId}/companies/${companyId}/documents?include_archived=${includeArchived}`);
+            return data;
+        },
+        enabled: eventId != null && companyId != null,
+    });
+}
+
+export function useCreateEventCompanyDocument(eventId: number, companyId: number, userId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: DocumentCreate): Promise<Document> => {
+            const { data } = await api.post<Document>(
+                `/events/${eventId}/companies/${companyId}/documents?user_id=${userId}`,
+                payload,
+            );
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: eventCompanyDocumentKeys.list(eventId, companyId) });
+        },
+    });
+}
+
+export function useUploadEventCompanyDocument(eventId: number, companyId: number, userId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { file: File; document_type?: string }): Promise<Document> => {
+            const formData = new FormData();
+            formData.append('file', payload.file);
+            const params = new URLSearchParams();
+            if (payload.document_type) {
+                params.append('document_type', payload.document_type);
+            }
+            params.append('user_id', String(userId));
+            const queryString = params.toString();
+            const url = queryString
+                ? `/events/${eventId}/companies/${companyId}/documents/upload?${queryString}`
+                : `/events/${eventId}/companies/${companyId}/documents/upload`;
+            const { data } = await api.post<Document>(url, formData);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: eventCompanyDocumentKeys.list(eventId, companyId) });
+        },
+    });
+}
+
+export function useDeleteEventCompanyDocument(eventId: number, companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<void> => {
+            await api.delete(`/events/${eventId}/companies/${companyId}/documents/${documentId}`);
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: eventCompanyDocumentKeys.list(eventId, companyId) });
+        },
+    });
+}
+
+export function useArchiveEventCompanyDocument(eventId: number, companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<Document> => {
+            const { data } = await api.post<Document>(`/events/${eventId}/companies/${companyId}/documents/${documentId}/archive`);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['events', eventId, 'companies', companyId, 'documents'] });
+        },
+    });
+}
+
+export function useUnarchiveEventCompanyDocument(eventId: number, companyId: number) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (documentId: number): Promise<Document> => {
+            const { data } = await api.post<Document>(`/events/${eventId}/companies/${companyId}/documents/${documentId}/unarchive`);
+            return data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['events', eventId, 'companies', companyId, 'documents'] });
         },
     });
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import TagSelector from '../ui/TagSelector';
 import { useUpdateCompany } from '../../hooks/api/companies';
-import { useIndustries } from '../../hooks/api/reference';
+import { useIndustries, useUsers } from '../../hooks/api/reference';
 import { toApiError } from '../../lib/api';
 import type { Company, CompanySize } from '../../types/api';
 import styles from './FormFields.module.css';
@@ -27,6 +27,7 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
 }) => {
     const update = useUpdateCompany(company.id);
     const industries = useIndustries();
+    const users = useUsers();
 
     const [name, setName] = useState(company.name);
     const [legalName, setLegalName] = useState(company.legal_name ?? '');
@@ -43,6 +44,9 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
     const [description, setDescription] = useState(company.description ?? '');
     const [tagIds, setTagIds] = useState<number[]>(
         company.tags.map((t) => t.id),
+    );
+    const [ownerUserId, setOwnerUserId] = useState<string>(
+        company.owner_user_id != null ? String(company.owner_user_id) : '',
     );
     const [error, setError] = useState<string | null>(null);
     const [prevOpen, setPrevOpen] = useState(open);
@@ -62,6 +66,9 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
             setCompanySize(company.company_size ?? '');
             setDescription(company.description ?? '');
             setTagIds(company.tags.map((t) => t.id));
+            setOwnerUserId(
+                company.owner_user_id != null ? String(company.owner_user_id) : '',
+            );
             setError(null);
         }
     }
@@ -85,6 +92,7 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
                 company_size: (companySize || null) as CompanySize | null,
                 description: description.trim() || null,
                 tag_ids: tagIds,
+                owner_user_id: ownerUserId ? Number.parseInt(ownerUserId, 10) : null,
             },
             {
                 onSuccess: () => onClose(),
@@ -219,6 +227,22 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = ({
                 <div className={styles.row}>
                     <label className={styles.label}>Tagi</label>
                     <TagSelector value={tagIds} onChange={setTagIds} />
+                </div>
+
+                <div className={styles.row}>
+                    <label className={styles.label}>Opiekun</label>
+                    <select
+                        className={styles.select}
+                        value={ownerUserId}
+                        onChange={(e) => setOwnerUserId(e.target.value)}
+                    >
+                        <option value="">— brak —</option>
+                        {users.data?.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u.first_name} {u.last_name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

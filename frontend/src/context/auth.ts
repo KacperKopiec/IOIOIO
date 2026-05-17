@@ -11,17 +11,17 @@ interface RoleProfile {
 export const ROLE_PROFILES: Record<UserRole, RoleProfile> = {
     koordynator: {
         label: 'Koordynator wydarzenia',
-        demoUserId: 2,
+        demoUserId: 1,
         demoUserName: 'Marek Kowalski',
     },
     opiekun: {
         label: 'Opiekun partnerów',
-        demoUserId: 3,
+        demoUserId: 2,
         demoUserName: 'Katarzyna Wiśniewska',
     },
     promocja: {
         label: 'Dział promocji',
-        demoUserId: 4,
+        demoUserId: 3,
         demoUserName: 'Tomasz Lewandowski',
     },
 };

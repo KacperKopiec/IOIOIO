@@ -4,6 +4,7 @@ import { eventKeys } from './events';
 import type {
     PipelineEntry,
     PipelineEntryCreate,
+    PipelineEntryUpdate,
     PipelineMoveRequest,
 } from '../../types/api';
 
@@ -84,6 +85,26 @@ export function useDeletePipelineEntry(eventIdHint?: number) {
                 qc.invalidateQueries({ queryKey: eventKeys.pipeline(eventIdHint) });
                 qc.invalidateQueries({ queryKey: eventKeys.kpi(eventIdHint) });
             }
+        },
+    });
+}
+
+export function useUpdatePipelineEntry() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (vars: {
+            id: number;
+            payload: Partial<PipelineEntryUpdate>;
+        }): Promise<PipelineEntry> => {
+            const { data } = await api.patch<PipelineEntry>(
+                `/pipeline-entries/${vars.id}`,
+                vars.payload,
+            );
+            return data;
+        },
+        onSuccess: (entry) => {
+            qc.invalidateQueries({ queryKey: pipelineEntryKeys.all });
+            qc.invalidateQueries({ queryKey: eventKeys.pipeline(entry.event_id) });
         },
     });
 }

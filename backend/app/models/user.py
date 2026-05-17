@@ -17,3 +17,5 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     role: Mapped["Role | None"] = relationship(back_populates="users")
+    owned_companies: Mapped[list["Company"]] = relationship(back_populates="owner_user")
+    documents: Mapped[list["Document"]] = relationship(back_populates="uploaded_by")

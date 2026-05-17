@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+import os
+from pathlib import Path
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from app.api.activities import router as activities_router
 from app.api.companies import router as companies_router
@@ -22,6 +25,14 @@ from app.core.config import get_settings
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="AGH CRM", version="0.1.0", root_path="/api")
+
+    @app.get("/storage/documents/{file_name}")
+    def serve_document(file_name: str):
+        storage_dir = Path(__file__).parent / "storage" / "documents"
+        file_path = storage_dir / file_name
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Plik nie znaleziony")
+        return FileResponse(file_path, media_type="application/pdf")
 
     app.add_middleware(
         CORSMiddleware,

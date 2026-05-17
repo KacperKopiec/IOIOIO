@@ -81,6 +81,8 @@ export interface Company {
     country: string | null;
     city: string | null;
     notes: string | null;
+    owner_user_id: number | null;
+    owner_user: User | null;
     created_at: string;
     updated_at: string;
     industry: Industry | null;
@@ -100,6 +102,7 @@ export interface CompanyCreate {
     country?: string | null;
     city?: string | null;
     notes?: string | null;
+    owner_user_id?: number | null;
     tag_ids?: number[];
 }
 
@@ -210,6 +213,16 @@ export interface PipelineMoveRequest {
     stage_id: number;
     agreed_amount?: string | null;
     rejection_reason?: string | null;
+}
+
+export interface PipelineEntryUpdate {
+    stage_id?: number | null;
+    owner_user_id?: number | null;
+    contact_person_id?: number | null;
+    expected_amount?: string | null;
+    agreed_amount?: string | null;
+    probability_override?: number | null;
+    notes?: string | null;
 }
 
 export interface Activity {
@@ -345,4 +358,16 @@ export interface ReportsResponse {
     new_sponsors: ReportNewSponsor[];
     events: ReportEventRow[];
     top_companies: ReportTopCompany[];
+}
+
+export interface Document {
+    id: number;
+    file_name: string;
+    file_url: string;
+    document_type: string | null;
+    archived: boolean;
+    created_at: string;
+    updated_at: string;
+    uploaded_by_user_id: number | null;
+    uploaded_by_name: string | null;
 }

@@ -5,13 +5,14 @@ def test_pipeline_stages_seeded(client):
     names = [item["name"] for item in items]
     assert names == [
         "Kontakt",
+        "Zainteresowany",
         "Oferta wysłana",
         "Negocjacje",
         "Decyzja: TAK",
         "Odrzucony",
     ]
-    assert items[3]["outcome"] == "won"
-    assert items[4]["outcome"] == "lost"
+    assert items[4]["outcome"] == "won"
+    assert items[5]["outcome"] == "lost"
 
 
 def test_industries_seeded(client):

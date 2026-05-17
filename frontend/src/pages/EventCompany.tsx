@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Info } from 'lucide-react';
+import { FileText, Info } from 'lucide-react';
 import { useActivities } from '../hooks/api/activities';
 import { useCompany, useCompanyContacts } from '../hooks/api/companies';
 import { useEvent } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
 import { usePipelineStages } from '../hooks/api/reference';
 import CompanyInfo from '../components/CompanyDetail/CompanyInfo';
+import EventCompanyDocuments from '../components/EventCompany/EventCompanyDocuments';
 import CompanySummary from '../components/EventCompany/CompanySummary';
 import EventCompanyMetrics from '../components/EventCompany/EventCompanyMetrics';
 import EventContactsCard from '../components/EventCompany/EventContactsCard';
@@ -124,6 +125,13 @@ const EventCompany: React.FC = () => {
                         isLoading={contacts.isLoading}
                         onAdd={() => setAddContactOpen(true)}
                     />
+                    <Card padding="compact">
+                        <CardHeader title="Dokumenty" icon={<FileText size={18} />} />
+                        <EventCompanyDocuments
+                            eventId={ev.id}
+                            companyId={c.id}
+                        />
+                    </Card>
                 </div>
 
                 <div className={styles.rightCol}>

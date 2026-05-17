@@ -28,6 +28,9 @@ class Company(Base, TimestampMixin):
     country: Mapped[str | None] = mapped_column(String(80))
     city: Mapped[str | None] = mapped_column(String(120))
     notes: Mapped[str | None] = mapped_column(Text)
+    owner_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
 
     industry: Mapped["Industry | None"] = relationship(back_populates="companies")
     contacts: Mapped[list["Contact"]] = relationship(
@@ -36,3 +39,4 @@ class Company(Base, TimestampMixin):
     tags: Mapped[list["Tag"]] = relationship(
         secondary="company_tags", back_populates="companies"
     )
+    owner_user: Mapped["User | None"] = relationship(back_populates="owned_companies")

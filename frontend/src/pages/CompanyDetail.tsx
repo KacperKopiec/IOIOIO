@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Building2, History, Info, NotebookPen, Pencil, Plus, Users } from 'lucide-react';
+import { Building2, FileText, History, Info, NotebookPen, Pencil, Plus, Users } from 'lucide-react';
 import {
     useCompany,
     useCompanyContacts,
     useCompanyEvents,
+    useCompanyActivities,
 } from '../hooks/api/companies';
 import CompanyInfo from '../components/CompanyDetail/CompanyInfo';
 import CooperationTimeline from '../components/CompanyDetail/CooperationTimeline';
 import RelationshipValue from '../components/CompanyDetail/RelationshipValue';
 import ContactsList from '../components/CompanyDetail/ContactsList';
-import CompanyNotes from '../components/CompanyDetail/CompanyNotes';
+import CompanyActivities from '../components/CompanyDetail/CompanyActivities';
+import CompanyDocuments from '../components/CompanyDetail/CompanyDocuments';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
 import EditCompanyModal from '../components/modals/EditCompanyModal';
@@ -34,7 +36,6 @@ const CompanyDetail: React.FC = () => {
     const { role } = useAuth();
     const canEditCompany = role === 'opiekun';
 
-    const [editingNotes, setEditingNotes] = useState(false);
     const [addContactOpen, setAddContactOpen] = useState(false);
     const [addActivityOpen, setAddActivityOpen] = useState(false);
     const [editCompanyOpen, setEditCompanyOpen] = useState(false);
@@ -42,6 +43,7 @@ const CompanyDetail: React.FC = () => {
     const company = useCompany(companyId);
     const contacts = useCompanyContacts(companyId);
     const events = useCompanyEvents(companyId);
+    const activities = useCompanyActivities(companyId);
 
     if (company.isLoading) {
         return (
@@ -179,26 +181,21 @@ const CompanyDetail: React.FC = () => {
                         <CardHeader
                             title="Notatki"
                             icon={<NotebookPen size={18} />}
-                            action={
-                                !editingNotes && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        iconOnly
-                                        aria-label="Edytuj notatki"
-                                        onClick={() => setEditingNotes(true)}
-                                    >
-                                        <Pencil size={14} />
-                                    </Button>
-                                )
-                            }
                         />
-                        <CompanyNotes
+                        <CompanyActivities
                             companyId={c.id}
-                            notes={c.notes}
-                            editing={editingNotes}
-                            onCancel={() => setEditingNotes(false)}
-                            onSaved={() => setEditingNotes(false)}
+                            activities={activities.data ?? []}
+                            isLoading={activities.isLoading}
+                        />
+                    </Card>
+
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Dokumenty"
+                            icon={<FileText size={18} />}
+                        />
+                        <CompanyDocuments
+                            companyId={company.data?.id ?? 0}
                         />
                     </Card>
                 </div>
