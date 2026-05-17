@@ -4,4 +4,16 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://crm-backend:8000',
+        changeOrigin: true,
+      },
+      '/storage': {
+        target: 'http://crm-backend:8000',
+        changeOrigin: true,
+      },
+    },
+  },
 })

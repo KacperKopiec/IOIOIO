@@ -39,6 +39,14 @@ const CompanyInfo: React.FC<CompanyInfoProps> = ({ company }) => {
                 <span className={styles.label}>Adres siedziby</span>
                 <span className={styles.value}>{addressLines || '—'}</span>
             </div>
+            {company.owner_user && (
+                <div className={styles.field}>
+                    <span className={styles.label}>Opiekun</span>
+                    <span className={styles.value}>
+                        {company.owner_user.first_name} {company.owner_user.last_name}
+                    </span>
+                </div>
+            )}
             <div className={styles.field}>
                 <span className={styles.label}>Strona WWW</span>
                 {websiteUrl ? (

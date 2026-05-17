@@ -1,6 +1,10 @@
+import os
+import uuid
+from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import selectinload
 
@@ -8,6 +12,7 @@ from app.api.deps import DbDep
 from app.models.activity import Activity
 from app.models.company import Company
 from app.models.contact import Contact
+from app.models.document import Document
 from app.models.enums import CompanySize, RelationshipStatus, StageOutcome
 from app.models.event import Event
 from app.models.pipeline import PipelineEntry, PipelineStage
@@ -16,6 +21,7 @@ from app.models.tag import Tag
 from app.schemas.common import Page, PageParams
 from app.schemas.company import CompanyCreate, CompanyOut, CompanyUpdate
 from app.schemas.contact import ContactOut
+from app.schemas.document import DocumentCreate, DocumentOut
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -41,7 +47,11 @@ def _parse_csv_int(value: str | None) -> list[int]:
 def _load_company(db, company_id: int) -> Company:
     company = db.scalar(
         select(Company)
-        .options(selectinload(Company.industry), selectinload(Company.tags))
+        .options(
+            selectinload(Company.industry),
+            selectinload(Company.tags),
+            selectinload(Company.owner_user),
+        )
         .where(Company.id == company_id)
     )
     if company is None:
@@ -128,7 +138,11 @@ def list_companies(
 
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     stmt = (
-        base.options(selectinload(Company.industry), selectinload(Company.tags))
+        base.options(
+            selectinload(Company.industry),
+            selectinload(Company.tags),
+            selectinload(Company.owner_user),
+        )
         .order_by(Company.name)
         .offset(page_params.offset)
         .limit(page_params.page_size)
@@ -219,6 +233,7 @@ def list_company_events(company_id: int, db: DbDep) -> list[dict]:
             "stage_outcome": stage.outcome.value,
             "expected_amount": entry.expected_amount,
             "agreed_amount": entry.agreed_amount,
+            "closed_at": entry.closed_at,
         }
         for entry, event, stage in rows
     ]
@@ -248,3 +263,133 @@ def list_company_activities(company_id: int, db: DbDep) -> list[dict]:
         }
         for a in db.scalars(stmt).all()
     ]
+
+
+@router.get("/{company_id}/documents", response_model=list[DocumentOut])
+def list_company_documents(company_id: int, db: DbDep, include_archived: bool = Query(default=False)) -> list[Document]:
+    from sqlalchemy.orm import selectinload
+    _load_company(db, company_id)
+    stmt = (
+        select(Document)
+        .options(selectinload(Document.uploaded_by))
+        .where(Document.company_id == company_id)
+    )
+    if not include_archived:
+        stmt = stmt.where(Document.archived == False)
+    stmt = stmt.order_by(Document.created_at.desc())
+    docs = db.scalars(stmt).all()
+    return [
+        DocumentOut(
+            id=doc.id,
+            file_name=doc.file_name,
+            file_url=doc.file_url,
+            document_type=doc.document_type,
+            archived=doc.archived,
+            created_at=doc.created_at,
+            updated_at=doc.updated_at,
+            uploaded_by_user_id=doc.uploaded_by_user_id,
+            uploaded_by_name=doc.uploaded_by.first_name + " " + doc.uploaded_by.last_name if doc.uploaded_by else None,
+        )
+        for doc in docs
+    ]
+
+
+@router.post("/{company_id}/documents", response_model=DocumentOut, status_code=status.HTTP_201_CREATED)
+def create_company_document(
+    company_id: int,
+    payload: DocumentCreate,
+    db: DbDep,
+    user_id: int | None = Query(default=None),
+) -> Document:
+    _load_company(db, company_id)
+    doc = Document(
+        company_id=company_id,
+        uploaded_by_user_id=user_id,
+        **payload.model_dump(),
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+
+@router.post("/{company_id}/documents/upload", response_model=DocumentOut, status_code=status.HTTP_201_CREATED)
+async def upload_company_document(
+    company_id: int,
+    db: DbDep,
+    file: UploadFile = File(...),
+    document_type: str | None = Query(default=None),
+    user_id: int | None = Query(default=None),
+) -> Document:
+    _load_company(db, company_id)
+
+    if file.content_type not in ("application/pdf", "application/octet-stream"):
+        raise HTTPException(status_code=400, detail="Dozwolone są tylko pliki PDF")
+
+    storage_dir = Path(__file__).parent.parent / "storage" / "documents"
+    storage_dir.mkdir(parents=True, exist_ok=True)
+
+    file_ext = ".pdf"
+    file_name = f"{uuid.uuid4()}{file_ext}"
+    file_path = storage_dir / file_name
+
+    content = await file.read()
+    file_path.write_bytes(content)
+
+    doc = Document(
+        company_id=company_id,
+        uploaded_by_user_id=user_id,
+        file_name=file.filename or "dokument.pdf",
+        file_url=f"/storage/documents/{file_name}",
+        document_type=document_type,
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+
+@router.delete("/{company_id}/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_company_document(company_id: int, document_id: int, db: DbDep) -> None:
+    _load_company(db, company_id)
+    stmt = select(Document).where(
+        Document.id == document_id,
+        Document.company_id == company_id,
+    )
+    doc = db.execute(stmt).scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Dokument nie znaleziony")
+    db.delete(doc)
+    db.commit()
+
+
+@router.post("/{company_id}/documents/{document_id}/archive", response_model=DocumentOut)
+def archive_company_document(company_id: int, document_id: int, db: DbDep) -> Document:
+    _load_company(db, company_id)
+    stmt = select(Document).where(
+        Document.id == document_id,
+        Document.company_id == company_id,
+    )
+    doc = db.execute(stmt).scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Dokument nie znaleziony")
+    doc.archived = True
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+
+@router.post("/{company_id}/documents/{document_id}/unarchive", response_model=DocumentOut)
+def unarchive_company_document(company_id: int, document_id: int, db: DbDep) -> Document:
+    _load_company(db, company_id)
+    stmt = select(Document).where(
+        Document.id == document_id,
+        Document.company_id == company_id,
+    )
+    doc = db.execute(stmt).scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Dokument nie znaleziony")
+    doc.archived = False
+    db.commit()
+    db.refresh(doc)
+    return doc

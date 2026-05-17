@@ -20,6 +20,7 @@ from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.relationship import CompanyRelationship, RelationshipType
 
 KONTAKT_STAGE_NAME = "Kontakt"
+ZAINTERESOWANY_STAGE_NAME = "Zainteresowany"
 OFFER_SENT_STAGE_NAME = "Oferta wysłana"
 DEFAULT_RELATIONSHIP_TYPE = "sponsor"
 
@@ -73,6 +74,9 @@ def move_pipeline_entry(
     if current_stage is not None and current_stage.name == KONTAKT_STAGE_NAME:
         if entry.first_contact_at is None:
             entry.first_contact_at = now
+
+    if new_stage.name == ZAINTERESOWANY_STAGE_NAME and entry.first_contact_at is None:
+        entry.first_contact_at = now
 
     if new_stage.name == OFFER_SENT_STAGE_NAME and entry.offer_sent_at is None:
         entry.offer_sent_at = now

@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
@@ -29,3 +29,6 @@ class Document(Base, TimestampMixin):
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_url: Mapped[str] = mapped_column(String(500), nullable=False)
     document_type: Mapped[str | None] = mapped_column(String(80))
+    archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    uploaded_by: Mapped["User | None"] = relationship(back_populates="documents")

@@ -29,7 +29,7 @@ const RelationshipValue: React.FC<RelationshipValueProps> = ({
     const thisYear = new Date().getFullYear();
     const yearlyTotal = won
         .filter((l) => {
-            const d = l.event_start_date ? new Date(l.event_start_date) : null;
+            const d = l.closed_at ? new Date(l.closed_at) : null;
             return d != null && d.getFullYear() === thisYear;
         })
         .reduce((acc, l) => acc + Number.parseFloat(l.agreed_amount ?? '0'), 0);
@@ -37,6 +37,10 @@ const RelationshipValue: React.FC<RelationshipValueProps> = ({
     const pendingTotal = eventLinks
         .filter((l) => l.stage_outcome === 'open')
         .reduce((acc, l) => acc + Number.parseFloat(l.expected_amount ?? '0'), 0);
+
+    const avgPartnerValue = won.length > 0
+        ? total / won.length
+        : 0;
 
     return (
         <div className={styles.card}>
@@ -50,6 +54,10 @@ const RelationshipValue: React.FC<RelationshipValueProps> = ({
                 <div className={styles.row}>
                     <span>Sfinalizowane ({thisYear})</span>
                     <span className={styles.rowValue}>{formatPLN(yearlyTotal)}</span>
+                </div>
+                <div className={styles.row}>
+                    <span>Średnio na inicjatywę</span>
+                    <span className={styles.rowValue}>{formatPLN(avgPartnerValue)}</span>
                 </div>
                 <div className={styles.row}>
                     <span>W lejku (oczekiwane)</span>

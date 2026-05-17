@@ -2,10 +2,16 @@ import axios, { AxiosError } from 'axios';
 
 export const api = axios.create({
     baseURL: '/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
     timeout: 30_000,
+});
+
+api.interceptors.request.use((config) => {
+    if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+    } else if (!config.headers['Content-Type']) {
+        config.headers['Content-Type'] = 'application/json';
+    }
+    return config;
 });
 
 export interface ApiError {

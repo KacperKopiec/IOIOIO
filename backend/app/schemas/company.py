@@ -6,6 +6,7 @@ from app.models.enums import CompanySize
 from app.schemas.common import OrmBase
 from app.schemas.industry import IndustryOut
 from app.schemas.tag import TagOut
+from app.schemas.user import UserOut
 
 
 class CompanyBase(OrmBase):
@@ -19,6 +20,7 @@ class CompanyBase(OrmBase):
     country: str | None = Field(default=None, max_length=80)
     city: str | None = Field(default=None, max_length=120)
     notes: str | None = None
+    owner_user_id: int | None = None
 
 
 class CompanyCreate(CompanyBase):
@@ -37,6 +39,7 @@ class CompanyUpdate(OrmBase):
     city: str | None = Field(default=None, max_length=120)
     notes: str | None = None
     tag_ids: list[int] | None = None
+    owner_user_id: int | None = None
 
 
 class CompanyOut(CompanyBase):
@@ -47,3 +50,4 @@ class CompanyOut(CompanyBase):
     tags: list[TagOut] = Field(default_factory=list)
     is_partner: bool = False
     last_contact_at: datetime | None = None
+    owner_user: UserOut | None = None

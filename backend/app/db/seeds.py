@@ -20,10 +20,11 @@ from app.models.user import User
 
 PIPELINE_STAGES: list[tuple[str, int, int, StageOutcome]] = [
     ("Kontakt", 1, 15, StageOutcome.OPEN),
-    ("Oferta wysłana", 2, 40, StageOutcome.OPEN),
-    ("Negocjacje", 3, 70, StageOutcome.OPEN),
-    ("Decyzja: TAK", 4, 100, StageOutcome.WON),
-    ("Odrzucony", 5, 0, StageOutcome.LOST),
+    ("Zainteresowany", 2, 25, StageOutcome.OPEN),
+    ("Oferta wysłana", 3, 40, StageOutcome.OPEN),
+    ("Negocjacje", 4, 70, StageOutcome.OPEN),
+    ("Decyzja: TAK", 5, 100, StageOutcome.WON),
+    ("Odrzucony", 6, 0, StageOutcome.LOST),
 ]
 
 ROLES: list[str] = ["koordynator", "opiekun", "promocja"]

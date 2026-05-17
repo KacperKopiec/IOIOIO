@@ -1,0 +1,332 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.row:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface-muted);
+}
+
+.icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-strong);
+    letter-spacing: 0.3px;
+    line-height: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.type {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    line-height: 16.5px;
+}
+
+.meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.metaItem {
+    font-size: 10px;
+    color: var(--color-text-placeholder);
+}
+
+.linkIcon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.empty {
+    color: var(--color-text-placeholder);
+    font-size: 13px;
+    text-align: center;
+    padding: 12px;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px dashed var(--color-border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.addButton:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.archiveToggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border: 1px dashed var(--color-border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.archiveToggle:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--color-surface-muted);
+    border-radius: 4px;
+}
+
+.input,
+.select {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 13px;
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.formActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.submitButton {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.tabGroup {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.tab:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.tabActive {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.fileUpload {
+    position: relative;
+    padding: 20px;
+    border: 2px dashed var(--color-border);
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.fileUpload:hover {
+    border-color: var(--color-primary);
+}
+
+.fileInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.filePlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+.fileName {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.rowContent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 4px;
+}
+
+.rowContent:hover {
+    background: var(--color-surface-muted);
+}
+
+.actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 4px;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.actionButton:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-primary);
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.deleteButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.deleteButton:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-error);
+}
+
+.deleteButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
