@@ -7,7 +7,6 @@ const links = [
     { to: '/firms', label: 'Baza Firm' },
     { to: '/events', label: 'Wydarzenia' },
     { to: '/reports', label: 'Raporty' },
-    { to: '/settings', label: 'Ustawienia' },
 ];
 
 const Sidebar: React.FC = () => {
@@ -17,7 +16,6 @@ const Sidebar: React.FC = () => {
                 <div className={styles.logoMark} />
                 <div className={styles.logoText}>INFORMATYKA</div>
             </div>
-
             <nav className={styles.nav}>
                 {links.map((l) => (
                     <NavLink
