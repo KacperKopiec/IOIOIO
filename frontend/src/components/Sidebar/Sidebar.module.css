@@ -11,16 +11,13 @@
     background: var(--color-surface);
     border-right: 1px solid var(--color-border-subtle);
     box-shadow: 4px 0 20px rgba(15, 23, 42, 0.04);
-    padding: var(--space-3) 0;
-    gap: var(--space-2);
     z-index: var(--z-sticky);
 }
 
 .logoArea {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-6);
+    padding: 5px 23px 0;
+    height: 55px;
+    width: 100%;
 }
 
 .logoMark {
