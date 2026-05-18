@@ -1,8 +1,8 @@
 import React from 'react';
 import type { CompanyFilters } from '../../hooks/api/companies';
-import { useIndustries, useTags } from '../../hooks/api/reference';
+import { useIndustries, usePipelineStages, useTags } from '../../hooks/api/reference';
 import { FIRM_TAGS } from '../../constants/firmTags';
-import type { CompanySize } from '../../types/api';
+import type { CompanySize, StageOutcome } from '../../types/api';
 import styles from './FilterSidebar.module.css';
 
 interface FilterSidebarProps {
@@ -17,8 +17,15 @@ const COMPANY_SIZE_OPTIONS: { value: CompanySize; label: string }[] = [
     { value: 'public_institution', label: 'Sektor publiczny' },
 ];
 
+const PIPELINE_OUTCOME_OPTIONS: { value: StageOutcome; label: string }[] = [
+    { value: 'won', label: 'Partner' },
+    { value: 'open', label: 'W toku' },
+    { value: 'lost', label: 'Odrzucony' },
+];
+
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
     const industries = useIndustries();
+    const pipelineStages = usePipelineStages();
     const tags = useTags();
 
     const selectedTagIds = new Set(filters.tag_ids ?? []);
@@ -38,6 +45,45 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
 
     const handleReset = () => {
         onChange({ page: 1, page_size: filters.page_size });
+    };
+
+    const pipelineStatusValue = filters.pipeline_stage_id
+        ? `stage:${filters.pipeline_stage_id}`
+        : filters.pipeline_outcome
+          ? `outcome:${filters.pipeline_outcome}`
+          : '';
+
+    const handlePipelineStatusChange = (
+        e: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const value = e.target.value;
+        if (!value) {
+            onChange({
+                ...filters,
+                pipeline_stage_id: null,
+                pipeline_outcome: null,
+                page: 1,
+            });
+            return;
+        }
+
+        const [kind, rawValue] = value.split(':');
+        if (kind === 'stage') {
+            onChange({
+                ...filters,
+                pipeline_stage_id: Number.parseInt(rawValue, 10),
+                pipeline_outcome: null,
+                page: 1,
+            });
+            return;
+        }
+
+        onChange({
+            ...filters,
+            pipeline_stage_id: null,
+            pipeline_outcome: rawValue as StageOutcome,
+            page: 1,
+        });
     };
 
     const tagColor = (tagName: string) => {
@@ -120,6 +166,29 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
                         />
                         <span>Aktywna umowa</span>
                     </label>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Status pipeline</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={pipelineStatusValue}
+                            onChange={handlePipelineStatusChange}
+                        >
+                            <option value="">Wszystkie statusy</option>
+                            {PIPELINE_OUTCOME_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={`outcome:${opt.value}`}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                            {pipelineStages.data?.map((stage) => (
+                                <option key={stage.id} value={`stage:${stage.id}`}>
+                                    {stage.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 <div className={styles.section}>

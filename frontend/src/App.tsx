@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import { AuthProvider } from './context/AuthContext';
@@ -23,6 +24,14 @@ const RouteFallback = () => (
     <Page width="wide">
         <Card>
             <EmptyState>Ładowanie…</EmptyState>
+        </Card>
+    </Page>
+);
+
+const PlaceholderPage = ({ children }: { children: ReactNode }) => (
+    <Page width="wide">
+        <Card>
+            <EmptyState>{children}</EmptyState>
         </Card>
     </Page>
 );
@@ -77,6 +86,8 @@ function App() {
                                 </Suspense>
                             }
                         />
+                        <Route path="settings" element={<PlaceholderPage>Ustawienia są w przygotowaniu.</PlaceholderPage>} />
+                        <Route path="help" element={<PlaceholderPage>Pomoc jest w przygotowaniu.</PlaceholderPage>} />
                     </Route>
                 </Routes>
             </BrowserRouter>
