@@ -4,33 +4,19 @@ export type UserRole = 'koordynator' | 'opiekun' | 'promocja';
 
 interface RoleProfile {
     label: string;
-    demoUserId: number;
-    demoUserName: string;
 }
 
 export const ROLE_PROFILES: Record<UserRole, RoleProfile> = {
-    koordynator: {
-        label: 'Koordynator wydarzenia',
-        demoUserId: 1,
-        demoUserName: 'Marek Kowalski',
-    },
-    opiekun: {
-        label: 'Opiekun partnerów',
-        demoUserId: 2,
-        demoUserName: 'Katarzyna Wiśniewska',
-    },
-    promocja: {
-        label: 'Dział promocji',
-        demoUserId: 3,
-        demoUserName: 'Tomasz Lewandowski',
-    },
+    koordynator: { label: 'Koordynator wydarzenia' },
+    opiekun: { label: 'Opiekun partnerów' },
+    promocja: { label: 'Dział promocji' },
 };
 
 export const ROLES: UserRole[] = ['koordynator', 'opiekun', 'promocja'];
 
 export interface AuthContextType {
     role: UserRole;
-    userId: number;
+    userId: number | null;
     userName: string;
     userRoleName: string;
     setRole: (role: UserRole) => void;
