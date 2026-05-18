@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Building2, FileText, History, Info, NotebookPen, Pencil, Plus, Users } from 'lucide-react';
+import { Building2, FileText, History, Info, NotebookPen, Pencil, Plus, ReceiptText, Users } from 'lucide-react';
 import {
     useCompany,
     useCompanyContacts,
@@ -13,6 +13,7 @@ import RelationshipValue from '../components/CompanyDetail/RelationshipValue';
 import ContactsList from '../components/CompanyDetail/ContactsList';
 import CompanyActivities from '../components/CompanyDetail/CompanyActivities';
 import CompanyDocuments from '../components/CompanyDetail/CompanyDocuments';
+import InvoicePanel from '../components/Invoices/InvoicePanel';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
 import EditCompanyModal from '../components/modals/EditCompanyModal';
@@ -197,6 +198,14 @@ const CompanyDetail: React.FC = () => {
                         <CompanyDocuments
                             companyId={company.data?.id ?? 0}
                         />
+                    </Card>
+
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Faktury i płatności"
+                            icon={<ReceiptText size={18} />}
+                        />
+                        <InvoicePanel companyId={c.id} />
                     </Card>
                 </div>
             </div>

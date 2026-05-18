@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, ReceiptText } from 'lucide-react';
 import { useAuth } from '../context/auth';
 import { useEvent, useEventKpi, useEventPipeline } from '../hooks/api/events';
 import { usePipelineStages } from '../hooks/api/reference';
@@ -16,10 +16,12 @@ import UpcomingActions from '../components/EventDetail/UpcomingActions';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
 import EditEventModal from '../components/modals/EditEventModal';
+import InvoicePanel from '../components/Invoices/InvoicePanel';
 import {
     Badge,
     Button,
     Card,
+    CardHeader,
     EmptyState,
     Page,
     PageHeader,
@@ -160,6 +162,13 @@ const EventDetail: React.FC = () => {
 
                 <aside className={styles.sideCol}>
                     <GoalProgress kpi={kpi.data} />
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Faktury i płatności"
+                            icon={<ReceiptText size={18} />}
+                        />
+                        <InvoicePanel eventId={ev.id} />
+                    </Card>
                     <ActivityFeed
                         activities={dashboard.data?.recent_activities ?? []}
                         isLoading={dashboard.isLoading}

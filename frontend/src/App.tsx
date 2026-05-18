@@ -19,6 +19,7 @@ const EventDetail = lazy(() => import('./pages/EventDetail'));
 const EventPipeline = lazy(() => import('./pages/EventPipeline'));
 const EventCompany = lazy(() => import('./pages/EventCompany'));
 const CompanyDetail = lazy(() => import('./pages/CompanyDetail'));
+const Invoices = lazy(() => import('./pages/Invoices'));
 
 const RouteFallback = () => (
     <Page width="wide">
@@ -83,6 +84,14 @@ function App() {
                             element={
                                 <Suspense fallback={<RouteFallback />}>
                                     <Reports />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="invoices"
+                            element={
+                                <Suspense fallback={<RouteFallback />}>
+                                    <Invoices />
                                 </Suspense>
                             }
                         />

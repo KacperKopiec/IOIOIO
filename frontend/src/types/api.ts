@@ -16,6 +16,7 @@ export type RelationshipStatus =
     | 'completed'
     | 'cancelled'
     | 'on_hold';
+export type PaymentStatus = 'pending' | 'paid' | 'unpaid';
 export type TagCategory = 'technology' | 'interest' | 'relationship' | 'collaboration';
 
 export interface PageMeta {
@@ -114,6 +115,7 @@ export interface Contact {
     first_name: string;
     last_name: string;
     position: string | null;
+    function?: string | null;
     email: string | null;
     phone: string | null;
     linkedin_url: string | null;
@@ -261,6 +263,39 @@ export interface CompanyRelationship {
     updated_at: string;
     relationship_type: RelationshipType | null;
 }
+
+export interface Invoice {
+    id: number;
+    company_id: number;
+    event_id: number | null;
+    invoice_number: string;
+    amount: string;
+    currency: string;
+    issue_date: string;
+    due_date: string | null;
+    payment_status: PaymentStatus;
+    paid_at: string | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+    company_name: string | null;
+    event_name: string | null;
+}
+
+export interface InvoiceCreate {
+    company_id: number;
+    event_id?: number | null;
+    invoice_number: string;
+    amount: string;
+    currency?: string;
+    issue_date: string;
+    due_date?: string | null;
+    payment_status?: PaymentStatus;
+    paid_at?: string | null;
+    notes?: string | null;
+}
+
+export type InvoiceUpdate = Partial<InvoiceCreate>;
 
 // Dashboards
 export interface EventOwnerBrief {

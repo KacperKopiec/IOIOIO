@@ -1,5 +1,7 @@
-import os
 from pathlib import Path
+
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -11,6 +13,7 @@ from app.api.contacts import router as contacts_router
 from app.api.dashboard import router as dashboard_router
 from app.api.events import router as events_router
 from app.api.health import router as health_router
+from app.api.invoices import router as invoices_router
 from app.api.pipeline_entries import router as pipeline_entries_router
 from app.api.reports import router as reports_router
 from app.api.industries import router as industries_router
@@ -22,9 +25,21 @@ from app.api.users import router as users_router
 from app.core.config import get_settings
 
 
+def run_startup_migrations() -> None:
+    alembic_ini = Path(__file__).resolve().parents[1] / "alembic.ini"
+    if not alembic_ini.exists():
+        return
+    command.upgrade(Config(str(alembic_ini)), "head")
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="AGH CRM", version="0.1.0", root_path="/api")
+
+    @app.on_event("startup")
+    def migrate_database() -> None:
+        if settings.app_env != "test":
+            run_startup_migrations()
 
     @app.get("/storage/documents/{file_name}")
     def serve_document(file_name: str):
@@ -55,6 +70,7 @@ def create_app() -> FastAPI:
     app.include_router(pipeline_entries_router)
     app.include_router(activities_router)
     app.include_router(company_relationships_router)
+    app.include_router(invoices_router)
     app.include_router(dashboard_router)
     app.include_router(reports_router)
     return app

@@ -6,6 +6,7 @@ const links = [
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/firms', label: 'Baza Firm' },
     { to: '/events', label: 'Wydarzenia' },
+    { to: '/invoices', label: 'Faktury' },
     { to: '/reports', label: 'Raporty' },
     { to: '/settings', label: 'Ustawienia' },
 ];

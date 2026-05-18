@@ -38,6 +38,12 @@ class RelationshipStatus(StrEnum):
     ON_HOLD = "on_hold"
 
 
+class PaymentStatus(StrEnum):
+    PENDING = "pending"
+    PAID = "paid"
+    UNPAID = "unpaid"
+
+
 class TagCategory(StrEnum):
     TECHNOLOGY = "technology"
     INTEREST = "interest"

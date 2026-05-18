@@ -6,12 +6,14 @@ from app.models.enums import (
     ActivityType,
     CompanySize,
     EventStatus,
+    PaymentStatus,
     RelationshipStatus,
     StageOutcome,
     TagCategory,
 )
 from app.models.event import Event
 from app.models.industry import Industry
+from app.models.invoice import Invoice
 from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.relationship import CompanyRelationship, RelationshipType
 from app.models.role import Role
@@ -34,6 +36,8 @@ __all__ = [
     "Event",
     "EventStatus",
     "Industry",
+    "Invoice",
+    "PaymentStatus",
     "PipelineEntry",
     "PipelineStage",
     "RelationshipStatus",
