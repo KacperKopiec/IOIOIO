@@ -20,6 +20,12 @@
     width: 100%;
 }
 
+.logo {
+    height: 100%;
+    width: auto;
+    display: block;
+}
+
 .logoMark {
     width: 36px;
     height: 36px;
@@ -55,10 +61,9 @@
 }
 
 .icon {
-    width: 14px;
-    height: 14px;
-    background: var(--color-text-subtle);
-    border-radius: 3px;
+    font-size: 20px;
+    line-height: 1;
+    color: inherit;
 }
 
 .label {
@@ -75,7 +80,7 @@
 }
 
 .active .icon {
-    background: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .footer {
