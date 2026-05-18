@@ -13,6 +13,7 @@ import type {
     Contact,
     Document,
     Page,
+    StageOutcome,
 } from '../../types/api';
 
 export interface CompanyEventLink {
@@ -36,6 +37,8 @@ export interface CompanyFilters {
     company_size?: CompanySize | null;
     tag_ids?: number[];
     relation_status?: 'active' | 'inactive' | null;
+    pipeline_stage_id?: number | null;
+    pipeline_outcome?: StageOutcome | null;
     page?: number;
     page_size?: number;
 }
@@ -60,6 +63,10 @@ function buildParams(filters: CompanyFilters) {
         params.tag_ids = filters.tag_ids.join(',');
     }
     if (filters.relation_status) params.relation_status = filters.relation_status;
+    if (filters.pipeline_stage_id != null) {
+        params.pipeline_stage_id = filters.pipeline_stage_id;
+    }
+    if (filters.pipeline_outcome) params.pipeline_outcome = filters.pipeline_outcome;
     params.page = filters.page ?? 1;
     params.page_size = filters.page_size ?? 25;
     return params;

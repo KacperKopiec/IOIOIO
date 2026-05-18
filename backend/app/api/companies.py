@@ -100,6 +100,14 @@ def list_companies(
     company_size: CompanySize | None = None,
     tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorów tagów"),
     relation_status: Literal["active", "inactive"] | None = None,
+    pipeline_stage_id: int | None = Query(
+        default=None,
+        description="firmy mające wpis w lejku na wybranym etapie",
+    ),
+    pipeline_outcome: StageOutcome | None = Query(
+        default=None,
+        description="firmy mające wpis w lejku o wyniku open/won/lost",
+    ),
 ) -> Page[CompanyOut]:
     base = select(Company)
     if q:
@@ -135,6 +143,22 @@ def list_companies(
             base = base.where(has_active)
         else:
             base = base.where(~has_active)
+
+    if pipeline_stage_id is not None or pipeline_outcome is not None:
+        pipeline_match = (
+            select(PipelineEntry.id)
+            .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
+            .where(PipelineEntry.company_id == Company.id)
+        )
+        if pipeline_stage_id is not None:
+            pipeline_match = pipeline_match.where(
+                PipelineEntry.stage_id == pipeline_stage_id
+            )
+        if pipeline_outcome is not None:
+            pipeline_match = pipeline_match.where(
+                PipelineStage.outcome == pipeline_outcome
+            )
+        base = base.where(pipeline_match.exists())
 
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     stmt = (

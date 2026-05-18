@@ -48,6 +48,33 @@ def test_companies_tag_filter_csv_and_semantics(client):
         assert "sponsor" in names and "saas" in names
 
 
+def test_companies_pipeline_stage_filter(client):
+    stages = {s["name"]: s["id"] for s in client.get("/pipeline-stages").json()}
+    offer_sent = stages.get("Oferta wysłana")
+    assert offer_sent
+
+    body = client.get(
+        "/companies", params={"pipeline_stage_id": offer_sent}
+    ).json()
+
+    for item in body["items"]:
+        links = client.get(f"/companies/{item['id']}/events").json()
+        assert any(link["stage_id"] == offer_sent for link in links)
+
+
+def test_companies_pipeline_outcome_filter_partner(client):
+    body = client.get("/companies", params={"pipeline_outcome": "won"}).json()
+
+    for item in body["items"]:
+        links = client.get(f"/companies/{item['id']}/events").json()
+        assert any(link["stage_outcome"] == "won" for link in links)
+
+
+def test_companies_invalid_pipeline_outcome_returns_422(client):
+    response = client.get("/companies", params={"pipeline_outcome": "partner"})
+    assert response.status_code == 422
+
+
 def test_companies_pagination_meta(client):
     page = client.get("/companies", params={"page": 1, "page_size": 5}).json()
     assert page["meta"]["page"] == 1

@@ -21,9 +21,11 @@ from app.models.enums import (
     ActivityType,
     CompanySize,
     EventStatus,
+    PaymentStatus,
 )
 from app.models.event import Event
 from app.models.industry import Industry
+from app.models.invoice import Invoice
 from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.role import Role
 from app.models.tag import Tag
@@ -337,6 +339,43 @@ def _seed_activities(
         )
 
 
+def _seed_invoices(session: Session, entries: list[PipelineEntry]) -> None:
+    statuses = [PaymentStatus.PAID, PaymentStatus.PENDING, PaymentStatus.UNPAID]
+    for idx, entry in enumerate(entries[:12], start=1):
+        invoice_number = f"FV/CRM/{entry.event_id}/{entry.company_id}"
+        existing = session.scalar(
+            select(Invoice).where(Invoice.invoice_number == invoice_number)
+        )
+        if existing is not None:
+            continue
+        issue_date = (
+            entry.closed_at
+            or entry.offer_sent_at
+            or entry.first_contact_at
+            or datetime.utcnow()
+        ).date()
+        amount = entry.agreed_amount or entry.expected_amount or Decimal("5000.00")
+        payment_status = statuses[idx % len(statuses)]
+        session.add(
+            Invoice(
+                company_id=entry.company_id,
+                event_id=entry.event_id,
+                invoice_number=invoice_number,
+                amount=amount,
+                currency="PLN",
+                issue_date=issue_date,
+                due_date=issue_date + timedelta(days=14),
+                payment_status=payment_status,
+                paid_at=(
+                    issue_date + timedelta(days=7)
+                    if payment_status == PaymentStatus.PAID
+                    else None
+                ),
+                notes="Demo rejestru faktur",
+            )
+        )
+
+
 def run() -> None:
     rng = random.Random(42)
     with SessionLocal() as session:
@@ -377,6 +416,7 @@ def run() -> None:
             all_entries.extend(entries)
 
         _seed_activities(session, all_entries, all_users, count=50, rng=rng)
+        _seed_invoices(session, all_entries)
         session.commit()
     print("Seeded demo data.")
 

@@ -16,6 +16,7 @@ export type RelationshipStatus =
     | 'completed'
     | 'cancelled'
     | 'on_hold';
+export type PaymentStatus = 'pending' | 'paid' | 'unpaid';
 export type TagCategory = 'technology' | 'interest' | 'relationship' | 'collaboration';
 
 export interface PageMeta {
@@ -114,6 +115,7 @@ export interface Contact {
     first_name: string;
     last_name: string;
     position: string | null;
+    function?: string | null;
     email: string | null;
     phone: string | null;
     linkedin_url: string | null;
@@ -262,6 +264,39 @@ export interface CompanyRelationship {
     relationship_type: RelationshipType | null;
 }
 
+export interface Invoice {
+    id: number;
+    company_id: number;
+    event_id: number | null;
+    invoice_number: string;
+    amount: string;
+    currency: string;
+    issue_date: string;
+    due_date: string | null;
+    payment_status: PaymentStatus;
+    paid_at: string | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+    company_name: string | null;
+    event_name: string | null;
+}
+
+export interface InvoiceCreate {
+    company_id: number;
+    event_id?: number | null;
+    invoice_number: string;
+    amount: string;
+    currency?: string;
+    issue_date: string;
+    due_date?: string | null;
+    payment_status?: PaymentStatus;
+    paid_at?: string | null;
+    notes?: string | null;
+}
+
+export type InvoiceUpdate = Partial<InvoiceCreate>;
+
 // Dashboards
 export interface EventOwnerBrief {
     user_id: number;
@@ -324,6 +359,14 @@ export interface ReportTotals {
     conversion_rate: number | null;
 }
 
+export interface ReportFilters {
+    year: number | null;
+    industry_id: number | null;
+    owner_user_id: number | null;
+    event_id: number | null;
+    company_id: number | null;
+}
+
 export interface ReportNewSponsor {
     company_id: number;
     company_name: string;
@@ -353,8 +396,49 @@ export interface ReportTopCompany {
     partnerships_count: number;
 }
 
+export interface AnnualCompanyReport {
+    year: number | null;
+    collaborating_companies_count: number;
+    partners_count: number;
+    total_value: string;
+}
+
+export interface ReportPipelineStageRow {
+    stage_id: number;
+    stage_name: string;
+    stage_outcome: StageOutcome;
+    count: number;
+    total_value: string;
+}
+
+export interface ReportCompanyHistoryRow {
+    company_id: number;
+    company_name: string;
+    event_id: number;
+    event_name: string;
+    stage_name: string;
+    stage_outcome: StageOutcome;
+    expected_amount: string | null;
+    agreed_amount: string | null;
+    first_contact_at: string | null;
+    closed_at: string | null;
+}
+
+export interface ReportYearTrendRow {
+    year: number;
+    collaborating_companies_count: number;
+    partners_count: number;
+    total_value: string;
+    pipeline_count: number;
+}
+
 export interface ReportsResponse {
+    filters: ReportFilters;
     totals: ReportTotals;
+    annual: AnnualCompanyReport;
+    pipeline_stages: ReportPipelineStageRow[];
+    company_history: ReportCompanyHistoryRow[];
+    yearly_trends: ReportYearTrendRow[];
     new_sponsors: ReportNewSponsor[];
     events: ReportEventRow[];
     top_companies: ReportTopCompany[];

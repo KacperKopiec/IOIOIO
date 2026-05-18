@@ -3,13 +3,18 @@ import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import logoUrl from '../../assets/logo.svg';
 
-type Link = { to: string; label: string; icon: string };
+interface SidebarLink {
+    to: string;
+    label: string;
+    icon: string;
+}
 
-const links: Link[] = [
+const links: SidebarLink[] = [
     { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
     { to: '/firms', label: 'Baza Firm', icon: 'domain' },
     { to: '/events', label: 'Wydarzenia', icon: 'event' },
-    { to: '/reports', label: 'Raporty', icon: 'assessment' },
+    { to: '/invoices', label: 'Faktury', icon: 'receipt_long' },
+    { to: '/reports', label: 'Raporty', icon: 'bar_chart' },
 ];
 
 const Sidebar: React.FC = () => {

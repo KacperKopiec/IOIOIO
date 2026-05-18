@@ -4,6 +4,59 @@
     gap: var(--space-5);
 }
 
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    align-items: end;
+}
+
+.filterField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.filterField select {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 9px 12px;
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+    font: inherit;
+    font-size: var(--font-size-base);
+}
+
+.exportButton,
+.resetButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.exportButton {
+    padding: 9px 14px;
+    background: var(--color-primary);
+    color: white;
+}
+
+.resetButton {
+    min-height: 40px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-strong);
+}
+
 .grid2 {
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
@@ -135,5 +188,46 @@
 }
 
 .topRow:last-child {
+    border-bottom: none;
+}
+
+.pipelineHead,
+.pipelineRow {
+    display: grid;
+    grid-template-columns: minmax(140px, 1.5fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(100px, 1fr);
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.historyHead,
+.historyRow {
+    display: grid;
+    grid-template-columns: minmax(120px, 1.2fr) minmax(120px, 1.2fr) minmax(100px, 1fr) minmax(90px, 0.8fr) minmax(90px, 0.8fr);
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.pipelineHead,
+.historyHead {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-muted);
+    border-radius: var(--radius-md);
+    color: var(--color-text-subtle);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.pipelineRow,
+.historyRow {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+}
+
+.pipelineRow:last-child,
+.historyRow:last-child {
     border-bottom: none;
 }
