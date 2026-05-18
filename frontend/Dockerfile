@@ -3,9 +3,10 @@ FROM node:24-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
+RUN chown -R 1001:1001 /app
 
 EXPOSE 5173
 
