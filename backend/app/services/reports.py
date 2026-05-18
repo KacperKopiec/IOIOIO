@@ -172,3 +172,64 @@ def build_reports(db: Session) -> ReportsResponse:
         events=events,
         top_companies=top_companies,
     )
+
+
+def build_event_report(db: Session, event: Event) -> dict:
+    stages = list(
+        db.execute(
+            select(PipelineStage).order_by(PipelineStage.order_number)
+        ).scalars()
+    )
+
+    stage_stats = []
+    for stage in stages:
+        entries = db.execute(
+            select(PipelineEntry)
+            .where(PipelineEntry.event_id == event.id)
+            .where(PipelineEntry.stage_id == stage.id)
+        ).scalars().all()
+
+        stage_value = sum(
+            int(e.expected_amount or 0)
+            for e in entries
+            if stage.outcome == StageOutcome.WON
+        )
+
+        stage_stats.append({
+            'stage_id': stage.id,
+            'stage_name': stage.name,
+            'stage_outcome': stage.outcome.value,
+            'count': len(entries),
+            'value': stage_value,
+        })
+
+    won_entries = db.execute(
+        select(PipelineEntry)
+        .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
+        .where(PipelineEntry.event_id == event.id)
+        .where(PipelineStage.outcome == StageOutcome.WON)
+    ).scalars().all()
+
+    partners = [
+        {
+            'company_id': e.company_id,
+            'company_name': e.company.name if e.company else None,
+            'amount': int(e.expected_amount or 0) if e.expected_amount else 0,
+            'closed_at': e.closed_at.isoformat() if e.closed_at else None,
+        }
+        for e in won_entries
+    ]
+
+    return {
+        'event_id': event.id,
+        'event_name': event.name,
+        'status': event.status.value,
+        'start_date': event.start_date.isoformat() if event.start_date else None,
+        'end_date': event.end_date.isoformat() if event.end_date else None,
+        'target_budget': int(event.target_budget or 0) if event.target_budget else 0,
+        'target_partners': event.target_partners_count or 0,
+        'stages': stage_stats,
+        'partners': partners,
+        'total_partners': len(partners),
+        'total_value': sum(p['amount'] for p in partners),
+    }

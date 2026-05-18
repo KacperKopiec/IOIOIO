@@ -1,20 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { CheckCircle, Circle, Plus } from 'lucide-react';
 import type { Activity } from '../../types/api';
+import { useUpdateActivity } from '../../hooks/api/activities';
+import AddActivityModal from '../modals/AddActivityModal';
 import styles from './EventTasksList.module.css';
 
 interface EventTasksListProps {
     activities: Activity[];
     isLoading: boolean;
+    eventId?: number;
 }
-
-const ACTIVITY_TYPE_LABELS: Record<Activity['activity_type'], string> = {
-    note: 'Notatka',
-    meeting: 'Spotkanie',
-    email: 'E-mail',
-    phone_call: 'Telefon',
-    follow_up: 'Follow-up',
-    task: 'Zadanie',
-};
 
 function badgeFor(activity: Activity) {
     if (activity.completed_at) {
@@ -48,12 +43,30 @@ function badgeFor(activity: Activity) {
     };
 }
 
-const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading }) => {
+const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, eventId }) => {
+    const [addOpen, setAddOpen] = useState(false);
+
+    const updateActivity = useUpdateActivity();
     const visible = activities.slice(0, 8);
+
+    const toggleDone = (activity: Activity) => {
+        const newCompletedAt = activity.completed_at ? null : new Date().toISOString();
+        updateActivity.mutate({
+            id: activity.id,
+            payload: { completed_at: newCompletedAt },
+        });
+    };
+
     return (
         <section className={styles.section}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Moje zadania</h2>
+                {eventId && (
+                    <button type="button" className={styles.addBtn} onClick={() => setAddOpen(true)}>
+                        <Plus size={14} />
+                        <span>Dodaj</span>
+                    </button>
+                )}
             </div>
 
             <div className={styles.card}>
@@ -77,24 +90,24 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading }
                     return (
                         <div key={activity.id} className={styles.row}>
                             <div className={styles.left}>
-                                <input
-                                    type="checkbox"
-                                    className={styles.checkbox}
-                                    checked={done}
-                                    readOnly
-                                />
+                                <button
+                                    type="button"
+                                    className={styles.checkBtn}
+                                    onClick={() => toggleDone(activity)}
+                                    disabled={updateActivity.isPending}
+                                >
+                                    {done ? (
+                                        <CheckCircle size={20} className={styles.checkIconDone} />
+                                    ) : (
+                                        <Circle size={20} className={styles.checkIcon} />
+                                    )}
+                                </button>
                                 <div>
                                     <div
                                         className={`${styles.taskTitle} ${done ? styles.taskTitleDone : ''
                                             }`}
                                     >
                                         {activity.subject}
-                                    </div>
-                                    <div
-                                        className={`${styles.taskMeta} ${done ? styles.taskMetaDone : ''
-                                            }`}
-                                    >
-                                        Kategoria: {ACTIVITY_TYPE_LABELS[activity.activity_type]}
                                     </div>
                                 </div>
                             </div>
@@ -105,6 +118,14 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading }
                     );
                 })}
             </div>
+
+            {eventId && (
+                <AddActivityModal
+                    open={addOpen}
+                    onClose={() => setAddOpen(false)}
+                    defaults={{ eventId }}
+                />
+            )}
         </section>
     );
 };

@@ -239,9 +239,9 @@ def _seed_pipeline_for_event(
     rng: random.Random,
 ) -> list[PipelineEntry]:
     distribution = {
-        EventStatus.CLOSED: [0.05, 0.10, 0.10, 0.55, 0.20],
-        EventStatus.ACTIVE: [0.30, 0.25, 0.20, 0.15, 0.10],
-        EventStatus.DRAFT: [0.70, 0.20, 0.05, 0.03, 0.02],
+        EventStatus.CLOSED: [0.05, 0.10, 0.10, 0.40, 0.25, 0.10],
+        EventStatus.ACTIVE: [0.25, 0.20, 0.20, 0.15, 0.12, 0.08],
+        EventStatus.DRAFT: [0.60, 0.18, 0.10, 0.07, 0.04, 0.01],
     }
     weights = distribution.get(event.status, distribution[EventStatus.ACTIVE])
 

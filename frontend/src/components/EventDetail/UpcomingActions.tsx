@@ -34,7 +34,15 @@ function initials(text: string | null | undefined): string {
 }
 
 const UpcomingActions: React.FC<UpcomingActionsProps> = ({ actions, isLoading }) => {
-    const visible = actions.slice(0, 4);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const futureActions = actions.filter((act) => {
+        if (!act.activity_date) return false;
+        const date = new Date(act.activity_date);
+        date.setHours(0, 0, 0, 0);
+        return date >= now;
+    });
+    const visible = futureActions.slice(0, 4);
     return (
         <div className={styles.card}>
             <h3 className={styles.title}>Nadchodzące działania</h3>

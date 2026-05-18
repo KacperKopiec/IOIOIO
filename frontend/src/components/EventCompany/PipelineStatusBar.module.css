@@ -123,6 +123,61 @@
     color: var(--color-danger);
 }
 
+.amountSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--color-surface-muted);
+    border-radius: 4px;
+}
+
+.amountLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.amountEdit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.amountInput {
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.amountInput:focus {
+    outline: none;
+    border-color: var(--color-primary-dark);
+}
+
+.amountActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.amountDisplay {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.amountValue {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-strong);
+}
+
 .notesSection {
     border-top: 1px solid var(--color-border);
     padding-top: 16px;
