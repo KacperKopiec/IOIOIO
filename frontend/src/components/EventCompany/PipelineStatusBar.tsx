@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ChevronDown, ChevronUp, Edit3, Loader2 } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Edit3, Loader2, Wallet } from 'lucide-react';
 import { useUpdatePipelineEntry } from '../../hooks/api/pipeline';
 import type { PipelineEntry, PipelineStage } from '../../types/api';
 import styles from './PipelineStatusBar.module.css';
@@ -20,7 +20,9 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
     const [notesExpanded, setNotesExpanded] = useState(false);
     const [notesEditing, setNotesEditing] = useState(false);
     const [notesText, setNotesText] = useState('');
-    const updateNotes = useUpdatePipelineEntry();
+    const [amountEditing, setAmountEditing] = useState(false);
+    const [amountText, setAmountText] = useState('');
+    const updateEntry = useUpdatePipelineEntry();
 
     const startEdit = () => {
         setNotesText(entry?.notes ?? '');
@@ -30,7 +32,7 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
 
     const saveNotes = () => {
         if (entry) {
-            updateNotes.mutate(
+            updateEntry.mutate(
                 { id: entry.id, payload: { notes: notesText || null } },
                 {
                     onSuccess: () => {
@@ -43,6 +45,30 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
 
     const cancelEdit = () => {
         setNotesEditing(false);
+    };
+
+    const startEditAmount = () => {
+        setAmountText(entry?.expected_amount?.toString() ?? '');
+        setAmountEditing(true);
+    };
+
+    const saveAmount = () => {
+        if (entry) {
+            const parsed = amountText.replace(/\s/g, '');
+            const value = parsed === '' ? null : parsed;
+            updateEntry.mutate(
+                { id: entry.id, payload: { expected_amount: value } },
+                {
+                    onSuccess: () => {
+                        setAmountEditing(false);
+                    },
+                },
+            );
+        }
+    };
+
+    const cancelAmountEdit = () => {
+        setAmountEditing(false);
     };
 
     return (
@@ -93,6 +119,63 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
                         : ''}
                 </div>
             )}
+            {entry && (
+                <div className={styles.amountSection}>
+                    <div className={styles.amountLabel}>
+                        <Wallet size={14} />
+                        <span>Oczekiwana kwota</span>
+                    </div>
+                    {amountEditing ? (
+                        <div className={styles.amountEdit}>
+                            <input
+                                type="text"
+                                className={styles.amountInput}
+                                value={amountText}
+                                onChange={(e) => setAmountText(e.target.value)}
+                                placeholder="np. 15000"
+                            />
+                            <div className={styles.amountActions}>
+                                <button
+                                    type="button"
+                                    className={styles.notesCancel}
+                                    onClick={cancelAmountEdit}
+                                    disabled={updateEntry.isPending}
+                                >
+                                    Anuluj
+                                </button>
+                                <button
+                                    type="button"
+                                    className={styles.notesSave}
+                                    onClick={saveAmount}
+                                    disabled={updateEntry.isPending}
+                                >
+                                    {updateEntry.isPending ? (
+                                        <Loader2 size={14} className={styles.spinner} />
+                                    ) : (
+                                        'Zapisz'
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.amountDisplay}>
+<span className={styles.amountValue}>
+                                {entry.expected_amount
+                                    ? `${parseFloat(entry.expected_amount).toLocaleString('pl-PL')} PLN`
+                                    : 'Brak'}
+                            </span>
+                            <button
+                                type="button"
+                                className={styles.notesToggle}
+                                onClick={startEditAmount}
+                            >
+                                <Edit3 size={12} />
+                                <span>Zmień</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
             {entry && (entry.notes || notesEditing) && (
                 <div className={styles.notesSection}>
                     <button
@@ -123,7 +206,7 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
                                             type="button"
                                             className={styles.notesCancel}
                                             onClick={cancelEdit}
-                                            disabled={updateNotes.isPending}
+                                            disabled={updateEntry.isPending}
                                         >
                                             Anuluj
                                         </button>
@@ -131,9 +214,9 @@ const PipelineStatusBar: React.FC<PipelineStatusBarProps> = ({
                                             type="button"
                                             className={styles.notesSave}
                                             onClick={saveNotes}
-                                            disabled={updateNotes.isPending}
+                                            disabled={updateEntry.isPending}
                                         >
-                                            {updateNotes.isPending ? (
+                                            {updateEntry.isPending ? (
                                                 <Loader2 size={14} className={styles.spinner} />
                                             ) : (
                                                 'Zapisz'

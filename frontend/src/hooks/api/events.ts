@@ -25,6 +25,7 @@ export const eventKeys = {
     detail: (id: number) => ['events', 'detail', id] as const,
     pipeline: (id: number) => ['events', id, 'pipeline'] as const,
     kpi: (id: number) => ['events', id, 'kpi'] as const,
+    report: (id: number) => ['events', id, 'report'] as const,
 };
 
 function buildParams(filters: EventFilters) {
@@ -79,6 +80,42 @@ export function useEventKpi(id: number | null) {
         queryKey: id != null ? eventKeys.kpi(id) : ['events', 'kpi', 'none'],
         queryFn: async (): Promise<EventKpi> => {
             const { data } = await api.get<EventKpi>(`/events/${id}/kpi`);
+            return data;
+        },
+        enabled: id != null,
+    });
+}
+
+export interface EventReport {
+    event_id: number;
+    event_name: string;
+    status: string;
+    start_date: string | null;
+    end_date: string | null;
+    target_budget: number;
+    target_partners: number;
+    stages: {
+        stage_id: number;
+        stage_name: string;
+        stage_outcome: string;
+        count: number;
+        value: number;
+    }[];
+    partners: {
+        company_id: number;
+        company_name: string | null;
+        amount: number;
+        closed_at: string | null;
+    }[];
+    total_partners: number;
+    total_value: number;
+}
+
+export function useEventReport(id: number | null) {
+    return useQuery({
+        queryKey: id != null ? eventKeys.report(id) : ['events', 'report', 'none'],
+        queryFn: async (): Promise<EventReport> => {
+            const { data } = await api.get<EventReport>(`/events/${id}/report`);
             return data;
         },
         enabled: id != null,

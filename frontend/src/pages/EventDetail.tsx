@@ -26,6 +26,7 @@ import {
 } from '../components/ui';
 import type { BadgeTone } from '../components/ui';
 import type { EventStatus } from '../types/api';
+import { useEventReport } from '../hooks/api/events';
 import styles from './EventDetail.module.css';
 
 const STATUS_LABELS: Record<EventStatus, string> = {
@@ -52,6 +53,7 @@ const EventDetail: React.FC = () => {
     const [addActivityOpen, setAddActivityOpen] = useState(false);
     const [addPipelineOpen, setAddPipelineOpen] = useState(false);
     const [editEventOpen, setEditEventOpen] = useState(false);
+    const [showReport, setShowReport] = useState(false);
 
     const event = useEvent(eventId);
     const kpi = useEventKpi(eventId);
@@ -61,6 +63,7 @@ const EventDetail: React.FC = () => {
     const activities = useActivities(
         eventId != null ? { event_id: eventId, limit: 50 } : {},
     );
+    const eventReport = useEventReport(showReport ? eventId : null);
 
     if (event.isLoading) {
         return (
@@ -128,11 +131,10 @@ const EventDetail: React.FC = () => {
                             Dodaj firmę
                         </Button>
                         <Button
-                            variant="primary"
-                            iconLeft={<Plus size={14} />}
-                            onClick={() => setAddActivityOpen(true)}
+                            variant="secondary"
+                            onClick={() => setShowReport(true)}
                         >
-                            Nowy wpis
+                            Raport
                         </Button>
                     </>
                 }
@@ -152,6 +154,7 @@ const EventDetail: React.FC = () => {
                     <EventTasksList
                         activities={activities.data ?? []}
                         isLoading={activities.isLoading}
+                        eventId={eventId ?? undefined}
                     />
                 </div>
 
@@ -183,6 +186,110 @@ const EventDetail: React.FC = () => {
                 event={ev}
                 onClose={() => setEditEventOpen(false)}
             />
+
+            {showReport && (
+                <div className={styles.reportOverlay}>
+                    <div className={styles.reportModal}>
+                        <div className={styles.reportHeader}>
+                            <h2>Raport: {ev.name}</h2>
+                            <button
+                                type="button"
+                                className={styles.reportClose}
+                                onClick={() => setShowReport(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        {eventReport.isLoading ? (
+                            <div className={styles.reportLoading}>Generowanie raportu...</div>
+                        ) : eventReport.data ? (
+                            <div className={styles.reportContent}>
+                                <div className={styles.reportSection}>
+                                    <h3>Podsumowanie</h3>
+                                    <div className={styles.reportStats}>
+                                        <div className={styles.reportStat}>
+                                            <span className={styles.reportStatLabel}>Partnerzy</span>
+                                            <span className={styles.reportStatValue}>
+                                                {eventReport.data.total_partners}
+                                            </span>
+                                        </div>
+                                        <div className={styles.reportStat}>
+                                            <span className={styles.reportStatLabel}>Wartość</span>
+                                            <span className={styles.reportStatValue}>
+                                                {Number(eventReport.data.total_value).toLocaleString('pl-PL')} PLN
+                                            </span>
+                                        </div>
+                                        <div className={styles.reportStat}>
+                                            <span className={styles.reportStatLabel}>Cel partnerów</span>
+                                            <span className={styles.reportStatValue}>
+                                                {eventReport.data.target_partners}
+                                            </span>
+                                        </div>
+                                        <div className={styles.reportStat}>
+                                            <span className={styles.reportStatLabel}>Cel budżetu</span>
+                                            <span className={styles.reportStatValue}>
+                                                {Number(eventReport.data.target_budget).toLocaleString('pl-PL')} PLN
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.reportSection}>
+                                    <h3>Etapy lejka</h3>
+                                    <table className={styles.reportTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Etap</th>
+                                                <th>Liczba firm</th>
+                                                <th>Wartość</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {eventReport.data.stages.map((stage) => (
+                                                <tr key={stage.stage_id}>
+                                                    <td>{stage.stage_name}</td>
+                                                    <td>{stage.count}</td>
+                                                    <td>
+                                                        {stage.stage_outcome === 'won'
+                                                            ? `${Number(stage.value).toLocaleString('pl-PL')} PLN`
+                                                            : '—'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {eventReport.data.partners.length > 0 && (
+                                    <div className={styles.reportSection}>
+                                        <h3>Partnerzy (Decyzja: TAK)</h3>
+                                        <table className={styles.reportTable}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Firma</th>
+                                                    <th>Kwota</th>
+                                                    <th>Data</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {eventReport.data.partners.map((p) => (
+                                                    <tr key={p.company_id}>
+                                                        <td>{p.company_name}</td>
+                                                        <td>{Number(p.amount).toLocaleString('pl-PL')} PLN</td>
+                                                        <td>{p.closed_at?.split('T')[0] || '—'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className={styles.reportError}>Błąd generowania raportu</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </Page>
     );
 };

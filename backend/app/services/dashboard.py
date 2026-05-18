@@ -80,10 +80,7 @@ def _event_brief(db: Session, event: Event) -> ActiveEventBrief:
             ).label("partners_count"),
             func.sum(
                 case(
-                    (
-                        PipelineStage.outcome == StageOutcome.WON,
-                        func.coalesce(PipelineEntry.agreed_amount, 0),
-                    ),
+                    (PipelineStage.outcome == StageOutcome.WON, PipelineEntry.expected_amount),
                     else_=0,
                 )
             ).label("total_value"),
@@ -135,10 +132,7 @@ def build_coordinator_dashboard(db: Session, event: Event) -> CoordinatorDashboa
             ).label("won"),
             func.sum(
                 case(
-                    (
-                        PipelineStage.outcome == StageOutcome.WON,
-                        func.coalesce(PipelineEntry.agreed_amount, 0),
-                    ),
+                    (PipelineStage.outcome == StageOutcome.WON, PipelineEntry.expected_amount),
                     else_=0,
                 )
             ).label("total_value"),

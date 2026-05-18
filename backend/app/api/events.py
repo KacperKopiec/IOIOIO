@@ -322,3 +322,10 @@ def unarchive_event_company_document(event_id: int, company_id: int, document_id
     db.commit()
     db.refresh(doc)
     return doc
+
+
+@router.get("/{event_id}/report")
+def get_event_report(event_id: int, db: DbDep) -> dict:
+    from app.services.reports import build_event_report
+    event = _load_event(db, event_id)
+    return build_event_report(db, event)

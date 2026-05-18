@@ -7,7 +7,7 @@
 .header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
 }
 
 .title {
@@ -43,6 +43,24 @@
     align-items: center;
     gap: 16px;
     min-width: 0;
+}
+
+.checkBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkIcon {
+    color: var(--color-text-placeholder);
+}
+
+.checkIconDone {
+    color: var(--color-success);
 }
 
 .checkbox {
@@ -109,4 +127,101 @@
     text-align: center;
     color: var(--color-text-subtle);
     font-size: 14px;
+}
+
+.addBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-primary-dark);
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: var(--color-surface);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.addBtn:hover {
+    background: var(--color-primary-darker);
+}
+
+.addForm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--color-surface-muted);
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.addInput {
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.addInput:focus {
+    outline: none;
+    border-color: var(--color-primary-dark);
+}
+
+.addTextarea {
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 13px;
+    min-height: 60px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.addTextarea:focus {
+    outline: none;
+    border-color: var(--color-primary-dark);
+}
+
+.addActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.addCancel {
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--color-text-muted);
+}
+
+.addCancel:hover {
+    background: var(--color-surface);
+}
+
+.addSave {
+    padding: 6px 12px;
+    background: var(--color-primary-dark);
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--color-surface);
+}
+
+.addSave:hover {
+    background: var(--color-primary-darker);
+}
+
+.addSave:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

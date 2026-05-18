@@ -25,10 +25,7 @@ def compute_event_kpi(db: Session, event: Event) -> EventKpi:
             ).label("lost_count"),
             func.sum(
                 case(
-                    (
-                        stage_outcome == StageOutcome.WON,
-                        func.coalesce(PipelineEntry.agreed_amount, 0),
-                    ),
+                    (stage_outcome == StageOutcome.WON, PipelineEntry.expected_amount),
                     else_=0,
                 )
             ).label("total_value"),
