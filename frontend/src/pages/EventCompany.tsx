@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { FileText, Info } from 'lucide-react';
 import { useActivities } from '../hooks/api/activities';
 import { useCompany, useCompanyContacts } from '../hooks/api/companies';
-import { useEvent } from '../hooks/api/events';
+import { useEvent, useEventCompanyReport } from '../hooks/api/events';
 import { usePipelineEntries } from '../hooks/api/pipeline';
 import { usePipelineStages } from '../hooks/api/reference';
 import CompanyInfo from '../components/CompanyDetail/CompanyInfo';
@@ -16,6 +16,7 @@ import EventNotesCard from '../components/EventCompany/EventNotesCard';
 import PipelineStatusBar from '../components/EventCompany/PipelineStatusBar';
 import AddContactModal from '../components/modals/AddContactModal';
 import {
+    Button,
     Card,
     CardHeader,
     EmptyState,
@@ -29,6 +30,7 @@ const EventCompany: React.FC = () => {
     const eventId = id ? Number.parseInt(id, 10) : null;
     const numericCompanyId = companyId ? Number.parseInt(companyId, 10) : null;
     const [addContactOpen, setAddContactOpen] = useState(false);
+    const [showReport, setShowReport] = useState(false);
 
     const company = useCompany(numericCompanyId);
     const event = useEvent(eventId);
@@ -39,6 +41,8 @@ const EventCompany: React.FC = () => {
             ? { event_id: eventId, company_id: numericCompanyId }
             : {},
     );
+    const companyReport = useEventCompanyReport(showReport ? eventId : null, showReport ? numericCompanyId : null);
+    const allContacts = useCompanyContacts(numericCompanyId);
     const activities = useActivities(
         eventId != null && numericCompanyId != null
             ? { event_id: eventId, company_id: numericCompanyId, limit: 50 }
@@ -103,6 +107,11 @@ const EventCompany: React.FC = () => {
                         </Link>
                     </>
                 }
+                actions={
+                    <Button variant="secondary" onClick={() => setShowReport(true)}>
+                        Raport
+                    </Button>
+                }
             />
 
             <div className={styles.layout}>
@@ -153,6 +162,96 @@ const EventCompany: React.FC = () => {
                 companyId={c.id}
                 onClose={() => setAddContactOpen(false)}
             />
+
+            {showReport && (
+                <div className={styles.reportOverlay}>
+                    <div className={styles.reportModal}>
+                        <div className={styles.reportHeader}>
+                            <h2>Raport współpracy: {c.name}</h2>
+                            <button
+                                type="button"
+                                className={styles.reportClose}
+                                onClick={() => setShowReport(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        {companyReport.isLoading ? (
+                            <div className={styles.reportLoading}>Generowanie raportu...</div>
+                        ) : companyReport.data ? (
+                            <div className={styles.reportContent}>
+                                <div className={styles.reportSection}>
+                                    <h3>Firma</h3>
+                                    <div className={styles.reportInfo}>
+                                        <div><strong>Nazwa:</strong> {companyReport.data.legal_name || companyReport.data.company_name}</div>
+                                        <div><strong>Miasto:</strong> {companyReport.data.city || '—'}</div>
+                                        <div><strong>Branża:</strong> {companyReport.data.industry || '—'}</div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.reportSection}>
+                                    <h3>Etap w lejku</h3>
+                                    {companyReport.data.pipeline_entry ? (
+                                        <div className={styles.reportInfo}>
+                                            <div><strong>Etap:</strong> {companyReport.data.pipeline_entry.stage_name}</div>
+                                            <div><strong>Oczekiwana:</strong> {companyReport.data.pipeline_entry.expected_amount.toLocaleString('pl-PL')} PLN</div>
+                                            <div><strong>Uzgodniona:</strong> {companyReport.data.pipeline_entry.agreed_amount.toLocaleString('pl-PL')} PLN</div>
+                                            <div><strong>Opiekun:</strong> {companyReport.data.pipeline_entry.owner_name || '—'}</div>
+                                            <div><strong>Pierwszy kontakt:</strong> {companyReport.data.pipeline_entry.first_contact_at?.split('T')[0] || '—'}</div>
+                                            <div><strong>Oferta wysłana:</strong> {companyReport.data.pipeline_entry.offer_sent_at?.split('T')[0] || '—'}</div>
+                                            <div><strong>Zamknięcie:</strong> {companyReport.data.pipeline_entry.closed_at?.split('T')[0] || '—'}</div>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.reportEmpty}>Firma nie jest w lejku tego wydarzenia</div>
+                                    )}
+                                </div>
+
+                                {companyReport.data.partnership && (
+                                    <div className={styles.reportSection}>
+                                        <h3>Partnerstwo</h3>
+                                        <div className={styles.reportInfo}>
+                                            <div><strong>Pakiet:</strong> {companyReport.data.partnership.package_name || '—'}</div>
+                                            <div><strong>Kwota netto:</strong> {companyReport.data.partnership.amount_net.toLocaleString('pl-PL')} PLN</div>
+                                            <div><strong>Kwota brutto:</strong> {companyReport.data.partnership.amount_gross.toLocaleString('pl-PL')} PLN</div>
+                                            <div><strong>Data podpisania:</strong> {companyReport.data.partnership.contract_signed_at?.split('T')[0] || '—'}</div>
+                                            <div><strong>Od:</strong> {companyReport.data.partnership.start_date?.split('T')[0] || '—'}</div>
+                                            <div><strong>Do:</strong> {companyReport.data.partnership.end_date?.split('T')[0] || '—'}</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {allContacts.data && allContacts.data.length > 0 && (
+                                    <div className={styles.reportSection}>
+                                        <h3>Osoby kontaktowe</h3>
+                                        <table className={styles.reportTable}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Imię i nazwisko</th>
+                                                    <th>Funkcja</th>
+                                                    <th>Email</th>
+                                                    <th>Telefon</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {allContacts.data.map((contact) => (
+                                                    <tr key={contact.id}>
+                                                        <td>{contact.first_name} {contact.last_name}</td>
+                                                        <td>{contact.function || '—'}</td>
+                                                        <td>{contact.email || '—'}</td>
+                                                        <td>{contact.phone || '—'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className={styles.reportError}>Błąd generowania raportu</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </Page>
     );
 };

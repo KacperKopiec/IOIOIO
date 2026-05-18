@@ -122,6 +122,53 @@ export function useEventReport(id: number | null) {
     });
 }
 
+export interface EventCompanyReport {
+    company_id: number;
+    company_name: string;
+    legal_name: string | null;
+    city: string | null;
+    industry: string | null;
+    event_id: number;
+    pipeline_entry: {
+        stage_id: number;
+        stage_name: string;
+        stage_outcome: string | null;
+        expected_amount: number;
+        agreed_amount: number;
+        first_contact_at: string | null;
+        offer_sent_at: string | null;
+        closed_at: string | null;
+        owner_name: string | null;
+        notes: string | null;
+    } | null;
+    activities: {
+        activity_type: string;
+        subject: string;
+        activity_date: string | null;
+    }[];
+    partnership: {
+        package_name: string | null;
+        amount_net: number;
+        amount_gross: number;
+        start_date: string | null;
+        end_date: string | null;
+        contract_signed_at: string | null;
+    } | null;
+}
+
+export function useEventCompanyReport(eventId: number | null, companyId: number | null) {
+    return useQuery({
+        queryKey: eventId != null && companyId != null 
+            ? ['events', eventId, 'companies', companyId, 'report'] 
+            : ['events', 'company-report', 'none'],
+        queryFn: async (): Promise<EventCompanyReport> => {
+            const { data } = await api.get<EventCompanyReport>(`/events/${eventId}/companies/${companyId}/report`);
+            return data;
+        },
+        enabled: eventId != null && companyId != null,
+    });
+}
+
 export function useCreateEvent() {
     const qc = useQueryClient();
     return useMutation({

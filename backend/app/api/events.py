@@ -329,3 +329,88 @@ def get_event_report(event_id: int, db: DbDep) -> dict:
     from app.services.reports import build_event_report
     event = _load_event(db, event_id)
     return build_event_report(db, event)
+
+
+@router.get("/{event_id}/companies/{company_id}/report")
+def get_event_company_report(event_id: int, company_id: int, db: DbDep) -> dict:
+    from sqlalchemy import func, select
+    from app.models.pipeline import PipelineEntry, PipelineStage
+    from app.models.activity import Activity
+    from app.models.relationship import CompanyRelationship
+    from app.models.enums import StageOutcome, RelationshipStatus
+
+    _load_event(db, event_id)
+    from app.api.companies import _load_company
+    company = _load_company(db, company_id)
+
+    entry = db.scalar(
+        select(PipelineEntry)
+        .options(
+            selectinload(PipelineEntry.stage),
+            selectinload(PipelineEntry.owner),
+        )
+        .where(PipelineEntry.event_id == event_id)
+        .where(PipelineEntry.company_id == company_id)
+    )
+
+    stage_data = None
+    if entry:
+        stage_data = {
+            "stage_id": entry.stage.id,
+            "stage_name": entry.stage.name,
+            "stage_outcome": entry.stage.outcome.value if entry.stage.outcome else None,
+            "expected_amount": int(entry.expected_amount) if entry.expected_amount else 0,
+            "agreed_amount": int(entry.agreed_amount) if entry.agreed_amount else 0,
+            "first_contact_at": entry.first_contact_at.isoformat() if entry.first_contact_at else None,
+            "offer_sent_at": entry.offer_sent_at.isoformat() if entry.offer_sent_at else None,
+            "closed_at": entry.closed_at.isoformat() if entry.closed_at else None,
+            "owner_name": f"{entry.owner.first_name} {entry.owner.last_name}" if entry.owner else None,
+            "notes": entry.notes,
+        }
+
+    activities = db.execute(
+        select(Activity)
+        .where(Activity.event_id == event_id)
+        .where(Activity.company_id == company_id)
+        .order_by(Activity.activity_date.desc().nullslast())
+        .limit(20)
+    ).scalars().all()
+
+    activities_data = [
+        {
+            "activity_type": a.activity_type.value,
+            "subject": a.subject,
+            "activity_date": a.activity_date.isoformat() if a.activity_date else None,
+        }
+        for a in activities
+    ]
+
+    relationship = db.scalar(
+        select(CompanyRelationship)
+        .where(CompanyRelationship.event_id == event_id)
+        .where(CompanyRelationship.company_id == company_id)
+        .where(CompanyRelationship.status == RelationshipStatus.ACTIVE)
+    )
+
+    partnership = None
+    if relationship:
+        partnership = {
+            "package_name": relationship.package_name,
+            "amount_net": int(relationship.amount_net) if relationship.amount_net else 0,
+            "amount_gross": int(relationship.amount_gross) if relationship.amount_gross else 0,
+            "start_date": relationship.start_date.isoformat() if relationship.start_date else None,
+            "end_date": relationship.end_date.isoformat() if relationship.end_date else None,
+            "contract_signed_at": relationship.contract_signed_at.isoformat() if relationship.contract_signed_at else None,
+        }
+
+    return {
+        "company_id": company.id,
+        "company_name": company.name,
+        "legal_name": company.legal_name,
+        "city": company.city,
+        "industry": company.industry.name if company.industry else None,
+        "event_id": event_id,
+        "pipeline_entry": stage_data,
+        "activities": activities_data,
+        "partnership": partnership,
+    }
