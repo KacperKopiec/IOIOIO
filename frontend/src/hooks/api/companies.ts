@@ -139,14 +139,14 @@ export interface DocumentCreate {
     document_type?: string;
 }
 
-export function useCreateCompanyDocument(companyId: number, userId: number) {
+export function useCreateCompanyDocument(companyId: number, userId: number | null) {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: DocumentCreate): Promise<Document> => {
-            const { data } = await api.post<Document>(
-                `/companies/${companyId}/documents?user_id=${userId}`,
-                payload,
-            );
+            const url = userId != null
+                ? `/companies/${companyId}/documents?user_id=${userId}`
+                : `/companies/${companyId}/documents`;
+            const { data } = await api.post<Document>(url, payload);
             return data;
         },
         onSuccess: () => {
@@ -155,7 +155,7 @@ export function useCreateCompanyDocument(companyId: number, userId: number) {
     });
 }
 
-export function useUploadCompanyDocument(companyId: number, userId: number) {
+export function useUploadCompanyDocument(companyId: number, userId: number | null) {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: { file: File; document_type?: string }): Promise<Document> => {
@@ -165,7 +165,9 @@ export function useUploadCompanyDocument(companyId: number, userId: number) {
             if (payload.document_type) {
                 params.append('document_type', payload.document_type);
             }
-            params.append('user_id', String(userId));
+            if (userId != null) {
+                params.append('user_id', String(userId));
+            }
             const queryString = params.toString();
             const url = queryString
                 ? `/companies/${companyId}/documents/upload?${queryString}`
@@ -274,14 +276,14 @@ export function useEventCompanyDocuments(eventId: number | null, companyId: numb
     });
 }
 
-export function useCreateEventCompanyDocument(eventId: number, companyId: number, userId: number) {
+export function useCreateEventCompanyDocument(eventId: number, companyId: number, userId: number | null) {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: DocumentCreate): Promise<Document> => {
-            const { data } = await api.post<Document>(
-                `/events/${eventId}/companies/${companyId}/documents?user_id=${userId}`,
-                payload,
-            );
+            const url = userId != null
+                ? `/events/${eventId}/companies/${companyId}/documents?user_id=${userId}`
+                : `/events/${eventId}/companies/${companyId}/documents`;
+            const { data } = await api.post<Document>(url, payload);
             return data;
         },
         onSuccess: () => {
@@ -290,7 +292,7 @@ export function useCreateEventCompanyDocument(eventId: number, companyId: number
     });
 }
 
-export function useUploadEventCompanyDocument(eventId: number, companyId: number, userId: number) {
+export function useUploadEventCompanyDocument(eventId: number, companyId: number, userId: number | null) {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: { file: File; document_type?: string }): Promise<Document> => {
@@ -300,7 +302,9 @@ export function useUploadEventCompanyDocument(eventId: number, companyId: number
             if (payload.document_type) {
                 params.append('document_type', payload.document_type);
             }
-            params.append('user_id', String(userId));
+            if (userId != null) {
+                params.append('user_id', String(userId));
+            }
             const queryString = params.toString();
             const url = queryString
                 ? `/events/${eventId}/companies/${companyId}/documents/upload?${queryString}`
