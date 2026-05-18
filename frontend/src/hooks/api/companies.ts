@@ -51,6 +51,7 @@ export const companyKeys = {
     events: (id: number) => ['companies', id, 'events'] as const,
     activities: (id: number) => ['companies', id, 'activities'] as const,
     documents: (id: number) => ['companies', id, 'documents'] as const,
+    report: (id: number) => ['companies', id, 'report'] as const,
 };
 
 function buildParams(filters: CompanyFilters) {
@@ -134,6 +135,50 @@ export function useCompanyDocuments(id: number | null, includeArchived: boolean 
             id != null ? [...companyKeys.documents(id), includeArchived] : ['companies', 'documents', 'none'],
         queryFn: async (): Promise<Document[]> => {
             const { data } = await api.get<Document[]>(`/companies/${id}/documents?include_archived=${includeArchived}`);
+            return data;
+        },
+        enabled: id != null,
+    });
+}
+
+export interface CompanyReport {
+    company_id: number;
+    company_name: string;
+    legal_name: string | null;
+    city: string | null;
+    industry: string | null;
+    stages: {
+        stage_name: string;
+        stage_outcome: string | null;
+        count: number;
+        value: number;
+    }[];
+    activities: {
+        activity_type: string;
+        subject: string;
+        activity_date: string | null;
+        due_date: string | null;
+        completed_at: string | null;
+    }[];
+    partnerships: {
+        event_id: number | null;
+        event_name: string | null;
+        package_name: string | null;
+        amount_net: number;
+        amount_gross: number;
+        contract_signed_at: string | null;
+        start_date: string | null;
+        end_date: string | null;
+    }[];
+    total_pipeline_won_value: number;
+    total_partnerships: number;
+}
+
+export function useCompanyReport(id: number | null) {
+    return useQuery({
+        queryKey: id != null ? companyKeys.report(id) : ['companies', 'report', 'none'],
+        queryFn: async (): Promise<CompanyReport> => {
+            const { data } = await api.get<CompanyReport>(`/companies/${id}/report`);
             return data;
         },
         enabled: id != null,

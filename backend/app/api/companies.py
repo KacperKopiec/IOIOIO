@@ -417,3 +417,92 @@ def unarchive_company_document(company_id: int, document_id: int, db: DbDep) -> 
     db.commit()
     db.refresh(doc)
     return doc
+
+
+@router.get("/{company_id}/report")
+def get_company_report(company_id: int, db: DbDep) -> dict:
+    from sqlalchemy import func
+    from app.models.pipeline import PipelineEntry, PipelineStage
+    from app.models.activity import Activity
+    from app.models.relationship import CompanyRelationship
+    from app.models.enums import StageOutcome, RelationshipStatus
+
+    company = _load_company(db, company_id)
+
+    pipeline_rows = db.execute(
+        select(
+            PipelineStage.name,
+            PipelineStage.outcome,
+            func.count(PipelineEntry.id).label("count"),
+            func.coalesce(func.sum(PipelineEntry.expected_amount), 0).label("value"),
+        )
+        .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
+        .where(PipelineEntry.company_id == company_id)
+        .group_by(PipelineStage.id, PipelineStage.name, PipelineStage.outcome)
+        .order_by(PipelineStage.order_number)
+    ).all()
+
+    stages_data = [
+        {
+            "stage_name": r.name,
+            "stage_outcome": r.outcome.value if r.outcome else None,
+            "count": r.count,
+            "value": int(r.value),
+        }
+        for r in pipeline_rows
+    ]
+
+    activities = db.execute(
+        select(Activity)
+        .where(Activity.company_id == company_id)
+        .order_by(Activity.activity_date.desc().nullslast())
+        .limit(20)
+    ).scalars().all()
+
+    activities_data = [
+        {
+            "activity_type": a.activity_type.value,
+            "subject": a.subject,
+            "activity_date": a.activity_date.isoformat() if a.activity_date else None,
+            "due_date": a.due_date.isoformat() if a.due_date else None,
+            "completed_at": a.completed_at.isoformat() if a.completed_at else None,
+        }
+        for a in activities
+    ]
+
+    relationships = db.execute(
+        select(CompanyRelationship)
+        .where(CompanyRelationship.company_id == company_id)
+        .where(CompanyRelationship.status == RelationshipStatus.ACTIVE)
+    ).scalars().all()
+
+    partnerships_data = [
+        {
+            "event_id": r.event.id if r.event else None,
+            "event_name": r.event.name if r.event else None,
+            "package_name": r.package_name,
+            "amount_net": int(r.amount_net) if r.amount_net else 0,
+            "amount_gross": int(r.amount_gross) if r.amount_gross else 0,
+            "contract_signed_at": r.contract_signed_at.isoformat() if r.contract_signed_at else None,
+            "start_date": r.start_date.isoformat() if r.start_date else None,
+            "end_date": r.end_date.isoformat() if r.end_date else None,
+        }
+        for r in relationships
+    ]
+
+    total_pipeline_value = sum(
+        r.value for r in pipeline_rows if r.outcome == StageOutcome.WON
+    )
+
+    return {
+        "company_id": company.id,
+        "company_name": company.name,
+        "legal_name": company.legal_name,
+        "city": company.city,
+        "industry": company.industry.name if company.industry else None,
+        "stages": stages_data,
+        "activities": activities_data,
+        "partnerships": partnerships_data,
+        "total_pipeline_won_value": total_pipeline_value,
+        "total_partnerships": len(relationships),
+    }
