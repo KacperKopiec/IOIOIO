@@ -127,6 +127,12 @@ const EventDetail: React.FC = () => {
                             variant="secondary"
                             iconLeft={<Plus size={14} />}
                             onClick={() => setAddPipelineOpen(true)}
+                            disabled={!canEditEvent}
+                            title={
+                                canEditEvent
+                                    ? undefined
+                                    : 'Tylko koordynator może dodawać firmy do lejka'
+                            }
                         >
                             Dodaj firmę
                         </Button>

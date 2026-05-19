@@ -211,6 +211,20 @@ export interface PipelineEntryCreate {
     notes?: string | null;
 }
 
+export interface PipelineEntryBulkCreate {
+    event_id: number;
+    company_ids: number[];
+    stage_id?: number | null;
+    owner_user_id?: number | null;
+    expected_amount?: string | null;
+    notes?: string | null;
+}
+
+export interface PipelineEntryBulkResult {
+    created: PipelineEntry[];
+    skipped_company_ids: number[];
+}
+
 export interface PipelineMoveRequest {
     stage_id: number;
     agreed_amount?: string | null;

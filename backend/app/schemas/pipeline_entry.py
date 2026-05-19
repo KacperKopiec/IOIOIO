@@ -31,6 +31,15 @@ class PipelineEntryCreate(OrmBase):
     notes: str | None = None
 
 
+class PipelineEntryBulkCreate(OrmBase):
+    event_id: int
+    company_ids: list[int] = Field(min_length=1)
+    stage_id: int | None = None
+    owner_user_id: int | None = None
+    expected_amount: Decimal | None = Field(default=None, ge=0)
+    notes: str | None = None
+
+
 class PipelineEntryUpdate(OrmBase):
     stage_id: int | None = None
     owner_user_id: int | None = None
@@ -58,3 +67,8 @@ class PipelineEntryOut(PipelineEntryBase):
     stage: PipelineStageOut | None = None
     company: CompanyOut | None = None
     owner: UserOut | None = None
+
+
+class PipelineEntryBulkResult(OrmBase):
+    created: list[PipelineEntryOut] = Field(default_factory=list)
+    skipped_company_ids: list[int] = Field(default_factory=list)

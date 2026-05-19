@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Mail, Tag } from 'lucide-react';
+import { FileText, GitBranchPlus, Mail, Tag } from 'lucide-react';
 import styles from './ActionBar.module.css';
 
 interface ActionBarProps {
@@ -7,7 +7,8 @@ interface ActionBarProps {
     visibleCount: number;
     allSelected: boolean;
     onToggleAll: (next: boolean) => void;
-    onAddTags: () => void;
+    onAddTags?: () => void;
+    onSeedPipeline?: () => void;
     onSendEmail?: () => void;
     onGenerateReport?: () => void;
 }
@@ -18,6 +19,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
     allSelected,
     onToggleAll,
     onAddTags,
+    onSeedPipeline,
     onSendEmail,
     onGenerateReport,
 }) => {
@@ -70,10 +72,29 @@ const ActionBar: React.FC<ActionBarProps> = ({
                         className={styles.actionButton}
                         type="button"
                         onClick={onAddTags}
-                        disabled={disabled}
+                        disabled={disabled || !onAddTags}
+                        title={
+                            !onAddTags
+                                ? 'Tylko opiekun relacji może zmieniać tagi'
+                                : undefined
+                        }
                     >
                         <Tag className={styles.iconSmall} aria-hidden="true" />
                         <span className={styles.actionText}>Dodaj tag</span>
+                    </button>
+                    <button
+                        className={styles.actionButton}
+                        type="button"
+                        onClick={onSeedPipeline}
+                        disabled={disabled || !onSeedPipeline}
+                        title={
+                            !onSeedPipeline
+                                ? 'Tylko koordynator może zasilać lejek'
+                                : undefined
+                        }
+                    >
+                        <GitBranchPlus className={styles.iconSmall} aria-hidden="true" />
+                        <span className={styles.actionText}>Zasil lejek</span>
                     </button>
                 </div>
             </div>

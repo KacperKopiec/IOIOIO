@@ -113,3 +113,26 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.fullList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.fullItem {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.fullItem .icon {
+    position: static;
+    flex: 0 0 auto;
+}
+
+.fullBody {
+    min-width: 0;
+    flex: 1;
+}

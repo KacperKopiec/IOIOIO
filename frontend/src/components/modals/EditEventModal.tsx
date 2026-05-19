@@ -214,7 +214,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                         <input
                             type="number"
                             min="0"
-                            step="100"
+                            step="0.01"
                             className={styles.input}
                             value={targetBudget}
                             onChange={(e) => setTargetBudget(e.target.value)}

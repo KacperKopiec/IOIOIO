@@ -23,12 +23,14 @@ interface KanbanBoardProps {
     eventId: number;
     stages: PipelineStage[];
     entries: PipelineEntry[];
+    readOnly?: boolean;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({
     eventId,
     stages,
     entries,
+    readOnly = false,
 }) => {
     const queryClient = useQueryClient();
     const move = useMovePipelineEntry();
@@ -54,12 +56,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }, [entries, stages]);
 
     function handleDragStart(event: DragStartEvent) {
+        if (readOnly) return;
         const entry = event.active.data.current?.entry as PipelineEntry | undefined;
         if (entry) setActiveEntry(entry);
     }
 
     function handleDragEnd(event: DragEndEvent) {
         setActiveEntry(null);
+        if (readOnly) return;
         const { active, over } = event;
         if (!over) return;
 
@@ -102,6 +106,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             onDragCancel={() => setActiveEntry(null)}
         >
             {errorMsg && <div className={styles.errorBanner}>{errorMsg}</div>}
+            {readOnly && (
+                <div className={styles.errorBanner}>
+                    Podgląd tylko do odczytu. Lejkiem zarządza koordynator.
+                </div>
+            )}
             <div className={styles.board}>
                 {stages.map((stage) => (
                     <KanbanColumn
