@@ -1,10 +1,11 @@
-import os
+import csv
+import io
 import uuid
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi.responses import Response
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import selectinload
 
@@ -61,54 +62,16 @@ def _load_company(db, company_id: int) -> Company:
     return company
 
 
-def _serialize_companies(db, companies: list[Company]) -> list[CompanyOut]:
-    if not companies:
-        return []
-    ids = [c.id for c in companies]
-    partner_ids = set(
-        db.scalars(
-            select(PipelineEntry.company_id)
-            .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
-            .where(
-                PipelineEntry.company_id.in_(ids),
-                PipelineStage.outcome == StageOutcome.WON,
-            )
-        ).all()
-    )
-    last_contact_rows = db.execute(
-        select(Activity.company_id, func.max(Activity.activity_date))
-        .where(Activity.company_id.in_(ids))
-        .group_by(Activity.company_id)
-    ).all()
-    last_contact_by_id = {cid: ts for cid, ts in last_contact_rows}
-
-    out: list[CompanyOut] = []
-    for c in companies:
-        model = CompanyOut.model_validate(c)
-        model.is_partner = c.id in partner_ids
-        model.last_contact_at = last_contact_by_id.get(c.id)
-        out.append(model)
-    return out
-
-
-@router.get("", response_model=Page[CompanyOut])
-def list_companies(
-    db: DbDep,
-    page_params: Annotated[PageParams, Depends()],
-    q: str | None = Query(default=None, description="szukaj po name/legal_name/nip/city"),
+def _companies_base_query(
+    q: str | None = None,
     industry_id: int | None = None,
     company_size: CompanySize | None = None,
-    tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorów tagów"),
+    tag_ids: str | None = None,
     relation_status: Literal["active", "inactive"] | None = None,
-    pipeline_stage_id: int | None = Query(
-        default=None,
-        description="firmy mające wpis w lejku na wybranym etapie",
-    ),
-    pipeline_outcome: StageOutcome | None = Query(
-        default=None,
-        description="firmy mające wpis w lejku o wyniku open/won/lost",
-    ),
-) -> Page[CompanyOut]:
+    pipeline_stage_id: int | None = None,
+    pipeline_outcome: StageOutcome | None = None,
+    company_ids: str | None = None,
+):
     base = select(Company)
     if q:
         like = f"%{q.lower()}%"
@@ -129,6 +92,10 @@ def list_companies(
     if parsed_tags:
         for tag_id in parsed_tags:
             base = base.where(Company.tags.any(Tag.id == tag_id))
+
+    parsed_company_ids = _parse_csv_int(company_ids)
+    if parsed_company_ids:
+        base = base.where(Company.id.in_(parsed_company_ids))
 
     if relation_status is not None:
         has_active = (
@@ -160,6 +127,90 @@ def list_companies(
             )
         base = base.where(pipeline_match.exists())
 
+    return base
+
+
+def _serialize_companies(db, companies: list[Company]) -> list[CompanyOut]:
+    if not companies:
+        return []
+    ids = [c.id for c in companies]
+    partner_ids = set(
+        db.scalars(
+            select(PipelineEntry.company_id)
+            .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
+            .where(
+                PipelineEntry.company_id.in_(ids),
+                PipelineStage.outcome == StageOutcome.WON,
+            )
+        ).all()
+    )
+    last_contact_rows = db.execute(
+        select(Activity.company_id, func.max(Activity.activity_date))
+        .where(Activity.company_id.in_(ids))
+        .group_by(Activity.company_id)
+    ).all()
+    last_contact_by_id = {cid: ts for cid, ts in last_contact_rows}
+
+    out: list[CompanyOut] = []
+    for c in companies:
+        model = CompanyOut.model_validate(c)
+        model.is_partner = c.id in partner_ids
+        model.last_contact_at = last_contact_by_id.get(c.id)
+        out.append(model)
+    return out
+
+
+def _format_dt(value) -> str:
+    return value.isoformat() if value else ""
+
+
+def _format_bool(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def _owner_name(company: Company) -> str:
+    if company.owner_user is None:
+        return ""
+    return f"{company.owner_user.first_name} {company.owner_user.last_name}"
+
+
+def _contact_names(company: Company) -> str:
+    return " | ".join(f"{c.first_name} {c.last_name}" for c in company.contacts)
+
+
+def _contact_values(company: Company, field: str) -> str:
+    return " | ".join(
+        value for contact in company.contacts if (value := getattr(contact, field))
+    )
+
+
+@router.get("", response_model=Page[CompanyOut])
+def list_companies(
+    db: DbDep,
+    page_params: Annotated[PageParams, Depends()],
+    q: str | None = Query(default=None, description="szukaj po name/legal_name/nip/city"),
+    industry_id: int | None = None,
+    company_size: CompanySize | None = None,
+    tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorów tagów"),
+    relation_status: Literal["active", "inactive"] | None = None,
+    pipeline_stage_id: int | None = Query(
+        default=None,
+        description="firmy mające wpis w lejku na wybranym etapie",
+    ),
+    pipeline_outcome: StageOutcome | None = Query(
+        default=None,
+        description="firmy mające wpis w lejku o wyniku open/won/lost",
+    ),
+) -> Page[CompanyOut]:
+    base = _companies_base_query(
+        q=q,
+        industry_id=industry_id,
+        company_size=company_size,
+        tag_ids=tag_ids,
+        relation_status=relation_status,
+        pipeline_stage_id=pipeline_stage_id,
+        pipeline_outcome=pipeline_outcome,
+    )
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     stmt = (
         base.options(
@@ -177,6 +228,115 @@ def list_companies(
         total=total,
         page=page_params.page,
         page_size=page_params.page_size,
+    )
+
+
+@router.get("/export")
+def export_companies(
+    db: DbDep,
+    q: str | None = Query(default=None, description="szukaj po name/legal_name/nip/city"),
+    industry_id: int | None = None,
+    company_size: CompanySize | None = None,
+    tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorÃ³w tagÃ³w"),
+    relation_status: Literal["active", "inactive"] | None = None,
+    pipeline_stage_id: int | None = Query(
+        default=None,
+        description="firmy majÄ…ce wpis w lejku na wybranym etapie",
+    ),
+    pipeline_outcome: StageOutcome | None = Query(
+        default=None,
+        description="firmy majÄ…ce wpis w lejku o wyniku open/won/lost",
+    ),
+    company_ids: str | None = Query(default=None, description="lista CSV identyfikatorÃ³w firm"),
+) -> Response:
+    stmt = (
+        _companies_base_query(
+            q=q,
+            industry_id=industry_id,
+            company_size=company_size,
+            tag_ids=tag_ids,
+            relation_status=relation_status,
+            pipeline_stage_id=pipeline_stage_id,
+            pipeline_outcome=pipeline_outcome,
+            company_ids=company_ids,
+        )
+        .options(
+            selectinload(Company.industry),
+            selectinload(Company.tags),
+            selectinload(Company.contacts),
+            selectinload(Company.owner_user),
+        )
+        .order_by(Company.name)
+    )
+    companies = list(db.scalars(stmt).all())
+    serialized_by_id = {
+        company.id: model
+        for company, model in zip(
+            companies, _serialize_companies(db, companies), strict=True
+        )
+    }
+
+    output = io.StringIO()
+    writer = csv.writer(output, lineterminator="\n")
+    writer.writerow(
+        [
+            "id",
+            "name",
+            "legal_name",
+            "nip",
+            "website",
+            "industry",
+            "company_size",
+            "country",
+            "city",
+            "owner",
+            "owner_email",
+            "is_partner",
+            "last_contact_at",
+            "tags",
+            "contact_names",
+            "contact_emails",
+            "contact_phones",
+            "description",
+            "notes",
+            "created_at",
+            "updated_at",
+        ]
+    )
+    for company in companies:
+        serialized = serialized_by_id[company.id]
+        writer.writerow(
+            [
+                company.id,
+                company.name,
+                company.legal_name or "",
+                company.nip or "",
+                company.website or "",
+                company.industry.name if company.industry else "",
+                company.company_size.value if company.company_size else "",
+                company.country or "",
+                company.city or "",
+                _owner_name(company),
+                company.owner_user.email if company.owner_user else "",
+                _format_bool(serialized.is_partner),
+                _format_dt(serialized.last_contact_at),
+                ", ".join(
+                    tag.name for tag in sorted(company.tags, key=lambda tag: tag.name)
+                ),
+                _contact_names(company),
+                _contact_values(company, "email"),
+                _contact_values(company, "phone"),
+                company.description or "",
+                company.notes or "",
+                _format_dt(company.created_at),
+                _format_dt(company.updated_at),
+            ]
+        )
+
+    return Response(
+        content=("\ufeff" + output.getvalue()).encode("utf-8"),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="companies-export.csv"'},
     )
 
 

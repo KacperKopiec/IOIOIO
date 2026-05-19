@@ -1,3 +1,7 @@
+import csv
+import io
+
+
 def test_list_companies_paginated(client):
     response = client.get("/companies", params={"page_size": 5})
     assert response.status_code == 200
@@ -31,3 +35,30 @@ def test_invalid_company_size_returns_422(client):
         "/companies", json={"name": "x", "company_size": "mega-corp"}
     )
     assert response.status_code == 422
+
+
+def test_export_companies_csv_respects_filters(client, unique_slug):
+    payload = {
+        "name": f"CSV Export Test {unique_slug}",
+        "city": "Krakow",
+        "company_size": "sme",
+    }
+    created = client.post("/companies", json=payload).json()
+
+    try:
+        response = client.get("/companies/export", params={"q": unique_slug})
+        assert response.status_code == 200
+        assert "text/csv" in response.headers["content-type"]
+        assert "attachment" in response.headers["content-disposition"]
+
+        content = response.content.decode("utf-8-sig")
+        rows = list(csv.DictReader(io.StringIO(content)))
+
+        assert rows
+        assert rows[0]["id"] == str(created["id"])
+        assert rows[0]["name"] == payload["name"]
+        assert rows[0]["city"] == payload["city"]
+        assert rows[0]["company_size"] == payload["company_size"]
+        assert "contact_emails" in rows[0]
+    finally:
+        client.delete(f"/companies/{created['id']}")
