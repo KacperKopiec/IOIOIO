@@ -91,6 +91,15 @@
     background: var(--color-border-subtle);
 }
 
+.btnDanger {
+    background: var(--color-danger);
+    color: var(--color-surface);
+}
+
+.btnDanger:hover:not(:disabled) {
+    background: var(--color-danger-dark, var(--color-danger));
+}
+
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;

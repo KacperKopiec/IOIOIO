@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Building2, FileText, History, Info, NotebookPen, Pencil, Plus, ReceiptText, Users } from 'lucide-react';
+import { Bell, Building2, FileText, History, Info, NotebookPen, Pencil, Plus, ReceiptText, Users } from 'lucide-react';
 import {
     useCompany,
     useCompanyContacts,
@@ -14,6 +14,7 @@ import RelationshipValue from '../components/CompanyDetail/RelationshipValue';
 import ContactsList from '../components/CompanyDetail/ContactsList';
 import CompanyActivities from '../components/CompanyDetail/CompanyActivities';
 import CompanyDocuments from '../components/CompanyDetail/CompanyDocuments';
+import EventTasksList from '../components/EventDetail/EventTasksList';
 import InvoicePanel from '../components/Invoices/InvoicePanel';
 import AddActivityModal from '../components/modals/AddActivityModal';
 import AddContactModal from '../components/modals/AddContactModal';
@@ -39,7 +40,7 @@ const CompanyDetail: React.FC = () => {
     const canEditCompany = role === 'opiekun';
 
     const [addContactOpen, setAddContactOpen] = useState(false);
-    const [addActivityOpen, setAddActivityOpen] = useState(false);
+    const [addHistoryOpen, setAddHistoryOpen] = useState(false);
     const [editCompanyOpen, setEditCompanyOpen] = useState(false);
     const [showReport, setShowReport] = useState(false);
 
@@ -121,10 +122,10 @@ const CompanyDetail: React.FC = () => {
                             </Button>
                             <Button
                                 variant="primary"
-                                onClick={() => setAddActivityOpen(true)}
+                                onClick={() => setAddHistoryOpen(true)}
                                 iconLeft={<Plus size={14} />}
                             >
-                                Nowy wpis
+                                Wpis do historii
                             </Button>
                         </>
                     }
@@ -189,7 +190,21 @@ const CompanyDetail: React.FC = () => {
 
                     <Card padding="compact">
                         <CardHeader
-                            title="Notatki"
+                            title="Follow-upy"
+                            icon={<Bell size={18} />}
+                        />
+                        <EventTasksList
+                            title="Zadania do wykonania"
+                            emptyText="Brak otwartych follow-upów dla tej firmy."
+                            activities={activities.data ?? []}
+                            isLoading={activities.isLoading}
+                            defaults={{ companyId: c.id }}
+                        />
+                    </Card>
+
+                    <Card padding="compact">
+                        <CardHeader
+                            title="Historia kontaktu"
                             icon={<NotebookPen size={18} />}
                         />
                         <CompanyActivities
@@ -225,8 +240,10 @@ const CompanyDetail: React.FC = () => {
                 onClose={() => setAddContactOpen(false)}
             />
             <AddActivityModal
-                open={addActivityOpen}
-                onClose={() => setAddActivityOpen(false)}
+                open={addHistoryOpen}
+                onClose={() => setAddHistoryOpen(false)}
+                mode="history"
+                defaultType="note"
                 defaults={{ companyId: c.id }}
             />
             <EditCompanyModal

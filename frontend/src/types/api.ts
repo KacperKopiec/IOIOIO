@@ -310,10 +310,13 @@ export interface RecentActivityBrief {
     activity_type: ActivityType;
     subject: string;
     activity_date: string | null;
+    due_date: string | null;
+    completed_at: string | null;
     company_id: number | null;
     company_name: string | null;
     event_id: number | null;
     event_name: string | null;
+    assigned_user_id: number | null;
 }
 
 export interface CoordinatorDashboard {

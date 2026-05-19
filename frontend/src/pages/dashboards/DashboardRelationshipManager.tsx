@@ -70,7 +70,7 @@ const DashboardRelationshipManager: React.FC = () => {
                 <KpiCard
                     icon={<AlertTriangle size={20} />}
                     tone="danger"
-                    label="Zaległe zadania"
+                    label="Zaległe follow-upy"
                     value={`${overdue.length}`}
                     sub="wymagają reakcji"
                 />
@@ -86,7 +86,7 @@ const DashboardRelationshipManager: React.FC = () => {
             <div className={styles.sectionGrid}>
                 <Card padding="compact">
                     <CardHeader
-                        title="Zaległe"
+                        title="Zaległe follow-upy"
                         action={
                             <Link to="/firms" className={styles.sectionAction}>
                                 Zobacz wszystkie
@@ -96,7 +96,7 @@ const DashboardRelationshipManager: React.FC = () => {
                     {dashboard.isLoading ? (
                         <EmptyState compact>Ładowanie…</EmptyState>
                     ) : overdue.length === 0 ? (
-                        <EmptyState compact>Brak zaległych zadań.</EmptyState>
+                        <EmptyState compact>Brak zaległych follow-upów.</EmptyState>
                     ) : (
                         <div className={styles.activityList}>
                             {overdue.map((act) => (
@@ -139,7 +139,16 @@ interface ActivityRowProps {
 }
 
 const ActivityRow: React.FC<ActivityRowProps> = ({ activity, variant }) => (
-    <div
+    <Link
+        to={
+            activity.event_id && activity.company_id
+                ? `/events/${activity.event_id}/companies/${activity.company_id}`
+                : activity.event_id
+                    ? `/events/${activity.event_id}`
+                    : activity.company_id
+                        ? `/companies/${activity.company_id}`
+                        : '/dashboard'
+        }
         className={`${styles.activityRow} ${variant === 'overdue' ? styles.activityRowOverdue : ''
             }`}
     >
@@ -151,9 +160,9 @@ const ActivityRow: React.FC<ActivityRowProps> = ({ activity, variant }) => (
             </span>
         </div>
         <span className={styles.activityDate}>
-            {formatRelative(activity.activity_date)}
+            {formatRelative(activity.due_date ?? activity.activity_date)}
         </span>
-    </div>
+    </Link>
 );
 
 export default DashboardRelationshipManager;

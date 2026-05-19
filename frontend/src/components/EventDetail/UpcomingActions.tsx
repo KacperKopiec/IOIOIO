@@ -37,8 +37,9 @@ const UpcomingActions: React.FC<UpcomingActionsProps> = ({ actions, isLoading })
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const futureActions = actions.filter((act) => {
-        if (!act.activity_date) return false;
-        const date = new Date(act.activity_date);
+        const plannedAt = act.due_date ?? act.activity_date;
+        if (!plannedAt) return false;
+        const date = new Date(plannedAt);
         date.setHours(0, 0, 0, 0);
         return date >= now;
     });
@@ -52,7 +53,7 @@ const UpcomingActions: React.FC<UpcomingActionsProps> = ({ actions, isLoading })
                     <div className={styles.empty}>Brak zaplanowanych działań.</div>
                 )}
                 {visible.map((act) => {
-                    const badge = dueBadge(act.activity_date);
+                    const badge = dueBadge(act.due_date ?? act.activity_date);
                     return (
                         <div key={act.id} className={styles.row}>
                             <div className={styles.avatar}>

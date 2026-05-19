@@ -32,10 +32,13 @@ class RecentActivityBrief(OrmBase):
     activity_type: ActivityType
     subject: str
     activity_date: datetime | None
+    due_date: datetime | None
+    completed_at: datetime | None
     company_id: int | None
     company_name: str | None
     event_id: int | None
     event_name: str | None
+    assigned_user_id: int | None
 
 
 class CoordinatorDashboard(OrmBase):

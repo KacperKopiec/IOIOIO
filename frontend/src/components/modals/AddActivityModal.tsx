@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../ui/Modal';
 import { useCreateActivity } from '../../hooks/api/activities';
 import { useUsers } from '../../hooks/api/reference';
@@ -9,6 +9,8 @@ import styles from './FormFields.module.css';
 interface AddActivityModalProps {
     open: boolean;
     onClose: () => void;
+    defaultType?: ActivityType;
+    mode?: 'all' | 'history' | 'follow_up';
     defaults?: {
         companyId?: number | null;
         eventId?: number | null;
@@ -17,7 +19,7 @@ interface AddActivityModalProps {
     };
 }
 
-const TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
+const ALL_TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
     { value: 'meeting', label: 'Spotkanie' },
     { value: 'email', label: 'E-mail' },
     { value: 'phone_call', label: 'Telefon' },
@@ -26,15 +28,59 @@ const TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
     { value: 'task', label: 'Zadanie' },
 ];
 
+const HISTORY_TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
+    { value: 'note', label: 'Notatka' },
+    { value: 'meeting', label: 'Spotkanie' },
+    { value: 'email', label: 'E-mail' },
+    { value: 'phone_call', label: 'Telefon' },
+];
+
+const FOLLOW_UP_TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
+    { value: 'follow_up', label: 'Follow-up' },
+    { value: 'task', label: 'Zadanie' },
+];
+
 const AddActivityModal: React.FC<AddActivityModalProps> = ({
     open,
     onClose,
+    defaultType = 'meeting',
+    mode = 'all',
     defaults,
 }) => {
     const create = useCreateActivity();
     const users = useUsers();
 
-    const [activityType, setActivityType] = useState<ActivityType>('meeting');
+    const typeOptions =
+        mode === 'history'
+            ? HISTORY_TYPE_OPTIONS
+            : mode === 'follow_up'
+                ? FOLLOW_UP_TYPE_OPTIONS
+                : ALL_TYPE_OPTIONS;
+    const effectiveDefaultType = typeOptions.some((opt) => opt.value === defaultType)
+        ? defaultType
+        : typeOptions[0].value;
+    const showAssigneeAndDueDate = mode !== 'history';
+    const showActivityDate = mode !== 'follow_up';
+    const modalTitle =
+        mode === 'history'
+            ? 'Dodaj wpis do historii'
+            : mode === 'follow_up'
+                ? 'Dodaj follow-up'
+                : 'Dodaj aktywność';
+    const submitLabel =
+        mode === 'history'
+            ? 'Zapisz wpis'
+            : mode === 'follow_up'
+                ? 'Dodaj follow-up'
+                : 'Dodaj wpis';
+    const subjectPlaceholder =
+        mode === 'history'
+            ? 'np. Wysłano ofertę do kontaktu'
+            : mode === 'follow_up'
+                ? 'np. Zadzwonić z ponowieniem oferty'
+                : undefined;
+
+    const [activityType, setActivityType] = useState<ActivityType>(effectiveDefaultType);
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
     const [activityDate, setActivityDate] = useState('');
@@ -42,8 +88,14 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
     const [assignedUserId, setAssignedUserId] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        if (open) {
+            setActivityType(effectiveDefaultType);
+        }
+    }, [effectiveDefaultType, open]);
+
     function reset() {
-        setActivityType('meeting');
+        setActivityType(effectiveDefaultType);
         setSubject('');
         setDescription('');
         setActivityDate('');
@@ -69,11 +121,17 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                 activity_type: activityType,
                 subject: subject.trim(),
                 description: description.trim() || null,
-                activity_date: activityDate
-                    ? new Date(activityDate).toISOString()
+                activity_date: showActivityDate
+                    ? activityDate
+                        ? new Date(activityDate).toISOString()
+                        : mode === 'history'
+                            ? new Date().toISOString()
+                            : null
                     : null,
-                due_date: dueDate ? new Date(dueDate).toISOString() : null,
-                assigned_user_id: assignedUserId
+                due_date: showAssigneeAndDueDate && dueDate
+                    ? new Date(dueDate).toISOString()
+                    : null,
+                assigned_user_id: showAssigneeAndDueDate && assignedUserId
                     ? Number.parseInt(assignedUserId, 10)
                     : null,
                 company_id: defaults?.companyId ?? null,
@@ -95,7 +153,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
         <Modal
             open={open}
             onClose={handleClose}
-            title="Dodaj aktywność"
+            title={modalTitle}
             footer={
                 <>
                     <button
@@ -112,7 +170,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                         className={`${styles.btn} ${styles.btnPrimary}`}
                         disabled={create.isPending}
                     >
-                        {create.isPending ? 'Zapisywanie…' : 'Dodaj wpis'}
+                        {create.isPending ? 'Zapisywanie…' : submitLabel}
                     </button>
                 </>
             }
@@ -126,28 +184,30 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                             value={activityType}
                             onChange={(e) => setActivityType(e.target.value as ActivityType)}
                         >
-                            {TYPE_OPTIONS.map((opt) => (
+                            {typeOptions.map((opt) => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
                             ))}
                         </select>
                     </div>
-                    <div className={styles.row}>
-                        <label className={styles.label}>Przypisany do</label>
-                        <select
-                            className={styles.select}
-                            value={assignedUserId}
-                            onChange={(e) => setAssignedUserId(e.target.value)}
-                        >
-                            <option value="">— nikt —</option>
-                            {users.data?.map((u) => (
-                                <option key={u.id} value={u.id}>
-                                    {u.first_name} {u.last_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {showAssigneeAndDueDate && (
+                        <div className={styles.row}>
+                            <label className={styles.label}>Przypisany do</label>
+                            <select
+                                className={styles.select}
+                                value={assignedUserId}
+                                onChange={(e) => setAssignedUserId(e.target.value)}
+                            >
+                                <option value="">— nikt —</option>
+                                {users.data?.map((u) => (
+                                    <option key={u.id} value={u.id}>
+                                        {u.first_name} {u.last_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.row}>
@@ -158,6 +218,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                         className={styles.input}
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
+                        placeholder={subjectPlaceholder}
                         autoFocus
                         required
                     />
@@ -172,26 +233,32 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                     />
                 </div>
 
-                <div className={styles.row2}>
-                    <div className={styles.row}>
-                        <label className={styles.label}>Data aktywności</label>
-                        <input
-                            type="datetime-local"
-                            className={styles.input}
-                            value={activityDate}
-                            onChange={(e) => setActivityDate(e.target.value)}
-                        />
+                {(showActivityDate || showAssigneeAndDueDate) && (
+                    <div className={styles.row2}>
+                        {showActivityDate && (
+                            <div className={styles.row}>
+                                <label className={styles.label}>Data wpisu</label>
+                                <input
+                                    type="datetime-local"
+                                    className={styles.input}
+                                    value={activityDate}
+                                    onChange={(e) => setActivityDate(e.target.value)}
+                                />
+                            </div>
+                        )}
+                        {showAssigneeAndDueDate && (
+                            <div className={styles.row}>
+                                <label className={styles.label}>Termin follow-upu</label>
+                                <input
+                                    type="datetime-local"
+                                    className={styles.input}
+                                    value={dueDate}
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                />
+                            </div>
+                        )}
                     </div>
-                    <div className={styles.row}>
-                        <label className={styles.label}>Termin</label>
-                        <input
-                            type="datetime-local"
-                            className={styles.input}
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                        />
-                    </div>
-                </div>
+                )}
 
                 {error && <div className={styles.error}>{error}</div>}
             </form>

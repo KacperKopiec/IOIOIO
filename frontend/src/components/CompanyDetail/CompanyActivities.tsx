@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Send } from 'lucide-react';
-import { useCreateActivity } from '../../hooks/api/activities';
+import { Pencil, Send, Trash2 } from 'lucide-react';
+import { useCreateActivity, useDeleteActivity } from '../../hooks/api/activities';
 import { toApiError } from '../../lib/api';
 import type { Activity } from '../../types/api';
+import EditHistoryActivityModal from '../modals/EditHistoryActivityModal';
 import styles from './CompanyActivities.module.css';
 
 interface CompanyActivitiesProps {
@@ -11,6 +12,15 @@ interface CompanyActivitiesProps {
     activities: Activity[];
     isLoading: boolean;
 }
+
+const HISTORY_TYPES = new Set(['note', 'meeting', 'email', 'phone_call']);
+
+const TYPE_LABEL: Record<string, string> = {
+    note: 'Notatka',
+    meeting: 'Spotkanie',
+    email: 'E-mail',
+    phone_call: 'Telefon',
+};
 
 function formatRelative(iso: string | null): string {
     if (!iso) return '';
@@ -49,9 +59,17 @@ const CompanyActivities: React.FC<CompanyActivitiesProps> = ({
     const queryClient = useQueryClient();
     const [draft, setDraft] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [edited, setEdited] = useState<Activity | null>(null);
     const create = useCreateActivity();
+    const deleteActivity = useDeleteActivity();
 
-    const notes = activities.filter((a) => a.activity_type === 'note');
+    const history = activities
+        .filter((a) => HISTORY_TYPES.has(a.activity_type))
+        .sort((a, b) => {
+            const aDate = new Date(a.activity_date ?? a.created_at).getTime();
+            const bDate = new Date(b.activity_date ?? b.created_at).getTime();
+            return bDate - aDate;
+        });
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -75,10 +93,19 @@ const CompanyActivities: React.FC<CompanyActivitiesProps> = ({
         );
     }
 
+    function handleDelete(activity: Activity) {
+        const confirmed = window.confirm('Usunąć ten wpis z historii kontaktu?');
+        if (!confirmed) return;
+        setError(null);
+        deleteActivity.mutate(activity.id, {
+            onError: (err) => setError(toApiError(err).detail),
+        });
+    }
+
     if (isLoading) {
         return (
             <div className={styles.card}>
-                <h3 className={styles.title}>Notatki</h3>
+                <h3 className={styles.title}>Historia kontaktu</h3>
                 <div className={styles.loading}>Ładowanie…</div>
             </div>
         );
@@ -86,23 +113,45 @@ const CompanyActivities: React.FC<CompanyActivitiesProps> = ({
 
     return (
         <div className={styles.card}>
-            <h3 className={styles.title}>Notatki</h3>
+            <h3 className={styles.title}>Historia kontaktu</h3>
 
-            {notes.length > 0 ? (
+            {history.length > 0 ? (
                 <div className={styles.list}>
-                    {notes.map((note) => (
-                        <div key={note.id} className={styles.note}>
-                            <div className={styles.noteBody}>
-                                {note.description || note.subject}
+                    {history.map((activity) => (
+                        <div key={activity.id} className={styles.note}>
+                            <div className={styles.noteHeader}>
+                                <div className={styles.noteBody}>
+                                    {activity.description || activity.subject}
+                                </div>
+                                <div className={styles.noteActions}>
+                                    <button
+                                        type="button"
+                                        className={styles.iconBtn}
+                                        onClick={() => setEdited(activity)}
+                                        aria-label="Edytuj wpis"
+                                    >
+                                        <Pencil size={14} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.iconBtn}
+                                        onClick={() => handleDelete(activity)}
+                                        disabled={deleteActivity.isPending}
+                                        aria-label="Usuń wpis"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                             </div>
                             <div className={styles.noteMeta}>
-                                {formatRelative(note.activity_date ?? note.created_at)}
+                                <span>{TYPE_LABEL[activity.activity_type] ?? activity.activity_type}</span>
+                                <span>{formatRelative(activity.activity_date ?? activity.created_at)}</span>
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className={styles.empty}>Brak notatek dla tej firmy.</div>
+                <div className={styles.empty}>Brak historii kontaktu dla tej firmy.</div>
             )}
 
             <form onSubmit={handleSubmit} className={styles.editorWrap}>
@@ -110,7 +159,7 @@ const CompanyActivities: React.FC<CompanyActivitiesProps> = ({
                     className={styles.editor}
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    placeholder="Dodaj notatkę…"
+                    placeholder="Dodaj szybką notatkę…"
                 />
                 <button
                     type="submit"
@@ -123,6 +172,12 @@ const CompanyActivities: React.FC<CompanyActivitiesProps> = ({
             </form>
 
             {error && <div className={styles.errorRow}>{error}</div>}
+
+            <EditHistoryActivityModal
+                open={edited != null}
+                activity={edited}
+                onClose={() => setEdited(null)}
+            />
         </div>
     );
 };

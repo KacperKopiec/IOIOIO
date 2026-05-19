@@ -13,7 +13,6 @@ import EventTasksList from '../components/EventDetail/EventTasksList';
 import GoalProgress from '../components/EventDetail/GoalProgress';
 import ActivityFeed from '../components/EventDetail/ActivityFeed';
 import UpcomingActions from '../components/EventDetail/UpcomingActions';
-import AddActivityModal from '../components/modals/AddActivityModal';
 import AddPipelineEntryModal from '../components/modals/AddPipelineEntryModal';
 import EditEventModal from '../components/modals/EditEventModal';
 import InvoicePanel from '../components/Invoices/InvoicePanel';
@@ -52,7 +51,6 @@ const EventDetail: React.FC = () => {
     const { role } = useAuth();
     const canEditEvent = role === 'koordynator';
 
-    const [addActivityOpen, setAddActivityOpen] = useState(false);
     const [addPipelineOpen, setAddPipelineOpen] = useState(false);
     const [editEventOpen, setEditEventOpen] = useState(false);
     const [showReport, setShowReport] = useState(false);
@@ -180,11 +178,6 @@ const EventDetail: React.FC = () => {
                 </aside>
             </div>
 
-            <AddActivityModal
-                open={addActivityOpen}
-                onClose={() => setAddActivityOpen(false)}
-                defaults={{ eventId: ev.id }}
-            />
             <AddPipelineEntryModal
                 open={addPipelineOpen}
                 eventId={ev.id}

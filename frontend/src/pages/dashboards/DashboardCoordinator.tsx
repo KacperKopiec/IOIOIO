@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Briefcase, CalendarDays, Target } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Briefcase, CalendarDays, Target } from 'lucide-react';
 import { useAuth } from '../../context/auth';
+import { useActivities } from '../../hooks/api/activities';
 import { useEvents } from '../../hooks/api/events';
 import { usePipelineEntries } from '../../hooks/api/pipeline';
-import { formatDateRange, formatPLN, formatPercent } from '../../lib/format';
+import { formatDate, formatDateRange, formatPLN, formatPercent } from '../../lib/format';
 import {
     Badge,
     Card,
@@ -42,6 +43,11 @@ const DashboardCoordinator: React.FC = () => {
     });
     const allEvents = useEvents({ page: 1, page_size: 50 });
     const allEntries = usePipelineEntries({});
+    const overdueFollowUps = useActivities({
+        assigned_user_id: userId ?? undefined,
+        overdue_only: true,
+        limit: 8,
+    });
 
     const events =
         (myEvents.data?.items?.length ?? 0) > 0
@@ -49,6 +55,9 @@ const DashboardCoordinator: React.FC = () => {
             : allEvents.data?.items ?? [];
 
     const stats = computeStats(events, allEntries.data ?? []);
+    const overdueActions = (overdueFollowUps.data ?? []).filter((activity) =>
+        ['task', 'follow_up'].includes(activity.activity_type),
+    );
 
     return (
         <Page width="wide">
@@ -84,7 +93,52 @@ const DashboardCoordinator: React.FC = () => {
                             : 'Brak danych konwersji'
                     }
                 />
+                <KpiCard
+                    icon={<AlertTriangle size={20} />}
+                    tone="danger"
+                    label="Zaległe follow-upy"
+                    value={`${overdueActions.length}`}
+                    sub="Wymagają ponowienia kontaktu"
+                />
             </div>
+
+            <Card padding="compact">
+                <CardHeader title="Przypomnienia o follow-upach" />
+                {overdueFollowUps.isLoading ? (
+                    <EmptyState compact>Ładowanie przypomnień…</EmptyState>
+                ) : overdueActions.length === 0 ? (
+                    <EmptyState compact>Brak zaległych follow-upów przypisanych do Ciebie.</EmptyState>
+                ) : (
+                    <div className={styles.activityList}>
+                        {overdueActions.map((activity) => (
+                            <Link
+                                key={activity.id}
+                                to={
+                                    activity.event_id && activity.company_id
+                                        ? `/events/${activity.event_id}/companies/${activity.company_id}`
+                                        : activity.event_id
+                                            ? `/events/${activity.event_id}`
+                                            : activity.company_id
+                                                ? `/companies/${activity.company_id}`
+                                                : '/dashboard'
+                                }
+                                className={`${styles.activityRow} ${styles.activityRowOverdue}`}
+                            >
+                                <AlertTriangle size={18} />
+                                <div className={styles.activityBody}>
+                                    <div className={styles.activityTitle}>{activity.subject}</div>
+                                    <div className={styles.activitySub}>
+                                        Termin: {formatDate(activity.due_date)}
+                                        {activity.company_id ? ` · firma #${activity.company_id}` : ''}
+                                        {activity.event_id ? ` · wydarzenie #${activity.event_id}` : ''}
+                                    </div>
+                                </div>
+                                <ArrowRight size={16} />
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </Card>
 
             <Card padding="compact">
                 <CardHeader
