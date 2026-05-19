@@ -54,7 +54,11 @@ export const companyKeys = {
     report: (id: number) => ['companies', id, 'report'] as const,
 };
 
-function buildParams(filters: CompanyFilters) {
+function buildParams(
+    filters: CompanyFilters,
+    options: { includePagination?: boolean } = {},
+) {
+    const { includePagination = true } = options;
     const params: Record<string, unknown> = {};
     if (filters.q) params.q = filters.q;
     if (filters.industry_id != null) params.industry_id = filters.industry_id;
@@ -67,8 +71,10 @@ function buildParams(filters: CompanyFilters) {
         params.pipeline_stage_id = filters.pipeline_stage_id;
     }
     if (filters.pipeline_outcome) params.pipeline_outcome = filters.pipeline_outcome;
-    params.page = filters.page ?? 1;
-    params.page_size = filters.page_size ?? 25;
+    if (includePagination) {
+        params.page = filters.page ?? 1;
+        params.page_size = filters.page_size ?? 25;
+    }
     return params;
 }
 
@@ -82,6 +88,21 @@ export function useCompanies(filters: CompanyFilters) {
             return data;
         },
     });
+}
+
+export async function exportCompaniesCsv(
+    filters: CompanyFilters,
+    companyIds?: number[],
+): Promise<Blob> {
+    const params = buildParams(filters, { includePagination: false });
+    if (companyIds && companyIds.length > 0) {
+        params.company_ids = companyIds.join(',');
+    }
+    const { data } = await api.get<Blob>('/companies/export', {
+        params,
+        responseType: 'blob',
+    });
+    return data;
 }
 
 export function useCompany(id: number | null) {
