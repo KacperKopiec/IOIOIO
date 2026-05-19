@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth, type UserRole } from '../../context/auth';
 import styles from './Sidebar.module.css';
 import logoUrl from '../../assets/logo.svg';
 
@@ -7,24 +8,27 @@ interface SidebarLink {
     to: string;
     label: string;
     icon: string;
+    roles: UserRole[];
 }
 
 const links: SidebarLink[] = [
-    { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { to: '/firms', label: 'Baza Firm', icon: 'domain' },
-    { to: '/events', label: 'Wydarzenia', icon: 'event' },
-    { to: '/invoices', label: 'Faktury', icon: 'receipt_long' },
-    { to: '/reports', label: 'Raporty', icon: 'bar_chart' },
+    { to: '/dashboard', label: 'Dashboard', icon: 'dashboard', roles: ['koordynator', 'opiekun', 'promocja'] },
+    { to: '/firms', label: 'Baza Firm', icon: 'domain', roles: ['koordynator', 'opiekun', 'promocja'] },
+    { to: '/events', label: 'Wydarzenia', icon: 'event', roles: ['koordynator', 'opiekun', 'promocja'] },
+    { to: '/invoices', label: 'Faktury', icon: 'receipt_long', roles: ['koordynator', 'opiekun'] },
+    { to: '/reports', label: 'Raporty', icon: 'bar_chart', roles: ['koordynator', 'opiekun'] },
 ];
 
 const Sidebar: React.FC = () => {
+    const { role } = useAuth();
+    const visibleLinks = links.filter((link) => link.roles.includes(role));
     return (
         <aside className={styles.sidebar}>
             <div className={styles.logoArea}>
                 <img src={logoUrl} alt="NFORMATYKA" className={styles.logo} />
             </div>
             <nav className={styles.nav}>
-                {links.map((l) => (
+                {visibleLinks.map((l) => (
                     <NavLink
                         key={l.to}
                         to={l.to}

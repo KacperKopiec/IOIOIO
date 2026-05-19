@@ -37,6 +37,10 @@ export interface CompanyFilters {
     company_size?: CompanySize | null;
     tag_ids?: number[];
     relation_status?: 'active' | 'inactive' | null;
+    relationship_type_id?: number | null;
+    cooperation_year?: number | null;
+    owner_user_id?: number | null;
+    event_id?: number | null;
     pipeline_stage_id?: number | null;
     pipeline_outcome?: StageOutcome | null;
     page?: number;
@@ -67,6 +71,18 @@ function buildParams(
         params.tag_ids = filters.tag_ids.join(',');
     }
     if (filters.relation_status) params.relation_status = filters.relation_status;
+    if (filters.relationship_type_id != null) {
+        params.relationship_type_id = filters.relationship_type_id;
+    }
+    if (filters.cooperation_year != null) {
+        params.cooperation_year = filters.cooperation_year;
+    }
+    if (filters.owner_user_id != null) {
+        params.owner_user_id = filters.owner_user_id;
+    }
+    if (filters.event_id != null) {
+        params.event_id = filters.event_id;
+    }
     if (filters.pipeline_stage_id != null) {
         params.pipeline_stage_id = filters.pipeline_stage_id;
     }

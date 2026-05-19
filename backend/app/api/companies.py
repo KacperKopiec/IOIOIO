@@ -68,6 +68,10 @@ def _companies_base_query(
     company_size: CompanySize | None = None,
     tag_ids: str | None = None,
     relation_status: Literal["active", "inactive"] | None = None,
+    relationship_type_id: int | None = None,
+    cooperation_year: int | None = None,
+    owner_user_id: int | None = None,
+    event_id: int | None = None,
     pipeline_stage_id: int | None = None,
     pipeline_outcome: StageOutcome | None = None,
     company_ids: str | None = None,
@@ -87,6 +91,8 @@ def _companies_base_query(
         base = base.where(Company.industry_id == industry_id)
     if company_size is not None:
         base = base.where(Company.company_size == company_size)
+    if owner_user_id is not None:
+        base = base.where(Company.owner_user_id == owner_user_id)
 
     parsed_tags = _parse_csv_int(tag_ids)
     if parsed_tags:
@@ -106,10 +112,72 @@ def _companies_base_query(
             )
             .exists()
         )
-        if relation_status == "active":
-            base = base.where(has_active)
-        else:
-            base = base.where(~has_active)
+        base = base.where(has_active if relation_status == "active" else ~has_active)
+
+    if relationship_type_id is not None:
+        relationship_match = (
+            select(CompanyRelationship.id)
+            .where(
+                CompanyRelationship.company_id == Company.id,
+                CompanyRelationship.relationship_type_id == relationship_type_id,
+            )
+            .exists()
+        )
+        base = base.where(relationship_match)
+
+    if event_id is not None:
+        event_relationship_match = (
+            select(CompanyRelationship.id)
+            .where(
+                CompanyRelationship.company_id == Company.id,
+                CompanyRelationship.event_id == event_id,
+            )
+            .exists()
+        )
+        event_pipeline_match = (
+            select(PipelineEntry.id)
+            .where(
+                PipelineEntry.company_id == Company.id,
+                PipelineEntry.event_id == event_id,
+            )
+            .exists()
+        )
+        base = base.where(or_(event_relationship_match, event_pipeline_match))
+
+    if cooperation_year is not None:
+        year = cooperation_year
+        relationship_year_match = (
+            select(CompanyRelationship.id)
+            .join(Event, CompanyRelationship.event_id == Event.id, isouter=True)
+            .where(
+                CompanyRelationship.company_id == Company.id,
+                or_(
+                    func.extract("year", CompanyRelationship.contract_signed_at)
+                    == year,
+                    func.extract("year", CompanyRelationship.start_date) == year,
+                    func.extract("year", CompanyRelationship.end_date) == year,
+                    func.extract("year", Event.start_date) == year,
+                    func.extract("year", Event.end_date) == year,
+                ),
+            )
+            .exists()
+        )
+        pipeline_year_match = (
+            select(PipelineEntry.id)
+            .join(Event, PipelineEntry.event_id == Event.id)
+            .where(
+                PipelineEntry.company_id == Company.id,
+                or_(
+                    func.extract("year", PipelineEntry.closed_at) == year,
+                    func.extract("year", PipelineEntry.first_contact_at) == year,
+                    func.extract("year", PipelineEntry.offer_sent_at) == year,
+                    func.extract("year", Event.start_date) == year,
+                    func.extract("year", Event.end_date) == year,
+                ),
+            )
+            .exists()
+        )
+        base = base.where(or_(relationship_year_match, pipeline_year_match))
 
     if pipeline_stage_id is not None or pipeline_outcome is not None:
         pipeline_match = (
@@ -117,6 +185,8 @@ def _companies_base_query(
             .join(PipelineStage, PipelineEntry.stage_id == PipelineStage.id)
             .where(PipelineEntry.company_id == Company.id)
         )
+        if event_id is not None:
+            pipeline_match = pipeline_match.where(PipelineEntry.event_id == event_id)
         if pipeline_stage_id is not None:
             pipeline_match = pipeline_match.where(
                 PipelineEntry.stage_id == pipeline_stage_id
@@ -193,6 +263,24 @@ def list_companies(
     company_size: CompanySize | None = None,
     tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorów tagów"),
     relation_status: Literal["active", "inactive"] | None = None,
+    relationship_type_id: int | None = Query(
+        default=None,
+        description="firmy z relacją wybranego typu, np. sponsor/partner/rekrutacja",
+    ),
+    cooperation_year: int | None = Query(
+        default=None,
+        ge=2000,
+        le=2100,
+        description="firmy ze współpracą lub lejkiem w wybranym roku",
+    ),
+    owner_user_id: int | None = Query(
+        default=None,
+        description="firmy przypisane do wybranego opiekuna relacji",
+    ),
+    event_id: int | None = Query(
+        default=None,
+        description="firmy powiązane z wybraną inicjatywą/wydarzeniem",
+    ),
     pipeline_stage_id: int | None = Query(
         default=None,
         description="firmy mające wpis w lejku na wybranym etapie",
@@ -208,6 +296,10 @@ def list_companies(
         company_size=company_size,
         tag_ids=tag_ids,
         relation_status=relation_status,
+        relationship_type_id=relationship_type_id,
+        cooperation_year=cooperation_year,
+        owner_user_id=owner_user_id,
+        event_id=event_id,
         pipeline_stage_id=pipeline_stage_id,
         pipeline_outcome=pipeline_outcome,
     )
@@ -237,17 +329,35 @@ def export_companies(
     q: str | None = Query(default=None, description="szukaj po name/legal_name/nip/city"),
     industry_id: int | None = None,
     company_size: CompanySize | None = None,
-    tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorÃ³w tagÃ³w"),
+    tag_ids: str | None = Query(default=None, description="lista CSV identyfikatorów tagów"),
     relation_status: Literal["active", "inactive"] | None = None,
+    relationship_type_id: int | None = Query(
+        default=None,
+        description="firmy z relacją wybranego typu, np. sponsor/partner/rekrutacja",
+    ),
+    cooperation_year: int | None = Query(
+        default=None,
+        ge=2000,
+        le=2100,
+        description="firmy ze współpracą lub lejkiem w wybranym roku",
+    ),
+    owner_user_id: int | None = Query(
+        default=None,
+        description="firmy przypisane do wybranego opiekuna relacji",
+    ),
+    event_id: int | None = Query(
+        default=None,
+        description="firmy powiązane z wybraną inicjatywą/wydarzeniem",
+    ),
     pipeline_stage_id: int | None = Query(
         default=None,
-        description="firmy majÄ…ce wpis w lejku na wybranym etapie",
+        description="firmy mające wpis w lejku na wybranym etapie",
     ),
     pipeline_outcome: StageOutcome | None = Query(
         default=None,
-        description="firmy majÄ…ce wpis w lejku o wyniku open/won/lost",
+        description="firmy mające wpis w lejku o wyniku open/won/lost",
     ),
-    company_ids: str | None = Query(default=None, description="lista CSV identyfikatorÃ³w firm"),
+    company_ids: str | None = Query(default=None, description="lista CSV identyfikatorów firm"),
 ) -> Response:
     stmt = (
         _companies_base_query(
@@ -256,6 +366,10 @@ def export_companies(
             company_size=company_size,
             tag_ids=tag_ids,
             relation_status=relation_status,
+            relationship_type_id=relationship_type_id,
+            cooperation_year=cooperation_year,
+            owner_user_id=owner_user_id,
+            event_id=event_id,
             pipeline_stage_id=pipeline_stage_id,
             pipeline_outcome=pipeline_outcome,
             company_ids=company_ids,

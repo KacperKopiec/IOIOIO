@@ -1,41 +1,48 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Modal from '../ui/Modal';
-import { useCompanies } from '../../hooks/api/companies';
-import { useCreatePipelineEntry } from '../../hooks/api/pipeline';
+import { useEvents } from '../../hooks/api/events';
+import { useBulkCreatePipelineEntries } from '../../hooks/api/pipeline';
 import { usePipelineStages, useUsers } from '../../hooks/api/reference';
 import { toApiError } from '../../lib/api';
+import type { Company } from '../../types/api';
 import styles from './FormFields.module.css';
 
-interface AddPipelineEntryModalProps {
+interface BulkSeedPipelineModalProps {
     open: boolean;
-    eventId: number | null;
+    companies: Company[];
     onClose: () => void;
+    onDone?: () => void;
 }
 
-const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
+const BulkSeedPipelineModal: React.FC<BulkSeedPipelineModalProps> = ({
     open,
-    eventId,
+    companies,
     onClose,
+    onDone,
 }) => {
-    const create = useCreatePipelineEntry();
-    const companies = useCompanies({ page: 1, page_size: 100 });
+    const events = useEvents({ page: 1, page_size: 100 });
     const stages = usePipelineStages();
     const owners = useUsers('opiekun');
+    const bulkCreate = useBulkCreatePipelineEntries();
 
-    const [companyId, setCompanyId] = useState<string>('');
-    const [stageId, setStageId] = useState<string>('');
-    const [ownerId, setOwnerId] = useState<string>('');
+    const [eventId, setEventId] = useState('');
+    const [stageId, setStageId] = useState('');
+    const [ownerId, setOwnerId] = useState('');
     const [expectedAmount, setExpectedAmount] = useState('');
     const [notes, setNotes] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [summary, setSummary] = useState<string | null>(null);
+
+    const companyIds = useMemo(() => companies.map((c) => c.id), [companies]);
 
     function reset() {
-        setCompanyId('');
+        setEventId('');
         setStageId('');
         setOwnerId('');
         setExpectedAmount('');
         setNotes('');
         setError(null);
+        setSummary(null);
     }
 
     function handleClose() {
@@ -45,28 +52,31 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (eventId == null) {
-            setError('Brak wydarzenia.');
+        if (!eventId) {
+            setError('Wybierz inicjatywę.');
             return;
         }
-        if (!companyId) {
-            setError('Wybierz firmę.');
+        if (companyIds.length === 0) {
+            setError('Zaznacz firmy do dodania.');
             return;
         }
         setError(null);
-        create.mutate(
+        setSummary(null);
+        bulkCreate.mutate(
             {
-                event_id: eventId,
-                company_id: Number.parseInt(companyId, 10),
+                event_id: Number.parseInt(eventId, 10),
+                company_ids: companyIds,
                 stage_id: stageId ? Number.parseInt(stageId, 10) : null,
                 owner_user_id: ownerId ? Number.parseInt(ownerId, 10) : null,
                 expected_amount: expectedAmount || null,
                 notes: notes.trim() || null,
             },
             {
-                onSuccess: () => {
-                    reset();
-                    onClose();
+                onSuccess: (result) => {
+                    setSummary(
+                        `Dodano ${result.created.length}, pominięto ${result.skipped_company_ids.length}.`,
+                    );
+                    onDone?.();
                 },
                 onError: (err) => setError(toApiError(err).detail),
             },
@@ -77,44 +87,50 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
         <Modal
             open={open}
             onClose={handleClose}
-            title="Dodaj firmę do lejka"
+            title="Zasil lejek masowo"
             footer={
                 <>
                     <button
                         type="button"
                         className={`${styles.btn} ${styles.btnGhost}`}
                         onClick={handleClose}
-                        disabled={create.isPending}
+                        disabled={bulkCreate.isPending}
                     >
-                        Anuluj
+                        Zamknij
                     </button>
                     <button
                         type="submit"
-                        form="add-pipeline-form"
+                        form="bulk-seed-pipeline-form"
                         className={`${styles.btn} ${styles.btnPrimary}`}
-                        disabled={create.isPending}
+                        disabled={bulkCreate.isPending || companies.length === 0}
                     >
-                        {create.isPending ? 'Zapisywanie…' : 'Dodaj do lejka'}
+                        {bulkCreate.isPending ? 'Dodawanie…' : 'Dodaj do lejka'}
                     </button>
                 </>
             }
         >
-            <form id="add-pipeline-form" onSubmit={handleSubmit}>
+            <form id="bulk-seed-pipeline-form" onSubmit={handleSubmit}>
+                <div className={styles.row}>
+                    <label className={styles.label}>Zaznaczone firmy</label>
+                    <div className={styles.helper}>
+                        {companies.length} firm zostanie dodanych do wybranej inicjatywy.
+                    </div>
+                </div>
+
                 <div className={styles.row}>
                     <label className={styles.label}>
-                        Firma <span className={styles.required}>*</span>
+                        Inicjatywa <span className={styles.required}>*</span>
                     </label>
                     <select
                         className={styles.select}
-                        value={companyId}
-                        onChange={(e) => setCompanyId(e.target.value)}
-                        autoFocus
+                        value={eventId}
+                        onChange={(e) => setEventId(e.target.value)}
                         required
                     >
                         <option value="">— wybierz —</option>
-                        {companies.data?.items.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.name}
+                        {events.data?.items.map((event) => (
+                            <option key={event.id} value={event.id}>
+                                {event.name}
                             </option>
                         ))}
                     </select>
@@ -129,9 +145,9 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
                             onChange={(e) => setStageId(e.target.value)}
                         >
                             <option value="">Pierwszy etap</option>
-                            {stages.data?.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                    {s.name}
+                            {stages.data?.map((stage) => (
+                                <option key={stage.id} value={stage.id}>
+                                    {stage.name}
                                 </option>
                             ))}
                         </select>
@@ -144,9 +160,9 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
                             onChange={(e) => setOwnerId(e.target.value)}
                         >
                             <option value="">— wybierz —</option>
-                            {owners.data?.map((u) => (
-                                <option key={u.id} value={u.id}>
-                                    {u.first_name} {u.last_name}
+                            {owners.data?.map((owner) => (
+                                <option key={owner.id} value={owner.id}>
+                                    {owner.first_name} {owner.last_name}
                                 </option>
                             ))}
                         </select>
@@ -154,7 +170,7 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
                 </div>
 
                 <div className={styles.row}>
-                    <label className={styles.label}>Oczekiwana kwota (PLN)</label>
+                    <label className={styles.label}>Oczekiwana kwota na firmę (PLN)</label>
                     <input
                         type="number"
                         min="0"
@@ -166,7 +182,7 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
                 </div>
 
                 <div className={styles.row}>
-                    <label className={styles.label}>Notatki</label>
+                    <label className={styles.label}>Notatka</label>
                     <textarea
                         className={styles.textarea}
                         value={notes}
@@ -174,10 +190,11 @@ const AddPipelineEntryModal: React.FC<AddPipelineEntryModalProps> = ({
                     />
                 </div>
 
+                {summary && <div className={styles.helper}>{summary}</div>}
                 {error && <div className={styles.error}>{error}</div>}
             </form>
         </Modal>
     );
 };
 
-export default AddPipelineEntryModal;
+export default BulkSeedPipelineModal;

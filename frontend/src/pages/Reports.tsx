@@ -63,11 +63,26 @@ const Reports: React.FC = () => {
     const totals = reports.data?.totals;
     const annual = reports.data?.annual;
     const events = useMemo(() => reports.data?.events ?? [], [reports.data]);
-    const pipelineStages = reports.data?.pipeline_stages ?? [];
-    const companyHistory = reports.data?.company_history ?? [];
-    const yearlyTrends = reports.data?.yearly_trends ?? [];
-    const newSponsors = reports.data?.new_sponsors ?? [];
-    const topCompanies = reports.data?.top_companies ?? [];
+    const pipelineStages = useMemo(
+        () => reports.data?.pipeline_stages ?? [],
+        [reports.data],
+    );
+    const companyHistory = useMemo(
+        () => reports.data?.company_history ?? [],
+        [reports.data],
+    );
+    const yearlyTrends = useMemo(
+        () => reports.data?.yearly_trends ?? [],
+        [reports.data],
+    );
+    const newSponsors = useMemo(
+        () => reports.data?.new_sponsors ?? [],
+        [reports.data],
+    );
+    const topCompanies = useMemo(
+        () => reports.data?.top_companies ?? [],
+        [reports.data],
+    );
 
     const eventChartData = useMemo(
         () =>

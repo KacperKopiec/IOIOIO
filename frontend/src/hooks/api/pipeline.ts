@@ -3,6 +3,8 @@ import { api } from '../../lib/api';
 import { eventKeys } from './events';
 import type {
     PipelineEntry,
+    PipelineEntryBulkCreate,
+    PipelineEntryBulkResult,
     PipelineEntryCreate,
     PipelineEntryUpdate,
     PipelineMoveRequest,
@@ -48,6 +50,29 @@ export function useCreatePipelineEntry() {
             qc.invalidateQueries({ queryKey: pipelineEntryKeys.all });
             qc.invalidateQueries({ queryKey: eventKeys.pipeline(entry.event_id) });
             qc.invalidateQueries({ queryKey: eventKeys.kpi(entry.event_id) });
+        },
+    });
+}
+
+export function useBulkCreatePipelineEntries() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (
+            payload: PipelineEntryBulkCreate,
+        ): Promise<PipelineEntryBulkResult> => {
+            const { data } = await api.post<PipelineEntryBulkResult>(
+                '/pipeline-entries/bulk',
+                payload,
+            );
+            return data;
+        },
+        onSuccess: (result) => {
+            qc.invalidateQueries({ queryKey: pipelineEntryKeys.all });
+            const eventId = result.created[0]?.event_id;
+            if (eventId != null) {
+                qc.invalidateQueries({ queryKey: eventKeys.pipeline(eventId) });
+                qc.invalidateQueries({ queryKey: eventKeys.kpi(eventId) });
+            }
         },
     });
 }

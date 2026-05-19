@@ -21,9 +21,7 @@ export function useActivities(filters: ActivityFilters = {}) {
     return useQuery({
         queryKey: activityKeys.list(filters),
         queryFn: async (): Promise<Activity[]> => {
-            console.log('Fetching activities with filters:', filters);
             const { data } = await api.get<Activity[]>('/activities', { params: filters });
-            console.log('Activities fetched:', data.length);
             return data;
         },
     });
@@ -39,15 +37,11 @@ export function useCreateActivity() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: ActivityCreatePayload): Promise<Activity> => {
-            console.log('API call: POST /activities', payload);
             const { data } = await api.post<Activity>('/activities', payload);
-            console.log('API response:', data);
             return data;
         },
         onSuccess: () => {
-            console.log('Invalidating all queries');
             qc.invalidateQueries();
-            console.log('Invalidated');
         },
     });
 }
@@ -55,9 +49,11 @@ export function useCreateActivity() {
 export interface ActivityUpdatePayload {
     subject?: string;
     activity_type?: Activity['activity_type'];
+    description?: string | null;
+    activity_date?: string | null;
     due_date?: string | null;
     completed_at?: string | null;
-    notes?: string | null;
+    assigned_user_id?: number | null;
 }
 
 export function useUpdateActivity() {
@@ -68,7 +64,19 @@ export function useUpdateActivity() {
             return data;
         },
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ['activities'] });
+            qc.invalidateQueries();
+        },
+    });
+}
+
+export function useDeleteActivity() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: number): Promise<void> => {
+            await api.delete(`/activities/${id}`);
+        },
+        onSuccess: () => {
+            qc.invalidateQueries();
         },
     });
 }

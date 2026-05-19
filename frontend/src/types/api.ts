@@ -211,6 +211,20 @@ export interface PipelineEntryCreate {
     notes?: string | null;
 }
 
+export interface PipelineEntryBulkCreate {
+    event_id: number;
+    company_ids: number[];
+    stage_id?: number | null;
+    owner_user_id?: number | null;
+    expected_amount?: string | null;
+    notes?: string | null;
+}
+
+export interface PipelineEntryBulkResult {
+    created: PipelineEntry[];
+    skipped_company_ids: number[];
+}
+
 export interface PipelineMoveRequest {
     stage_id: number;
     agreed_amount?: string | null;
@@ -310,10 +324,13 @@ export interface RecentActivityBrief {
     activity_type: ActivityType;
     subject: string;
     activity_date: string | null;
+    due_date: string | null;
+    completed_at: string | null;
     company_id: number | null;
     company_name: string | null;
     event_id: number | null;
     event_name: string | null;
+    assigned_user_id: number | null;
 }
 
 export interface CoordinatorDashboard {

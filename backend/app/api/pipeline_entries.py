@@ -10,6 +10,8 @@ from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.role import Role
 from app.models.user import User
 from app.schemas.pipeline_entry import (
+    PipelineEntryBulkCreate,
+    PipelineEntryBulkResult,
     PipelineEntryCreate,
     PipelineEntryOut,
     PipelineEntryUpdate,
@@ -119,6 +121,67 @@ def create_pipeline_entry(payload: PipelineEntryCreate, db: DbDep) -> PipelineEn
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=_DUPLICATE_DETAIL)
     db.refresh(entry)
     return _load_entry(db, entry.id)
+
+
+@router.post("/bulk", response_model=PipelineEntryBulkResult, status_code=status.HTTP_201_CREATED)
+def bulk_create_pipeline_entries(
+    payload: PipelineEntryBulkCreate, db: DbDep
+) -> PipelineEntryBulkResult:
+    if db.get(Event, payload.event_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Wydarzenie nie istnieje"
+        )
+
+    stage_id = payload.stage_id
+    if stage_id is None:
+        first_stage = db.scalar(
+            select(PipelineStage).order_by(PipelineStage.order_number).limit(1)
+        )
+        if first_stage is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Brak etapów lejka w bazie danych",
+            )
+        stage_id = first_stage.id
+    elif db.get(PipelineStage, stage_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Etap lejka nie istnieje"
+        )
+
+    unique_company_ids = list(dict.fromkeys(payload.company_ids))
+    existing_company_ids = set(
+        db.scalars(select(Company.id).where(Company.id.in_(unique_company_ids))).all()
+    )
+    already_in_pipeline = set(
+        db.scalars(
+            select(PipelineEntry.company_id).where(
+                PipelineEntry.event_id == payload.event_id,
+                PipelineEntry.company_id.in_(unique_company_ids),
+            )
+        ).all()
+    )
+
+    created_ids: list[int] = []
+    skipped: list[int] = []
+    for company_id in unique_company_ids:
+        if company_id not in existing_company_ids or company_id in already_in_pipeline:
+            skipped.append(company_id)
+            continue
+        entry = PipelineEntry(
+            event_id=payload.event_id,
+            company_id=company_id,
+            stage_id=stage_id,
+            owner_user_id=payload.owner_user_id,
+            expected_amount=payload.expected_amount,
+            notes=payload.notes,
+        )
+        db.add(entry)
+        db.flush()
+        created_ids.append(entry.id)
+
+    db.commit()
+    created = [_load_entry(db, entry_id) for entry_id in created_ids]
+    return PipelineEntryBulkResult(created=created, skipped_company_ids=skipped)
 
 
 @router.patch("/{entry_id}", response_model=PipelineEntryOut)

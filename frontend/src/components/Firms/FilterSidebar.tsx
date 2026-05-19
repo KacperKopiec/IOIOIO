@@ -1,6 +1,13 @@
 import React from 'react';
 import type { CompanyFilters } from '../../hooks/api/companies';
-import { useIndustries, usePipelineStages, useTags } from '../../hooks/api/reference';
+import { useEvents } from '../../hooks/api/events';
+import {
+    useIndustries,
+    usePipelineStages,
+    useRelationshipTypes,
+    useTags,
+    useUsers,
+} from '../../hooks/api/reference';
 import { FIRM_TAGS } from '../../constants/firmTags';
 import type { CompanySize, StageOutcome } from '../../types/api';
 import styles from './FilterSidebar.module.css';
@@ -23,10 +30,17 @@ const PIPELINE_OUTCOME_OPTIONS: { value: StageOutcome; label: string }[] = [
     { value: 'lost', label: 'Odrzucony' },
 ];
 
+const CURRENT_YEAR = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: 7 }, (_, index) => CURRENT_YEAR - index);
+type SegmentPreset = 'tech' | 'recruitment' | 'branding' | 'warm';
+
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
     const industries = useIndustries();
     const pipelineStages = usePipelineStages();
+    const relationshipTypes = useRelationshipTypes();
     const tags = useTags();
+    const users = useUsers();
+    const events = useEvents({ page: 1, page_size: 100 });
 
     const selectedTagIds = new Set(filters.tag_ids ?? []);
 
@@ -45,6 +59,25 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
 
     const handleReset = () => {
         onChange({ page: 1, page_size: filters.page_size });
+    };
+
+    const applySegment = (segment: SegmentPreset) => {
+        const tagNamesBySegment: Record<SegmentPreset, string[]> = {
+            tech: ['ai_ml', 'cloud', 'cybersecurity', 'embedded', 'enterprise'],
+            recruitment: ['recruitment'],
+            branding: ['branding'],
+            warm: ['partner', 'sponsor'],
+        };
+        const ids = tags.data
+            ?.filter((tag) => tagNamesBySegment[segment].includes(tag.name))
+            .map((tag) => tag.id) ?? [];
+        const next = new Set([...(filters.tag_ids ?? []), ...ids]);
+        onChange({
+            ...filters,
+            tag_ids: Array.from(next),
+            pipeline_outcome: segment === 'warm' ? 'won' : filters.pipeline_outcome,
+            page: 1,
+        });
     };
 
     const pipelineStatusValue = filters.pipeline_stage_id
@@ -169,6 +202,110 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
                 </div>
 
                 <div className={styles.section}>
+                    <label className={styles.label}>Typ współpracy</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={filters.relationship_type_id ?? ''}
+                            onChange={(e) =>
+                                onChange({
+                                    ...filters,
+                                    relationship_type_id: e.target.value
+                                        ? Number.parseInt(e.target.value, 10)
+                                        : null,
+                                    page: 1,
+                                })
+                            }
+                        >
+                            <option value="">Wszystkie typy</option>
+                            {relationshipTypes.data?.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                    {type.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Rok współpracy</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={filters.cooperation_year ?? ''}
+                            onChange={(e) =>
+                                onChange({
+                                    ...filters,
+                                    cooperation_year: e.target.value
+                                        ? Number.parseInt(e.target.value, 10)
+                                        : null,
+                                    page: 1,
+                                })
+                            }
+                        >
+                            <option value="">Dowolny rok</option>
+                            {YEAR_OPTIONS.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Opiekun relacji</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={filters.owner_user_id ?? ''}
+                            onChange={(e) =>
+                                onChange({
+                                    ...filters,
+                                    owner_user_id: e.target.value
+                                        ? Number.parseInt(e.target.value, 10)
+                                        : null,
+                                    page: 1,
+                                })
+                            }
+                        >
+                            <option value="">Wszyscy opiekunowie</option>
+                            {users.data?.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.first_name} {user.last_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Inicjatywa</label>
+                    <div className={styles.selectBox}>
+                        <select
+                            className={styles.select}
+                            value={filters.event_id ?? ''}
+                            onChange={(e) =>
+                                onChange({
+                                    ...filters,
+                                    event_id: e.target.value
+                                        ? Number.parseInt(e.target.value, 10)
+                                        : null,
+                                    page: 1,
+                                })
+                            }
+                        >
+                            <option value="">Wszystkie inicjatywy</option>
+                            {events.data?.items?.map((event) => (
+                                <option key={event.id} value={event.id}>
+                                    {event.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
                     <label className={styles.label}>Status pipeline</label>
                     <div className={styles.selectBox}>
                         <select
@@ -188,6 +325,40 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <label className={styles.label}>Segment pod zasiew lejka</label>
+                    <div className={styles.segmentGrid}>
+                        <button
+                            type="button"
+                            className={styles.segmentBtn}
+                            onClick={() => applySegment('tech')}
+                        >
+                            Technologie
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.segmentBtn}
+                            onClick={() => applySegment('recruitment')}
+                        >
+                            Rekrutacja
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.segmentBtn}
+                            onClick={() => applySegment('branding')}
+                        >
+                            Branding
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.segmentBtn}
+                            onClick={() => applySegment('warm')}
+                        >
+                            Ciepłe kontakty
+                        </button>
                     </div>
                 </div>
 

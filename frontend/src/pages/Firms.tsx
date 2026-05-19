@@ -5,8 +5,10 @@ import FilterSidebar from '../components/Firms/FilterSidebar';
 import FirmsTable from '../components/Firms/FirmsTable';
 import ActionBar from '../components/Firms/ActionBar';
 import AddCompanyModal from '../components/modals/AddCompanyModal';
+import BulkSeedPipelineModal from '../components/modals/BulkSeedPipelineModal';
 import BulkAddTagsModal from '../components/modals/BulkAddTagsModal';
 import { Button, Page, PageHeader } from '../components/ui';
+import { useAuth } from '../context/auth';
 import {
     exportCompaniesCsv,
     useCompanies,
@@ -20,8 +22,12 @@ const Firms: React.FC = () => {
     const [searchInput, setSearchInput] = useState('');
     const [addOpen, setAddOpen] = useState(false);
     const [bulkTagOpen, setBulkTagOpen] = useState(false);
+    const [bulkSeedOpen, setBulkSeedOpen] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const { role } = useAuth();
+    const canManageCompanies = role === 'opiekun';
+    const canSeedPipeline = role === 'koordynator';
 
     const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -92,13 +98,15 @@ const Firms: React.FC = () => {
                 title="Baza firm"
                 breadcrumb={[{ label: 'Baza firm' }]}
                 actions={
-                    <Button
-                        variant="primary"
-                        iconLeft={<Plus size={14} />}
-                        onClick={() => setAddOpen(true)}
-                    >
-                        Dodaj firmę
-                    </Button>
+                    canManageCompanies ? (
+                        <Button
+                            variant="primary"
+                            iconLeft={<Plus size={14} />}
+                            onClick={() => setAddOpen(true)}
+                        >
+                            Dodaj firmę
+                        </Button>
+                    ) : undefined
                 }
             />
 
@@ -129,7 +137,8 @@ const Firms: React.FC = () => {
                         visibleCount={visibleIds.length}
                         allSelected={allVisibleSelected}
                         onToggleAll={handleToggleAll}
-                        onAddTags={() => setBulkTagOpen(true)}
+                        onAddTags={canManageCompanies ? () => setBulkTagOpen(true) : undefined}
+                        onSeedPipeline={canSeedPipeline ? () => setBulkSeedOpen(true) : undefined}
                         onExportCsv={handleExportCsv}
                         isExporting={isExporting}
                     />
@@ -150,6 +159,12 @@ const Firms: React.FC = () => {
                 open={bulkTagOpen}
                 companies={selectedCompanies}
                 onClose={() => setBulkTagOpen(false)}
+                onDone={() => setSelectedIds(new Set())}
+            />
+            <BulkSeedPipelineModal
+                open={bulkSeedOpen}
+                companies={selectedCompanies}
+                onClose={() => setBulkSeedOpen(false)}
                 onDone={() => setSelectedIds(new Set())}
             />
         </Page>

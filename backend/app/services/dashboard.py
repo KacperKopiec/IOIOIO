@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.models.activity import Activity
 from app.models.company import Company
-from app.models.enums import EventStatus, StageOutcome
+from app.models.enums import ActivityType, EventStatus, StageOutcome
 from app.models.event import Event
 from app.models.pipeline import PipelineEntry, PipelineStage
 from app.models.user import User
@@ -33,10 +33,13 @@ def _activity_brief(row, *, company_name: str | None, event_name: str | None) ->
         activity_type=row.activity_type,
         subject=row.subject,
         activity_date=row.activity_date,
+        due_date=row.due_date,
+        completed_at=row.completed_at,
         company_id=row.company_id,
         company_name=company_name,
         event_id=row.event_id,
         event_name=event_name,
+        assigned_user_id=row.assigned_user_id,
     )
 
 
@@ -47,6 +50,7 @@ def _load_recent_activities(
     assigned_user_id: int | None = None,
     event_id: int | None = None,
     overdue_only: bool = False,
+    task_only: bool = False,
 ) -> list[RecentActivityBrief]:
     stmt = (
         select(Activity, Company.name.label("company_name"), Event.name.label("event_name"))
@@ -57,14 +61,32 @@ def _load_recent_activities(
         stmt = stmt.where(Activity.assigned_user_id == assigned_user_id)
     if event_id is not None:
         stmt = stmt.where(Activity.event_id == event_id)
+    if task_only:
+        stmt = stmt.where(
+            Activity.activity_type.in_(
+                [
+                    ActivityType.TASK,
+                    ActivityType.FOLLOW_UP,
+                ]
+            ),
+            Activity.completed_at.is_(None),
+        )
     if overdue_only:
         stmt = stmt.where(
             Activity.due_date < datetime.now(timezone.utc).replace(tzinfo=None),
             Activity.completed_at.is_(None),
         )
-    stmt = stmt.order_by(
-        Activity.activity_date.desc().nullslast(), Activity.created_at.desc()
-    ).limit(limit)
+    if task_only or overdue_only:
+        stmt = stmt.order_by(
+            Activity.completed_at.asc().nullsfirst(),
+            Activity.due_date.asc().nullslast(),
+            Activity.created_at.desc(),
+        )
+    else:
+        stmt = stmt.order_by(
+            Activity.activity_date.desc().nullslast(), Activity.created_at.desc()
+        )
+    stmt = stmt.limit(limit)
     return [
         _activity_brief(act, company_name=cname, event_name=ename)
         for act, cname, ename in db.execute(stmt).all()
@@ -146,6 +168,7 @@ def build_coordinator_dashboard(db: Session, event: Event) -> CoordinatorDashboa
         limit=10,
         event_id=event.id,
         overdue_only=False,
+        task_only=True,
     )
     recent = _load_recent_activities(db, limit=8, event_id=event.id)
 
@@ -169,7 +192,7 @@ def build_relationship_manager_dashboard(
     db: Session, user: User
 ) -> RelationshipManagerDashboard:
     overdue = _load_recent_activities(
-        db, limit=20, assigned_user_id=user.id, overdue_only=True
+        db, limit=20, assigned_user_id=user.id, overdue_only=True, task_only=True
     )
     recent = _load_recent_activities(db, limit=10, assigned_user_id=user.id)
 

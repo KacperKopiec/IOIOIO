@@ -3,13 +3,29 @@ import { CheckCircle, Circle, Plus } from 'lucide-react';
 import type { Activity } from '../../types/api';
 import { useUpdateActivity } from '../../hooks/api/activities';
 import AddActivityModal from '../modals/AddActivityModal';
+import EditActivityModal from '../modals/EditActivityModal';
 import styles from './EventTasksList.module.css';
 
 interface EventTasksListProps {
     activities: Activity[];
     isLoading: boolean;
     eventId?: number;
+    title?: string;
+    emptyText?: string;
+    defaults?: {
+        companyId?: number | null;
+        eventId?: number | null;
+        pipelineEntryId?: number | null;
+        contactId?: number | null;
+    };
 }
+
+const ACTION_TYPES = new Set(['task', 'follow_up']);
+
+const TYPE_LABEL: Record<string, string> = {
+    task: 'zadanie',
+    follow_up: 'follow-up',
+};
 
 function badgeFor(activity: Activity) {
     if (activity.completed_at) {
@@ -43,11 +59,30 @@ function badgeFor(activity: Activity) {
     };
 }
 
-const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, eventId }) => {
+const EventTasksList: React.FC<EventTasksListProps> = ({
+    activities,
+    isLoading,
+    eventId,
+    title = 'Moje zadania',
+    emptyText = 'Brak zadań przypisanych do tego wydarzenia.',
+    defaults,
+}) => {
     const [addOpen, setAddOpen] = useState(false);
+    const [edited, setEdited] = useState<Activity | null>(null);
 
     const updateActivity = useUpdateActivity();
-    const visible = activities.slice(0, 8);
+    const addDefaults = defaults ?? { eventId };
+    const canAdd = Object.values(addDefaults).some((value) => value != null);
+    const visible = activities
+        .filter((activity) => ACTION_TYPES.has(activity.activity_type))
+        .sort((a, b) => {
+            if (a.completed_at && !b.completed_at) return 1;
+            if (!a.completed_at && b.completed_at) return -1;
+            const aDue = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+            const bDue = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+            return aDue - bDue;
+        })
+        .slice(0, 8);
 
     const toggleDone = (activity: Activity) => {
         const newCompletedAt = activity.completed_at ? null : new Date().toISOString();
@@ -60,8 +95,8 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, 
     return (
         <section className={styles.section}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Moje zadania</h2>
-                {eventId && (
+                <h2 className={styles.title}>{title}</h2>
+                {canAdd && (
                     <button type="button" className={styles.addBtn} onClick={() => setAddOpen(true)}>
                         <Plus size={14} />
                         <span>Dodaj</span>
@@ -75,7 +110,7 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, 
                 )}
                 {!isLoading && visible.length === 0 && (
                     <div className={styles.empty}>
-                        Brak zadań przypisanych do tego wydarzenia.
+                        {emptyText}
                     </div>
                 )}
                 {visible.map((activity) => {
@@ -103,11 +138,17 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, 
                                     )}
                                 </button>
                                 <div>
-                                    <div
+                                    <button
+                                        type="button"
                                         className={`${styles.taskTitle} ${done ? styles.taskTitleDone : ''
                                             }`}
+                                        onClick={() => setEdited(activity)}
                                     >
                                         {activity.subject}
+                                    </button>
+                                    <div className={`${styles.taskMeta} ${done ? styles.taskMetaDone : ''}`}>
+                                        {TYPE_LABEL[activity.activity_type] ?? activity.activity_type}
+                                        {activity.description ? ` · ${activity.description}` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -119,13 +160,20 @@ const EventTasksList: React.FC<EventTasksListProps> = ({ activities, isLoading, 
                 })}
             </div>
 
-            {eventId && (
+            {canAdd && (
                 <AddActivityModal
                     open={addOpen}
                     onClose={() => setAddOpen(false)}
-                    defaults={{ eventId }}
+                    defaultType="follow_up"
+                    mode="follow_up"
+                    defaults={addDefaults}
                 />
             )}
+            <EditActivityModal
+                open={edited != null}
+                activity={edited}
+                onClose={() => setEdited(null)}
+            />
         </section>
     );
 };

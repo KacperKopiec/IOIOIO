@@ -14,6 +14,7 @@ import EventContactsCard from '../components/EventCompany/EventContactsCard';
 import EventHistoryTimeline from '../components/EventCompany/EventHistoryTimeline';
 import EventNotesCard from '../components/EventCompany/EventNotesCard';
 import PipelineStatusBar from '../components/EventCompany/PipelineStatusBar';
+import EventTasksList from '../components/EventDetail/EventTasksList';
 import AddContactModal from '../components/modals/AddContactModal';
 import {
     Button,
@@ -144,6 +145,17 @@ const EventCompany: React.FC = () => {
                 </div>
 
                 <div className={styles.rightCol}>
+                    <EventTasksList
+                        title="Follow-upy"
+                        emptyText="Brak kolejnych kroków dla tej firmy w tej inicjatywie."
+                        activities={activities.data ?? []}
+                        isLoading={activities.isLoading}
+                        defaults={{
+                            companyId: c.id,
+                            eventId: ev.id,
+                            pipelineEntryId: entry?.id ?? null,
+                        }}
+                    />
                     <EventHistoryTimeline
                         eventName={ev.name}
                         activities={activities.data ?? []}

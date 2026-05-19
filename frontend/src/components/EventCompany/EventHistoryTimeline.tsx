@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Mail, MessageSquare, Phone, UserPlus } from 'lucide-react';
 import type { Activity, ActivityType } from '../../types/api';
+import Modal from '../ui/Modal';
 import styles from './EventHistoryTimeline.module.css';
 
 interface EventHistoryTimelineProps {
@@ -35,6 +36,7 @@ const EventHistoryTimeline: React.FC<EventHistoryTimelineProps> = ({
     activities,
     isLoading,
 }) => {
+    const [fullOpen, setFullOpen] = useState(false);
     const visible = activities.slice(0, 6);
 
     return (
@@ -71,9 +73,48 @@ const EventHistoryTimeline: React.FC<EventHistoryTimelineProps> = ({
                 </div>
             )}
 
-            <button type="button" className={styles.moreBtn} disabled>
+            <button
+                type="button"
+                className={styles.moreBtn}
+                onClick={() => setFullOpen(true)}
+                disabled={activities.length === 0}
+            >
                 Pokaż pełną historię
             </button>
+            <Modal
+                open={fullOpen}
+                onClose={() => setFullOpen(false)}
+                title={`Pełna historia: ${eventName}`}
+                size="large"
+            >
+                <div className={styles.fullList}>
+                    {activities.length === 0 ? (
+                        <div className={styles.empty}>Brak aktywności.</div>
+                    ) : (
+                        activities.map((activity) => {
+                            const Icon = ICON_FOR_TYPE[activity.activity_type];
+                            return (
+                                <div key={activity.id} className={styles.fullItem}>
+                                    <span className={`${styles.icon} ${styles.iconPast}`}>
+                                        <Icon size={14} />
+                                    </span>
+                                    <div className={styles.fullBody}>
+                                        <div className={styles.itemTitle}>{activity.subject}</div>
+                                        <div className={styles.itemMeta}>
+                                            {formatDateLine(activity)}
+                                        </div>
+                                        {activity.description && (
+                                            <div className={styles.itemDesc}>
+                                                {activity.description}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </Modal>
         </div>
     );
 };
