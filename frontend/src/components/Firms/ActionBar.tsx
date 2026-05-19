@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, GitBranchPlus, Mail, Tag } from 'lucide-react';
+import { FileText, GitBranchPlus, Mail, Tag, Download } from 'lucide-react';
 import styles from './ActionBar.module.css';
 
 interface ActionBarProps {
@@ -10,6 +10,8 @@ interface ActionBarProps {
     onAddTags?: () => void;
     onSeedPipeline?: () => void;
     onSendEmail?: () => void;
+    onExportCsv?: () => void;
+    isExporting?: boolean;
     onGenerateReport?: () => void;
 }
 
@@ -21,6 +23,8 @@ const ActionBar: React.FC<ActionBarProps> = ({
     onAddTags,
     onSeedPipeline,
     onSendEmail,
+    onExportCsv,
+    isExporting = false,
     onGenerateReport,
 }) => {
     const disabled = selectedCount === 0;
@@ -103,17 +107,25 @@ const ActionBar: React.FC<ActionBarProps> = ({
                 <button
                     className={styles.reportButton}
                     type="button"
-                    onClick={onGenerateReport}
-                    disabled={!onGenerateReport}
-                    title={
-                        !onGenerateReport
-                            ? 'Generowanie raportu nie jest jeszcze zaimplementowane'
-                            : undefined
-                    }
+                    onClick={onExportCsv}
+                    disabled={!onExportCsv || isExporting}
                 >
-                    <FileText className={styles.reportIcon} aria-hidden="true" />
-                    <span className={styles.reportText}>Generuj raport</span>
+                    <Download className={styles.reportIcon} aria-hidden="true" />
+                    <span className={styles.reportText}>
+                        {isExporting ? 'Eksportowanie' : 'Eksport CSV'}
+                    </span>
                 </button>
+
+                {onGenerateReport && (
+                    <button
+                        className={styles.reportButton}
+                        type="button"
+                        onClick={onGenerateReport}
+                    >
+                        <FileText className={styles.reportIcon} aria-hidden="true" />
+                        <span className={styles.reportText}>Generuj raport</span>
+                    </button>
+                )}
             </div>
         </div>
     );

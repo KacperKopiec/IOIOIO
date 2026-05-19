@@ -9,7 +9,11 @@ import BulkSeedPipelineModal from '../components/modals/BulkSeedPipelineModal';
 import BulkAddTagsModal from '../components/modals/BulkAddTagsModal';
 import { Button, Page, PageHeader } from '../components/ui';
 import { useAuth } from '../context/auth';
-import { useCompanies, type CompanyFilters } from '../hooks/api/companies';
+import {
+    exportCompaniesCsv,
+    useCompanies,
+    type CompanyFilters,
+} from '../hooks/api/companies';
 
 const DEFAULT_FILTERS: CompanyFilters = { page: 1, page_size: 25 };
 
@@ -19,6 +23,7 @@ const Firms: React.FC = () => {
     const [addOpen, setAddOpen] = useState(false);
     const [bulkTagOpen, setBulkTagOpen] = useState(false);
     const [bulkSeedOpen, setBulkSeedOpen] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const { role } = useAuth();
     const canManageCompanies = role === 'opiekun';
@@ -56,6 +61,27 @@ const Firms: React.FC = () => {
 
     function handlePageChange(page: number) {
         setFilters((prev) => ({ ...prev, page }));
+    }
+
+    async function handleExportCsv() {
+        setIsExporting(true);
+        try {
+            const ids = selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
+            const blob = await exportCompaniesCsv(filters, ids);
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `firmy-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 0);
+        } catch (error) {
+            console.error(error);
+            window.alert('Nie udało się wyeksportować firm do CSV.');
+        } finally {
+            setIsExporting(false);
+        }
     }
 
     const allVisibleSelected =
@@ -113,6 +139,8 @@ const Firms: React.FC = () => {
                         onToggleAll={handleToggleAll}
                         onAddTags={canManageCompanies ? () => setBulkTagOpen(true) : undefined}
                         onSeedPipeline={canSeedPipeline ? () => setBulkSeedOpen(true) : undefined}
+                        onExportCsv={handleExportCsv}
+                        isExporting={isExporting}
                     />
                     <FirmsTable
                         companies={companies}
