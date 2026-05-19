@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import { useUpdateActivity } from '../../hooks/api/activities';
 import { toApiError } from '../../lib/api';
@@ -8,6 +8,11 @@ import styles from './FormFields.module.css';
 interface EditHistoryActivityModalProps {
     activity: Activity | null;
     open: boolean;
+    onClose: () => void;
+}
+
+interface EditHistoryActivityFormProps {
+    activity: Activity;
     onClose: () => void;
 }
 
@@ -26,30 +31,21 @@ function toLocalInput(value: string | null) {
     return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
 }
 
-const EditHistoryActivityModal: React.FC<EditHistoryActivityModalProps> = ({
+const EditHistoryActivityForm: React.FC<EditHistoryActivityFormProps> = ({
     activity,
-    open,
     onClose,
 }) => {
     const update = useUpdateActivity();
-    const [activityType, setActivityType] = useState<ActivityType>('note');
-    const [subject, setSubject] = useState('');
-    const [description, setDescription] = useState('');
-    const [activityDate, setActivityDate] = useState('');
+    const [activityType, setActivityType] = useState<ActivityType>(activity.activity_type);
+    const [subject, setSubject] = useState(activity.subject);
+    const [description, setDescription] = useState(activity.description ?? '');
+    const [activityDate, setActivityDate] = useState(
+        toLocalInput(activity.activity_date ?? activity.created_at),
+    );
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!activity || !open) return;
-        setActivityType(activity.activity_type);
-        setSubject(activity.subject);
-        setDescription(activity.description ?? '');
-        setActivityDate(toLocalInput(activity.activity_date ?? activity.created_at));
-        setError(null);
-    }, [activity, open]);
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!activity) return;
         if (!subject.trim()) {
             setError('Temat jest wymagany.');
             return;
@@ -76,7 +72,7 @@ const EditHistoryActivityModal: React.FC<EditHistoryActivityModalProps> = ({
 
     return (
         <Modal
-            open={open && activity != null}
+            open
             onClose={onClose}
             title="Edytuj wpis historii"
             footer={
@@ -152,6 +148,21 @@ const EditHistoryActivityModal: React.FC<EditHistoryActivityModalProps> = ({
                 {error && <div className={styles.error}>{error}</div>}
             </form>
         </Modal>
+    );
+};
+
+const EditHistoryActivityModal: React.FC<EditHistoryActivityModalProps> = ({
+    activity,
+    open,
+    onClose,
+}) => {
+    if (!open || !activity) return null;
+    return (
+        <EditHistoryActivityForm
+            key={activity.id}
+            activity={activity}
+            onClose={onClose}
+        />
     );
 };
 

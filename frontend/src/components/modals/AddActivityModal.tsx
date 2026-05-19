@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import { useCreateActivity } from '../../hooks/api/activities';
 import { useUsers } from '../../hooks/api/reference';
@@ -87,12 +87,6 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
     const [dueDate, setDueDate] = useState('');
     const [assignedUserId, setAssignedUserId] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (open) {
-            setActivityType(effectiveDefaultType);
-        }
-    }, [effectiveDefaultType, open]);
 
     function reset() {
         setActivityType(effectiveDefaultType);

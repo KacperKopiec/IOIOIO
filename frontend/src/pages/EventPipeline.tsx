@@ -129,7 +129,7 @@ const EventPipeline: React.FC = () => {
     const [filters, setFilters] = useState<PipelineFilters>(DEFAULT_FILTERS);
     const [sortMode, setSortMode] = useState<SortMode>('stage_order');
 
-    const allEntries = pipeline.data ?? [];
+    const allEntries = useMemo(() => pipeline.data ?? [], [pipeline.data]);
     const filteredEntries = useMemo(
         () => applySort(applyFilters(allEntries, filters), sortMode),
         [allEntries, filters, sortMode],

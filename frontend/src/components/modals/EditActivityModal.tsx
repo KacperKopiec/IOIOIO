@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import { useDeleteActivity, useUpdateActivity } from '../../hooks/api/activities';
 import { useUsers } from '../../hooks/api/reference';
@@ -9,6 +9,11 @@ import styles from './FormFields.module.css';
 interface EditActivityModalProps {
     activity: Activity | null;
     open: boolean;
+    onClose: () => void;
+}
+
+interface EditActivityFormProps {
+    activity: Activity;
     onClose: () => void;
 }
 
@@ -25,37 +30,23 @@ function toLocalInput(value: string | null) {
     return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
 }
 
-const EditActivityModal: React.FC<EditActivityModalProps> = ({
-    activity,
-    open,
-    onClose,
-}) => {
+const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose }) => {
     const users = useUsers();
     const update = useUpdateActivity();
     const deleteActivity = useDeleteActivity();
 
-    const [activityType, setActivityType] = useState<ActivityType>('follow_up');
-    const [subject, setSubject] = useState('');
-    const [description, setDescription] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [assignedUserId, setAssignedUserId] = useState('');
-    const [completed, setCompleted] = useState(false);
+    const [activityType, setActivityType] = useState<ActivityType>(activity.activity_type);
+    const [subject, setSubject] = useState(activity.subject);
+    const [description, setDescription] = useState(activity.description ?? '');
+    const [dueDate, setDueDate] = useState(toLocalInput(activity.due_date));
+    const [assignedUserId, setAssignedUserId] = useState(
+        activity.assigned_user_id ? String(activity.assigned_user_id) : '',
+    );
+    const [completed, setCompleted] = useState(activity.completed_at != null);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!activity || !open) return;
-        setActivityType(activity.activity_type);
-        setSubject(activity.subject);
-        setDescription(activity.description ?? '');
-        setDueDate(toLocalInput(activity.due_date));
-        setAssignedUserId(activity.assigned_user_id ? String(activity.assigned_user_id) : '');
-        setCompleted(activity.completed_at != null);
-        setError(null);
-    }, [activity, open]);
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!activity) return;
         if (!subject.trim()) {
             setError('Temat jest wymagany.');
             return;
@@ -85,7 +76,6 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({
     }
 
     function handleDelete() {
-        if (!activity) return;
         const confirmed = window.confirm('Usunąć ten follow-up?');
         if (!confirmed) return;
         setError(null);
@@ -97,7 +87,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({
 
     return (
         <Modal
-            open={open && activity != null}
+            open
             onClose={onClose}
             title="Edytuj follow-up"
             footer={
@@ -211,6 +201,15 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({
             </form>
         </Modal>
     );
+};
+
+const EditActivityModal: React.FC<EditActivityModalProps> = ({
+    activity,
+    open,
+    onClose,
+}) => {
+    if (!open || !activity) return null;
+    return <EditActivityForm key={activity.id} activity={activity} onClose={onClose} />;
 };
 
 export default EditActivityModal;
