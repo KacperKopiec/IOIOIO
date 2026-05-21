@@ -44,31 +44,31 @@ DEMO_USERS: list[dict] = [
     {
         "first_name": "Marek",
         "last_name": "Kowalski",
-        "email": "marek.koordynator@agh.edu.pl",
+        "email": "fabia+koordynator@student.agh.edu.pl",
         "role": "koordynator",
     },
     {
         "first_name": "Julia",
         "last_name": "Sokołowska",
-        "email": "julia.koordynator@agh.edu.pl",
+        "email": "fabia+koordynator2@student.agh.edu.pl",
         "role": "koordynator",
     },
     {
         "first_name": "Katarzyna",
         "last_name": "Wiśniewska",
-        "email": "katarzyna.opiekun@agh.edu.pl",
+        "email": "fabia+opiekun@student.agh.edu.pl",
         "role": "opiekun",
     },
     {
         "first_name": "Paweł",
         "last_name": "Zieliński",
-        "email": "pawel.opiekun@agh.edu.pl",
+        "email": "fabia+opiekun2@student.agh.edu.pl",
         "role": "opiekun",
     },
     {
         "first_name": "Tomasz",
         "last_name": "Lewandowski",
-        "email": "tomasz.promocja@agh.edu.pl",
+        "email": "fabia+promocja@student.agh.edu.pl",
         "role": "promocja",
     },
 ]
@@ -83,7 +83,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.CORPORATION,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["enterprise", "saas", "sponsor", "partner"],
         "description": "Krakowski partner enterprise software, ERP i usług cloud.",
     },
@@ -95,7 +95,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Cybersecurity",
         "size": CompanySize.CORPORATION,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["cloud", "cybersecurity", "enterprise", "recruitment"],
         "description": "Cloud security, edge computing i duży zespół inżynierski w Krakowie.",
     },
@@ -107,7 +107,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Telco",
         "size": CompanySize.CORPORATION,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["embedded", "enterprise", "recruitment"],
         "description": "Telekomunikacja, 5G, embedded software i infrastruktura sieciowa.",
     },
@@ -119,7 +119,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Cybersecurity",
         "size": CompanySize.CORPORATION,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["cybersecurity", "embedded", "enterprise"],
         "description": "Systemy bezpieczeństwa publicznego, komunikacja krytyczna i backend.",
     },
@@ -131,7 +131,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Automotive",
         "size": CompanySize.CORPORATION,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["embedded", "enterprise", "technology"],
         "description": "Software automotive, systemy ADAS i platformy embedded.",
     },
@@ -143,7 +143,7 @@ COMPANIES: list[dict] = [
         "city": "Poznań",
         "industry": "E-commerce",
         "size": CompanySize.CORPORATION,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["cloud", "saas", "recruitment", "branding"],
         "description": "E-commerce, platform engineering, search, data i skala produkcyjna.",
     },
@@ -155,7 +155,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["ai_ml", "saas", "branding", "alumni"],
         "description": "EdTech, AI-assisted learning i produkt globalny z Krakowa.",
     },
@@ -167,7 +167,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["ai_ml", "saas", "enterprise"],
         "description": "AI, behavioral data, marketing automation i platforma enterprise.",
     },
@@ -179,7 +179,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.CORPORATION,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["cloud", "cybersecurity", "enterprise", "partner"],
         "description": "Sieci, cloud, cybersecurity i programy akademickie.",
     },
@@ -191,7 +191,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.CORPORATION,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["cloud", "enterprise", "recruitment"],
         "description": "Travel tech, systemy rozproszone i inżynieria platformowa.",
     },
@@ -203,7 +203,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "R&D",
         "size": CompanySize.CORPORATION,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["embedded", "r_and_d", "enterprise"],
         "description": "R&D, automatyka, systemy przemysłowe i software dla energetyki.",
     },
@@ -215,7 +215,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Fintech",
         "size": CompanySize.SME,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["fintech", "saas", "enterprise"],
         "description": "Fintech, banking software i produkty dla sektora finansowego.",
     },
@@ -227,7 +227,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["cloud", "saas", "technology"],
         "description": "Cloud-native software, platform engineering i konsulting technologiczny.",
     },
@@ -239,7 +239,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["startup", "technology", "workshop"],
         "description": "Software house, open source, mobile i web engineering.",
     },
@@ -251,7 +251,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["cloud", "enterprise", "recruitment"],
         "description": "AdTech, systemy wysokiej przepustowości i platformy data.",
     },
@@ -263,7 +263,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "Fintech",
         "size": CompanySize.CORPORATION,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["fintech", "cloud", "branding"],
         "description": "Fintech, płatności, compliance i backend wysokiej dostępności.",
     },
@@ -275,7 +275,7 @@ COMPANIES: list[dict] = [
         "city": "Warszawa",
         "industry": "IT",
         "size": CompanySize.SME,
-        "owner": "katarzyna.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun@student.agh.edu.pl",
         "tags": ["cloud", "r_and_d", "enterprise"],
         "description": "Chmura obliczeniowa dla nauki, danych satelitarnych i HPC.",
     },
@@ -287,7 +287,7 @@ COMPANIES: list[dict] = [
         "city": "Kraków",
         "industry": "IT",
         "size": CompanySize.STARTUP,
-        "owner": "pawel.opiekun@agh.edu.pl",
+        "owner": "fabia+opiekun2@student.agh.edu.pl",
         "tags": ["iot", "embedded", "startup"],
         "description": "IoT, embedded software i prototypowanie urządzeń połączonych.",
     },
@@ -339,7 +339,7 @@ EVENTS: list[dict] = [
         "target_budget": Decimal("120000.00"),
         "target_partners_count": 8,
         "status": EventStatus.CLOSED,
-        "owner": "marek.koordynator@agh.edu.pl",
+        "owner": "fabia+koordynator@student.agh.edu.pl",
         "tags": ["technology", "sponsor", "workshop"],
     },
     {
@@ -350,7 +350,7 @@ EVENTS: list[dict] = [
         "target_budget": Decimal("85000.00"),
         "target_partners_count": 7,
         "status": EventStatus.ACTIVE,
-        "owner": "julia.koordynator@agh.edu.pl",
+        "owner": "fabia+koordynator2@student.agh.edu.pl",
         "tags": ["hackathon", "ai_ml", "sponsor"],
     },
     {
@@ -361,7 +361,7 @@ EVENTS: list[dict] = [
         "target_budget": Decimal("210000.00"),
         "target_partners_count": 16,
         "status": EventStatus.ACTIVE,
-        "owner": "marek.koordynator@agh.edu.pl",
+        "owner": "fabia+koordynator@student.agh.edu.pl",
         "tags": ["recruitment", "branding", "sponsor"],
     },
     {
@@ -372,7 +372,7 @@ EVENTS: list[dict] = [
         "target_budget": Decimal("95000.00"),
         "target_partners_count": 6,
         "status": EventStatus.DRAFT,
-        "owner": "julia.koordynator@agh.edu.pl",
+        "owner": "fabia+koordynator2@student.agh.edu.pl",
         "tags": ["cybersecurity", "workshop", "sponsor"],
     },
 ]
@@ -575,7 +575,7 @@ def _upsert_pipeline(
     users: dict[str, User],
 ) -> list[PipelineEntry]:
     stages = {stage.name: stage for stage in session.scalars(select(PipelineStage)).all()}
-    opiekun_emails = ["katarzyna.opiekun@agh.edu.pl", "pawel.opiekun@agh.edu.pl"]
+    opiekun_emails = ["fabia+opiekun@student.agh.edu.pl", "fabia+opiekun2@student.agh.edu.pl"]
     entries: list[PipelineEntry] = []
 
     for event_name, rows in PIPELINE_PLAN.items():
@@ -676,7 +676,7 @@ def _activity_key(session: Session, entry: PipelineEntry, subject: str, activity
 def _upsert_activities(session: Session, entries: list[PipelineEntry], users: dict[str, User]) -> None:
     stages = {row.id: row for row in session.scalars(select(PipelineStage)).all()}
     today = datetime.utcnow().replace(hour=9, minute=0, second=0, microsecond=0)
-    assignee_cycle = [users["katarzyna.opiekun@agh.edu.pl"], users["pawel.opiekun@agh.edu.pl"]]
+    assignee_cycle = [users["fabia+opiekun@student.agh.edu.pl"], users["fabia+opiekun2@student.agh.edu.pl"]]
 
     for idx, entry in enumerate(entries):
         stage = stages[entry.stage_id]
@@ -787,7 +787,7 @@ def _upsert_invoices(session: Session, entries: list[PipelineEntry]) -> None:
 
 
 def _upsert_documents(session: Session, entries: list[PipelineEntry], users: dict[str, User]) -> None:
-    uploader = users.get("marek.koordynator@agh.edu.pl")
+    uploader = users.get("fabia+koordynator@student.agh.edu.pl")
     for entry in entries:
         if entry.agreed_amount is None:
             continue

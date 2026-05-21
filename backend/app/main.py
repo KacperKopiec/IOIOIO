@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from alembic import command
@@ -5,6 +6,12 @@ from alembic.config import Config
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    force=True,
+)
 
 from app.api.activities import router as activities_router
 from app.api.companies import router as companies_router
@@ -43,11 +50,12 @@ def create_app() -> FastAPI:
 
     @app.get("/storage/documents/{file_name}")
     def serve_document(file_name: str):
+        from app.services.uploads import guess_media_type
         storage_dir = Path(__file__).parent / "storage" / "documents"
         file_path = storage_dir / file_name
         if not file_path.exists():
             raise HTTPException(status_code=404, detail="Plik nie znaleziony")
-        return FileResponse(file_path, media_type="application/pdf")
+        return FileResponse(file_path, media_type=guess_media_type(file_path))
 
     app.add_middleware(
         CORSMiddleware,

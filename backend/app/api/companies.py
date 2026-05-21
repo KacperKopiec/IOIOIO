@@ -1,6 +1,5 @@
 import csv
 import io
-import uuid
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -23,6 +22,7 @@ from app.schemas.common import Page, PageParams
 from app.schemas.company import CompanyCreate, CompanyOut, CompanyUpdate
 from app.schemas.contact import ContactOut
 from app.schemas.document import DocumentCreate, DocumentOut
+from app.services.uploads import save_upload
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -621,24 +621,14 @@ async def upload_company_document(
 ) -> Document:
     _load_company(db, company_id)
 
-    if file.content_type not in ("application/pdf", "application/octet-stream"):
-        raise HTTPException(status_code=400, detail="Dozwolone są tylko pliki PDF")
-
     storage_dir = Path(__file__).parent.parent / "storage" / "documents"
-    storage_dir.mkdir(parents=True, exist_ok=True)
-
-    file_ext = ".pdf"
-    file_name = f"{uuid.uuid4()}{file_ext}"
-    file_path = storage_dir / file_name
-
-    content = await file.read()
-    file_path.write_bytes(content)
+    _, original_name, public_url = save_upload(file, storage_dir)
 
     doc = Document(
         company_id=company_id,
         uploaded_by_user_id=user_id,
-        file_name=file.filename or "dokument.pdf",
-        file_url=f"/storage/documents/{file_name}",
+        file_name=original_name,
+        file_url=public_url,
         document_type=document_type,
     )
     db.add(doc)
