@@ -24,3 +24,13 @@
         gap: var(--space-4);
     }
 }
+
+@media print {
+    .page,
+    .pageWide,
+    .pageFull {
+        padding: 0 !important;
+        max-width: none !important;
+        gap: 6mm !important;
+    }
+}

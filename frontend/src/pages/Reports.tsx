@@ -11,7 +11,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import { Download } from 'lucide-react';
+import { Download, Printer } from 'lucide-react';
 import {
     buildReportExportUrl,
     useReports,
@@ -84,6 +84,30 @@ const Reports: React.FC = () => {
         [reports.data],
     );
 
+    const filterSummary = useMemo(() => {
+        const parts: string[] = [];
+        parts.push(`Rok: ${filters.year ?? 'wszystkie lata'}`);
+        if (filters.industry_id) {
+            const ind = industries.data?.find((i) => i.id === filters.industry_id);
+            parts.push(`Branża: ${ind?.name ?? filters.industry_id}`);
+        }
+        if (filters.owner_user_id) {
+            const u = users.data?.find((x) => x.id === filters.owner_user_id);
+            parts.push(
+                `Opiekun: ${u ? `${u.first_name} ${u.last_name}` : filters.owner_user_id}`,
+            );
+        }
+        if (filters.event_id) {
+            const ev = eventsQuery.data?.items.find((e) => e.id === filters.event_id);
+            parts.push(`Inicjatywa: ${ev?.name ?? filters.event_id}`);
+        }
+        if (filters.company_id) {
+            const c = companiesQuery.data?.items.find((co) => co.id === filters.company_id);
+            parts.push(`Firma: ${c?.name ?? filters.company_id}`);
+        }
+        return parts;
+    }, [filters, industries.data, users.data, eventsQuery.data, companiesQuery.data]);
+
     const eventChartData = useMemo(
         () =>
             events.slice(0, 8).map((ev) => ({
@@ -151,14 +175,36 @@ const Reports: React.FC = () => {
                 breadcrumb={[{ label: 'Raporty' }]}
                 subtitle="Filtrowane raporty roczne, inicjatyw, pipeline i historii firm."
                 actions={
-                    <a className={styles.exportButton} href={buildReportExportUrl(filters)}>
-                        <Download size={14} />
-                        Eksport CSV
-                    </a>
+                    <div className={styles.headerActions}>
+                        <button
+                            type="button"
+                            className={styles.printButton}
+                            onClick={() => window.print()}
+                        >
+                            <Printer size={14} />
+                            Drukuj
+                        </button>
+                        <a
+                            className={styles.exportButton}
+                            href={buildReportExportUrl(filters)}
+                        >
+                            <Download size={14} />
+                            Eksport CSV
+                        </a>
+                    </div>
                 }
             />
 
-            <Card padding="compact">
+            <div className={styles.printHeader} aria-hidden>
+                <div className={styles.printHeaderFilters}>
+                    {filterSummary.join('  •  ')}
+                </div>
+                <div className={styles.printHeaderMeta}>
+                    Wygenerowano: {formatDate(new Date().toISOString())}
+                </div>
+            </div>
+
+            <Card padding="compact" className={styles.filtersCard}>
                 <CardHeader
                     title="Filtry raportu"
                     subtitle="Zawężają wszystkie zestawienia i eksport"
