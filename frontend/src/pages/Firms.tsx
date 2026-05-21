@@ -27,7 +27,8 @@ const Firms: React.FC = () => {
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const { role } = useAuth();
     const canManageCompanies = role === 'opiekun';
-    const canSeedPipeline = role === 'koordynator';
+    const canSeedPipeline = true;
+    const isKoordynator = role === 'koordynator';
 
     const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -164,6 +165,7 @@ const Firms: React.FC = () => {
             <BulkSeedPipelineModal
                 open={bulkSeedOpen}
                 companies={selectedCompanies}
+                restricted={!isKoordynator}
                 onClose={() => setBulkSeedOpen(false)}
                 onDone={() => setSelectedIds(new Set())}
             />

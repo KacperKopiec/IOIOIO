@@ -12,6 +12,7 @@ interface BulkSeedPipelineModalProps {
     companies: Company[];
     onClose: () => void;
     onDone?: () => void;
+    restricted?: boolean;
 }
 
 const BulkSeedPipelineModal: React.FC<BulkSeedPipelineModalProps> = ({
@@ -19,6 +20,7 @@ const BulkSeedPipelineModal: React.FC<BulkSeedPipelineModalProps> = ({
     companies,
     onClose,
     onDone,
+    restricted = false,
 }) => {
     const events = useEvents({ page: 1, page_size: 100 });
     const stages = usePipelineStages();
@@ -66,10 +68,10 @@ const BulkSeedPipelineModal: React.FC<BulkSeedPipelineModalProps> = ({
             {
                 event_id: Number.parseInt(eventId, 10),
                 company_ids: companyIds,
-                stage_id: stageId ? Number.parseInt(stageId, 10) : null,
-                owner_user_id: ownerId ? Number.parseInt(ownerId, 10) : null,
-                expected_amount: expectedAmount || null,
-                notes: notes.trim() || null,
+                stage_id: restricted ? null : (stageId ? Number.parseInt(stageId, 10) : null),
+                owner_user_id: restricted ? null : (ownerId ? Number.parseInt(ownerId, 10) : null),
+                expected_amount: restricted ? null : (expectedAmount || null),
+                notes: restricted ? null : (notes.trim() || null),
             },
             {
                 onSuccess: (result) => {
@@ -136,59 +138,68 @@ const BulkSeedPipelineModal: React.FC<BulkSeedPipelineModalProps> = ({
                     </select>
                 </div>
 
-                <div className={styles.row2}>
-                    <div className={styles.row}>
-                        <label className={styles.label}>Etap startowy</label>
-                        <select
-                            className={styles.select}
-                            value={stageId}
-                            onChange={(e) => setStageId(e.target.value)}
-                        >
-                            <option value="">Pierwszy etap</option>
-                            {stages.data?.map((stage) => (
-                                <option key={stage.id} value={stage.id}>
-                                    {stage.name}
-                                </option>
-                            ))}
-                        </select>
+                {restricted ? (
+                    <div className={styles.helper}>
+                        Firmy zostaną dodane do wybranej inicjatywy w pierwszym etapie
+                        lejka. Etap, opiekuna, kwotę i notatki ustawia koordynator.
                     </div>
-                    <div className={styles.row}>
-                        <label className={styles.label}>Opiekun</label>
-                        <select
-                            className={styles.select}
-                            value={ownerId}
-                            onChange={(e) => setOwnerId(e.target.value)}
-                        >
-                            <option value="">— wybierz —</option>
-                            {owners.data?.map((owner) => (
-                                <option key={owner.id} value={owner.id}>
-                                    {owner.first_name} {owner.last_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
+                ) : (
+                    <>
+                        <div className={styles.row2}>
+                            <div className={styles.row}>
+                                <label className={styles.label}>Etap startowy</label>
+                                <select
+                                    className={styles.select}
+                                    value={stageId}
+                                    onChange={(e) => setStageId(e.target.value)}
+                                >
+                                    <option value="">Pierwszy etap</option>
+                                    {stages.data?.map((stage) => (
+                                        <option key={stage.id} value={stage.id}>
+                                            {stage.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.row}>
+                                <label className={styles.label}>Opiekun</label>
+                                <select
+                                    className={styles.select}
+                                    value={ownerId}
+                                    onChange={(e) => setOwnerId(e.target.value)}
+                                >
+                                    <option value="">— wybierz —</option>
+                                    {owners.data?.map((owner) => (
+                                        <option key={owner.id} value={owner.id}>
+                                            {owner.first_name} {owner.last_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
 
-                <div className={styles.row}>
-                    <label className={styles.label}>Oczekiwana kwota na firmę (PLN)</label>
-                    <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        className={styles.input}
-                        value={expectedAmount}
-                        onChange={(e) => setExpectedAmount(e.target.value)}
-                    />
-                </div>
+                        <div className={styles.row}>
+                            <label className={styles.label}>Oczekiwana kwota na firmę (PLN)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className={styles.input}
+                                value={expectedAmount}
+                                onChange={(e) => setExpectedAmount(e.target.value)}
+                            />
+                        </div>
 
-                <div className={styles.row}>
-                    <label className={styles.label}>Notatka</label>
-                    <textarea
-                        className={styles.textarea}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                    />
-                </div>
+                        <div className={styles.row}>
+                            <label className={styles.label}>Notatka</label>
+                            <textarea
+                                className={styles.textarea}
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                            />
+                        </div>
+                    </>
+                )}
 
                 {summary && <div className={styles.helper}>{summary}</div>}
                 {error && <div className={styles.error}>{error}</div>}
