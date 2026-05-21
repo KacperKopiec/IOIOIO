@@ -76,6 +76,35 @@
     outline-offset: 1px;
 }
 
+.reminderButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.reminderButton:hover:not(:disabled) {
+    background: var(--color-surface-hover, var(--color-surface));
+    border-color: var(--color-primary);
+}
+
+.reminderButton:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.reminderButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 @media (max-width: 700px) {
     .topbar {
         padding: 0 var(--space-4);
@@ -86,6 +115,10 @@
     }
 
     .userBlock {
+        display: none;
+    }
+
+    .reminderButton {
         display: none;
     }
 }

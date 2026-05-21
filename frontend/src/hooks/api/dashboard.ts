@@ -1,10 +1,20 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import type {
     CoordinatorDashboard,
     PromotionDashboard,
     RelationshipManagerDashboard,
 } from '../../types/api';
+
+export interface ReminderEmailResponse {
+    sent: boolean;
+    to: string;
+    subject: string;
+    overdue_count: number;
+    upcoming_count: number;
+    transport: 'smtp' | 'log';
+    detail: string | null;
+}
 
 export const dashboardKeys = {
     coordinator: (eventId: number) => ['dashboard', 'coordinator', eventId] as const,
@@ -53,5 +63,18 @@ export function useRelationshipManagerDashboard(userId: number | null) {
             return data;
         },
         enabled: userId != null,
+    });
+}
+
+export function useSendReminderEmail() {
+    return useMutation({
+        mutationFn: async (userId: number): Promise<ReminderEmailResponse> => {
+            const { data } = await api.post<ReminderEmailResponse>(
+                '/dashboard/send-reminder-email',
+                null,
+                { params: { user_id: userId } },
+            );
+            return data;
+        },
     });
 }

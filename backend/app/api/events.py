@@ -1,5 +1,4 @@
 import os
-import uuid
 from pathlib import Path
 from typing import Annotated
 
@@ -20,6 +19,7 @@ from app.schemas.document import DocumentCreate, DocumentOut
 from app.schemas.event import EventCreate, EventKpi, EventOut, EventUpdate
 from app.schemas.pipeline_entry import PipelineEntryOut
 from app.services.kpi import compute_event_kpi
+from app.services.uploads import save_upload
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -232,25 +232,15 @@ async def upload_event_company_document(
     from app.api.companies import _load_company
     _load_company(db, company_id)
 
-    if file.content_type not in ("application/pdf", "application/octet-stream"):
-        raise HTTPException(status_code=400, detail="Dozwolone są tylko pliki PDF")
-
     storage_dir = Path(__file__).parent.parent / "storage" / "documents"
-    storage_dir.mkdir(parents=True, exist_ok=True)
-
-    file_ext = ".pdf"
-    file_name = f"{uuid.uuid4()}{file_ext}"
-    file_path = storage_dir / file_name
-
-    content = await file.read()
-    file_path.write_bytes(content)
+    _, original_name, public_url = save_upload(file, storage_dir)
 
     doc = Document(
         event_id=event_id,
         company_id=company_id,
         uploaded_by_user_id=user_id,
-        file_name=file.filename or "dokument.pdf",
-        file_url=f"/storage/documents/{file_name}",
+        file_name=original_name,
+        file_url=public_url,
         document_type=document_type,
     )
     db.add(doc)

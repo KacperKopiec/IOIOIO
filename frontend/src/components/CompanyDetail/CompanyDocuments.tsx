@@ -165,7 +165,7 @@ const CompanyDocuments: React.FC<CompanyDocumentsProps> = ({
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept=".pdf,application/pdf"
+                                accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.svg,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.csv,.txt,.zip"
                                 onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
                                 className={styles.fileInput}
                             />

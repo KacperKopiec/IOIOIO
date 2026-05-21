@@ -68,9 +68,9 @@ TAGS: list[tuple[str, TagCategory]] = [
 ]
 
 DEMO_USERS: list[tuple[str, str, str, str]] = [
-    ("Marek", "Kowalski", "marek.koordynator@agh.edu.pl", "koordynator"),
-    ("Katarzyna", "Wiśniewska", "katarzyna.opiekun@agh.edu.pl", "opiekun"),
-    ("Tomasz", "Lewandowski", "tomasz.promocja@agh.edu.pl", "promocja"),
+    ("Marek", "Kowalski", "fabia+koordynator@student.agh.edu.pl", "koordynator"),
+    ("Katarzyna", "Wiśniewska", "fabia+opiekun@student.agh.edu.pl", "opiekun"),
+    ("Tomasz", "Lewandowski", "fabia+promocja@student.agh.edu.pl", "promocja"),
 ]
 
 
