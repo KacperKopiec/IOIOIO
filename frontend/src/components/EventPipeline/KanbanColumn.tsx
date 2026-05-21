@@ -8,9 +8,10 @@ import styles from './KanbanColumn.module.css';
 interface KanbanColumnProps {
     stage: PipelineStage;
     entries: PipelineEntry[];
+    onEditRejection?: (entry: PipelineEntry) => void;
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, entries }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, entries, onEditRejection }) => {
     const { isOver, setNodeRef } = useDroppable({
         id: `stage-${stage.id}`,
         data: { stageId: stage.id },
@@ -40,7 +41,13 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, entries }) => {
                 {entries.length === 0 ? (
                     <div className={styles.empty}>Upuść tutaj firmę</div>
                 ) : (
-                    entries.map((entry) => <KanbanCard key={entry.id} entry={entry} />)
+                    entries.map((entry) => (
+                        <KanbanCard
+                            key={entry.id}
+                            entry={entry}
+                            onEditRejection={onEditRejection}
+                        />
+                    ))
                 )}
             </div>
         </div>

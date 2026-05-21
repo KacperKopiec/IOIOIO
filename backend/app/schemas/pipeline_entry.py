@@ -48,6 +48,7 @@ class PipelineEntryUpdate(OrmBase):
     agreed_amount: Decimal | None = Field(default=None, ge=0)
     probability_override: int | None = Field(default=None, ge=0, le=100)
     notes: str | None = None
+    rejection_reason: str | None = None
 
 
 class PipelineMoveRequest(OrmBase):

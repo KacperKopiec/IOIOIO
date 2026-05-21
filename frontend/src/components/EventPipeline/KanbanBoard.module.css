@@ -19,3 +19,68 @@
 .dragOverlay {
     pointer-events: none;
 }
+
+.rejectBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rejectHint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 18px;
+}
+
+.rejectTextarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    box-sizing: border-box;
+}
+
+.rejectTextarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.rejectActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.rejectCancel {
+    padding: 8px 14px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.rejectCancel:hover {
+    background: var(--color-surface-muted);
+}
+
+.rejectConfirm {
+    padding: 8px 14px;
+    background: var(--color-primary-dark);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rejectConfirm:hover {
+    background: var(--color-primary-darker);
+}
