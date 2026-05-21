@@ -91,11 +91,6 @@ const ActionBar: React.FC<ActionBarProps> = ({
                         type="button"
                         onClick={onSeedPipeline}
                         disabled={disabled || !onSeedPipeline}
-                        title={
-                            !onSeedPipeline
-                                ? 'Tylko koordynator może zasilać lejek'
-                                : undefined
-                        }
                     >
                         <GitBranchPlus className={styles.iconSmall} aria-hidden="true" />
                         <span className={styles.actionText}>Zasil lejek</span>

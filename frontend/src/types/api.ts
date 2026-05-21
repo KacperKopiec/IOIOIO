@@ -239,6 +239,7 @@ export interface PipelineEntryUpdate {
     agreed_amount?: string | null;
     probability_override?: number | null;
     notes?: string | null;
+    rejection_reason?: string | null;
 }
 
 export interface Activity {

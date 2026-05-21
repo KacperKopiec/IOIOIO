@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowUpRight, Check, Clock, X } from 'lucide-react';
+import { ArrowUpRight, Check, Clock, Pencil, X } from 'lucide-react';
 import { formatPLN, ownerInitials } from '../../lib/format';
 import type { PipelineEntry } from '../../types/api';
 import { formatRelativeDate, getStageTone } from './stageStyle';
@@ -10,6 +10,7 @@ import styles from './KanbanCard.module.css';
 
 interface KanbanCardProps {
     entry: PipelineEntry;
+    onEditRejection?: (entry: PipelineEntry) => void;
 }
 
 function category(entry: PipelineEntry): string | null {
@@ -69,7 +70,7 @@ function bottomMeta(entry: PipelineEntry): {
     return { iconLabel: formatRelativeDate(entry.updated_at) };
 }
 
-const KanbanCard: React.FC<KanbanCardProps> = ({ entry }) => {
+const KanbanCard: React.FC<KanbanCardProps> = ({ entry, onEditRejection }) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } =
         useDraggable({
             id: entry.id,
@@ -146,7 +147,24 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ entry }) => {
             {isLost && (
                 <span className={`${styles.statusBadge} ${styles.statusBadgeLost}`}>
                     <X size={11} />
-                    {entry.rejection_reason ?? 'Brak budżetu'}
+                    <span className={styles.statusBadgeText}>
+                        {entry.rejection_reason ?? 'Brak budżetu'}
+                    </span>
+                    {onEditRejection && (
+                        <button
+                            type="button"
+                            className={styles.rejectionEditBtn}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEditRejection(entry);
+                            }}
+                            aria-label="Edytuj powód odrzucenia"
+                            title="Edytuj powód odrzucenia"
+                        >
+                            <Pencil size={10} />
+                        </button>
+                    )}
                 </span>
             )}
 

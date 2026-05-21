@@ -137,16 +137,20 @@ const EventTasksList: React.FC<EventTasksListProps> = ({
                                         <Circle size={20} className={styles.checkIcon} />
                                     )}
                                 </button>
-                                <div>
+                                <div className={styles.taskBody}>
                                     <button
                                         type="button"
                                         className={`${styles.taskTitle} ${done ? styles.taskTitleDone : ''
                                             }`}
                                         onClick={() => setEdited(activity)}
+                                        title={activity.subject}
                                     >
                                         {activity.subject}
                                     </button>
-                                    <div className={`${styles.taskMeta} ${done ? styles.taskMetaDone : ''}`}>
+                                    <div
+                                        className={`${styles.taskMeta} ${done ? styles.taskMetaDone : ''}`}
+                                        title={activity.description ?? undefined}
+                                    >
                                         {TYPE_LABEL[activity.activity_type] ?? activity.activity_type}
                                         {activity.description ? ` · ${activity.description}` : ''}
                                     </div>

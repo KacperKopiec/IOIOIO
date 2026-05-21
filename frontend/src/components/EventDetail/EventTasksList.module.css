@@ -43,6 +43,15 @@
     align-items: center;
     gap: 16px;
     min-width: 0;
+    flex: 1 1 0;
+}
+
+.taskBody {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .checkBtn {
@@ -85,6 +94,9 @@
     line-height: 24px;
     font-family: inherit;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .taskTitle:hover {
@@ -102,7 +114,6 @@
     color: var(--color-text-muted);
     letter-spacing: 0.5px;
     text-transform: none;
-    max-width: min(52vw, 360px);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

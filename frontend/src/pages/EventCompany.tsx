@@ -160,6 +160,9 @@ const EventCompany: React.FC = () => {
                         eventName={ev.name}
                         activities={activities.data ?? []}
                         isLoading={activities.isLoading}
+                        companyId={c.id}
+                        eventId={ev.id}
+                        pipelineEntryId={entry?.id ?? null}
                     />
                     <EventNotesCard
                         companyId={c.id}
