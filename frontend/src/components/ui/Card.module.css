@@ -75,3 +75,21 @@
 .action:hover {
     text-decoration: underline;
 }
+
+@media print {
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #cfd8e3 !important;
+        background: #fff !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .padded {
+        padding: 5mm !important;
+    }
+
+    .paddedCompact {
+        padding: 4mm !important;
+    }
+}
