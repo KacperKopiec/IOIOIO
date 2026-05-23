@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ROLE_PROFILES, ROLES, roleLabel, type UserRole } from './auth';
+import { ROLE_PROFILES, ROLES, roleLabel } from './auth';
 
 describe('auth context exports', () => {
     it('ROLES contains exactly three roles', () => {
