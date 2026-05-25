@@ -12,5 +12,6 @@ COPY pyproject.toml uv.lock* ./
 RUN uv sync --frozen --no-dev || uv sync --no-dev
 
 COPY . .
+RUN chmod +x ./docker-entrypoint.sh
 
-CMD ["sh", "./docker-entrypoint.sh"]
+CMD ["./docker-entrypoint.sh"]

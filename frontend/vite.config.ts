@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://crm-backend:8000',
+        target: process.env.API_TARGET || 'http://crm-backend:8000',
         changeOrigin: true,
       },
       '/storage': {
-        target: 'http://crm-backend:8000',
+        target: process.env.API_TARGET || 'http://crm-backend:8000',
         changeOrigin: true,
       },
     },

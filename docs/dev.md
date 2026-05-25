@@ -95,6 +95,46 @@ docker exec crm-frontend npm run test:watch     # interaktywnie
 
 29 testów (`lib/format`, `Button`, `Badge`, `KpiCard`, `Breadcrumb`).
 
+### End-to-End (Playwright)
+
+Testy e2e w `frontend/e2e/` testują pełne przepływy użytkownika:
+- Autentykacja i przełączanie ról
+- Lejek pozyskiwania firm (pipeline)
+- Zarządzanie firmami, eventami, kontaktami
+- Dashboard i raporty
+- Filtry i wyszukiwanie
+
+```bash
+cd frontend
+
+# Uruchom wszystkie testy
+npm run e2e
+
+# Tryb UI (interaktywny)
+npm run e2e:ui
+
+# Debug mode (otworzy debugger)
+npm run e2e:debug
+
+# Z przeglądarką widoczną
+npm run e2e:headed
+```
+
+Warunki uruchomienia:
+1. Backend musi być uruchomiony i dostępny na `http://localhost:8000/`
+2. Frontend dev server uruchomi się automatycznie na `http://localhost:5173/`
+3. Baza musi mieć dane seedowe (demo data): `docker exec crm-backend uv run python -m app.db.seeds_demo`
+
+Raporty z testów zapisane są w `frontend/playwright-report/`. Otwórz po uruchomieniu:
+
+```bash
+npx playwright show-report
+```
+
+Fixture i utilities:
+- `e2e/fixtures/auth.ts` — przełączanie ról, logowanie
+- `e2e/utils/helpers.ts` — wypełnianie formularzy, nawigacja, asercje
+
 ### Build produkcyjny
 
 ```bash
