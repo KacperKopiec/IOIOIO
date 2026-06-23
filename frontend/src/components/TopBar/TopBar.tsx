@@ -1,11 +1,11 @@
 import React from 'react';
 import { Mail } from 'lucide-react';
-import { ROLES, roleLabel, useAuth, type UserRole } from '../../context/auth';
+import { useAuth } from '../../context/auth';
 import { useSendReminderEmail } from '../../hooks/api/dashboard';
 import styles from './TopBar.module.css';
 
 const TopBar: React.FC = () => {
-    const { role, setRole, userId, userName, userRoleName } = useAuth();
+    const { userId, userName, userRoleName } = useAuth();
     const sendReminder = useSendReminderEmail();
 
     const handleSendReminder = async () => {
@@ -49,22 +49,6 @@ const TopBar: React.FC = () => {
                     <Mail size={14} />
                     {sendReminder.isPending ? 'Wysyłanie…' : 'Wyślij przypomnienie'}
                 </button>
-                <div className={styles.roleSwitcher}>
-                    <label className={styles.roleSwitcherLabel}>
-                        Tryb dev — rola:
-                    </label>
-                    <select
-                        className={styles.roleSwitcherSelect}
-                        value={role}
-                        onChange={(e) => setRole(e.target.value as UserRole)}
-                    >
-                        {ROLES.map((r) => (
-                            <option key={r} value={r}>
-                                {roleLabel(r)}
-                            </option>
-                        ))}
-                    </select>
-                </div>
                 <div className={styles.userBlock}>
                     <div className={styles.userName}>{userName}</div>
                     <div className={styles.userRole}>{userRoleName}</div>
